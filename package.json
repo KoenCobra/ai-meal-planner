@@ -16,6 +16,7 @@
     "@clerk/nextjs": "^6.12.6",
     "@radix-ui/react-slot": "^1.2.0",
     "@schematichq/schematic-components": "^0.7.11",
+    "@schematichq/schematic-react": "^1.2.4",
     "@schematichq/schematic-typescript-node": "^1.1.10",
     "@stripe/react-stripe-js": "^3.6.0",
     "class-variance-authority": "^0.7.1",
