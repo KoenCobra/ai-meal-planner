@@ -3,10 +3,6 @@
 
 @custom-variant dark (&:is(.dark *));
 
-body {
-  min-height: 100svh;
-}
-
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
