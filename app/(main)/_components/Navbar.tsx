@@ -13,7 +13,7 @@ const Navbar = () => {
   const [open, setOpen] = useState(false);
 
   return (
-    <nav className="border-b-2 border-border shadow-xs w-full bg-background">
+    <nav className="sticky top-0 z-50 border-b-2 border-border shadow-xs w-full bg-background">
       <div className="container py-3 flex items-center justify-between">
         <Link className="text-2xl font-bold" href="/">
           BUBU
