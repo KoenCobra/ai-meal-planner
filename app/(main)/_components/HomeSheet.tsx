@@ -7,8 +7,6 @@ import {
 } from "@/components/ui/sheet";
 import Link from "next/link";
 import ThemeToggle from "@/components/ThemeToggle";
-import { SignedOut } from "@clerk/nextjs";
-import LoginButton from "./LoginButton";
 
 interface Props {
   open: boolean;
@@ -22,7 +20,7 @@ const HomeSheet = ({ open, setOpen }: Props) => {
         <SheetHeader>
           <SheetTitle className="text-left text-2xl">Bubu</SheetTitle>
         </SheetHeader>
-        <div className="mt-6 grid text-left gap-3">
+        <div className="mt-6 grid text-left gap-3 px-5">
           <Link className="py-2" onClick={() => setOpen(false)} href="/detox">
             Detox
           </Link>
@@ -37,9 +35,6 @@ const HomeSheet = ({ open, setOpen }: Props) => {
             Meal Planner
           </Link>
           <div className="mt-5 flex items-center gap-3 ">
-            <SignedOut>
-              <LoginButton />
-            </SignedOut>
             <ThemeToggle />
           </div>
         </div>

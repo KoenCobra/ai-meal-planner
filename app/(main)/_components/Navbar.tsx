@@ -14,7 +14,7 @@ const Navbar = () => {
 
   return (
     <nav className="border-b-2 border-border shadow-xs w-full bg-background">
-      <div className="container mx-auto py-3 flex items-center justify-between">
+      <div className="container py-3 flex items-center justify-between">
         <Link className="text-2xl font-bold" href="/">
           BUBU
         </Link>
@@ -31,7 +31,7 @@ const Navbar = () => {
             </li>
           </ul>
         </div>
-        <div className="hidden md:block">
+        <div className="flex items-center gap-3">
           <div className="flex items-center gap-3">
             <ThemeToggle />
             <SignedOut>
@@ -41,11 +41,11 @@ const Navbar = () => {
               <UserButton />
             </SignedIn>
           </div>
-        </div>
-        <div className="md:hidden">
-          <Button onClick={() => setOpen(true)} variant="ghost">
-            <Menu />
-          </Button>
+          <div className="md:hidden">
+            <Button onClick={() => setOpen(true)} variant="ghost">
+              <Menu />
+            </Button>
+          </div>
         </div>
       </div>
       <HomeSheet open={open} setOpen={setOpen} />

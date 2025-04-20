@@ -3,9 +3,9 @@ import Navbar from "./_components/Navbar";
 
 const layout = ({ children }: { children: React.ReactNode }) => {
   return (
-    <div className="h-full">
+    <div>
       <Navbar />
-      <div className="container mx-auto">{children}</div>
+      <div className="container">{children}</div>
     </div>
   );
 };
