@@ -35,16 +35,14 @@ export default function RootLayout({
       >
         <ClerkProvider dynamic>
           <ConvexClientProvider>
-            <main>
-              <ThemeProvider
-                attribute="class"
-                defaultTheme="system"
-                enableSystem
-                disableTransitionOnChange
-              >
-                {children}
-              </ThemeProvider>
-            </main>
+            <ThemeProvider
+              attribute="class"
+              defaultTheme="system"
+              enableSystem
+              disableTransitionOnChange
+            >
+              {children}
+            </ThemeProvider>
           </ConvexClientProvider>
         </ClerkProvider>
       </body>
