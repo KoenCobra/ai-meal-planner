@@ -18,7 +18,7 @@ const HomeSheet = ({ open, setOpen }: Props) => {
     <Sheet open={open} onOpenChange={(open) => setOpen(open)}>
       <SheetContent>
         <SheetHeader>
-          <SheetTitle className="text-left text-2xl">Bubu</SheetTitle>
+          <SheetTitle className="text-left text-2xl">Bibi</SheetTitle>
         </SheetHeader>
         <div className="mt-6 grid text-left gap-3 px-5">
           <Link className="py-2" onClick={() => setOpen(false)} href="/detox">

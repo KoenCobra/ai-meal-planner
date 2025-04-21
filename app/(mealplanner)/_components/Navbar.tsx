@@ -10,8 +10,8 @@ const navItems = [
   { href: "/menus", label: "Menus", icon: null },
   { href: "/grocery", label: "Grocery", icon: null },
   {
-    href: "/bubu-ai",
-    label: "Bubu AI",
+    href: "/bibi-ai",
+    label: "Bibi AI",
     icon: (
       <Sparkles className="size-4 absolute -top-1 -right-4 text-blue-500" />
     ),
@@ -33,7 +33,7 @@ const Navbar = () => {
             });
           }}
         >
-          BUBU
+          Bibi
         </h1>
         <div className="hidden md:block">
           <ul className="flex gap-10 text-xl">

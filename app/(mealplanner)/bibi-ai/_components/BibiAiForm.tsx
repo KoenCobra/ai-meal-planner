@@ -1,0 +1,87 @@
+"use client";
+
+import React from "react";
+import { Button } from "@/components/ui/button";
+import {
+  Form,
+  FormControl,
+  FormField,
+  FormItem,
+  FormMessage,
+} from "@/components/ui/form";
+import { Textarea } from "@/components/ui/textarea";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { useForm } from "react-hook-form";
+import { toast } from "sonner";
+
+import { GenerateRecipeInput, generateRecipeSchema } from "@/lib/validation";
+import { Loader2Icon, WandSparkles } from "lucide-react";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { generateRecipe } from "../actions";
+
+const AiForm = () => {
+  const queryClient = useQueryClient();
+
+  const form = useForm<GenerateRecipeInput>({
+    resolver: zodResolver(generateRecipeSchema),
+    defaultValues: {
+      description: "",
+    },
+  });
+
+  const mutation = useMutation({
+    mutationFn: async (input: GenerateRecipeInput) => generateRecipe(input),
+    onSuccess: (data) => {
+      queryClient.setQueryData(["ai-recipe"], data);
+      form.reset();
+    },
+    onError: () => {
+      toast.error("Something went wrong. Please try again.");
+    },
+  });
+
+  const onSubmit = async (input: GenerateRecipeInput) => {
+    await mutation.mutateAsync(input);
+  };
+  return (
+    <div className="md:w-1/2 mx-auto">
+      <Form {...form}>
+        <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-3">
+          <FormField
+            control={form.control}
+            name="description"
+            render={({ field }) => (
+              <FormItem>
+                <FormControl>
+                  <Textarea
+                    {...field}
+                    placeholder={`E.g. "I want a recipe for a healthy breakfast" (in any language you prefer)`}
+                    rows={4}
+                    autoFocus
+                  />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+          <div className="flex justify-center">
+            <Button
+              disabled={mutation.isPending}
+              type="submit"
+              className="mt-2"
+            >
+              Generate Recipe
+              {mutation.isPending ? (
+                <Loader2Icon className="animate-spin" />
+              ) : (
+                <WandSparkles />
+              )}
+            </Button>
+          </div>
+        </form>
+      </Form>
+    </div>
+  );
+};
+
+export default AiForm;
