@@ -1,31 +1,12 @@
 import { Metadata } from "next";
 import RecipeCarousel from "./_components/RecipeCarousel";
 import RefreshRecipesButton from "./_components/RefreshRecipesButton";
-import { client } from "@/lib/schematic";
-import { auth } from "@clerk/nextjs/server";
 
 export const metadata: Metadata = {
   title: "Discover",
 };
 
 const Discover = async () => {
-  //move to server action maybe?
-  const { userId } = await auth();
-
-  if (!userId) {
-    throw new Error("User not found in Discover page");
-  }
-
-  await client.track({
-    event: "api-calls-to-spoonacular",
-    company: {
-      id: userId,
-    },
-    user: {
-      id: userId,
-    },
-  });
-
   return (
     <>
       <h1 className="text-3xl font-bold text-center uppercase items-center gap-2">

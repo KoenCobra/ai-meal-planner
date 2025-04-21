@@ -1,6 +1,7 @@
 import { RecipeDetail, DiscoverRecipeItem } from "@/app/types/recipe";
 import { axiosInstance } from "@/app/utils/axiosInstance";
 import { useQuery } from "@tanstack/react-query";
+import { getRecipes } from "../actions";
 
 export const useRecipe = (id: string) => {
   const { data, isError, isLoading } = useQuery<RecipeDetail>({
@@ -21,11 +22,7 @@ export const useRecipeCarousel = (dishType: string) => {
   const { data, isError, isLoading } = useQuery<DiscoverRecipeItem>({
     queryKey: ["discover", dishType],
     queryFn: async () => {
-      const res = await axiosInstance.get(
-        `recipes/random?number=3&include-tags=${dishType}&includeNutrition=false`,
-      );
-
-      return res.data;
+      return await getRecipes(dishType);
     },
     staleTime: Infinity,
   });
