@@ -9,6 +9,7 @@ export const metadata: Metadata = {
 };
 
 const Discover = async () => {
+  //move to server action maybe?
   const { userId } = await auth();
 
   if (!userId) {
