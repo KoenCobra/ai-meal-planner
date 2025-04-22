@@ -15,6 +15,7 @@ import { ArrowLeft, ArrowRight } from "lucide-react";
 import DiscoverRecipeCard from "./DiscoverRecipeCard";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useRecipeCarousel } from "../hooks";
+import { useSchematicEntitlement } from "@schematichq/schematic-react";
 
 interface RecipeCarouselProps {
   dishType: string;
@@ -23,6 +24,14 @@ interface RecipeCarouselProps {
 const RecipeCarousel = ({ dishType }: RecipeCarouselProps) => {
   const [api, setApi] = useState<CarouselApi>();
   const { data, isError, isLoading } = useRecipeCarousel(dishType);
+
+  const { featureUsageExceeded } = useSchematicEntitlement(
+    "api-calls-to-spoonacular",
+  );
+
+  if (featureUsageExceeded) {
+    return <div>Feature usage exceeded</div>;
+  }
 
   if (isError) return <div>Something went wrong</div>;
 

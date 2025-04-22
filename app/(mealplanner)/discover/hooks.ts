@@ -2,6 +2,7 @@ import { RecipeDetail, DiscoverRecipeItem } from "@/app/types/recipe";
 import { axiosInstance } from "@/app/utils/axiosInstance";
 import { useQuery } from "@tanstack/react-query";
 import { getRecipes } from "../actions";
+import { useSchematicEntitlement } from "@schematichq/schematic-react";
 
 export const useRecipe = (id: string) => {
   const { data, isError, isLoading } = useQuery<RecipeDetail>({
@@ -19,9 +20,14 @@ export const useRecipe = (id: string) => {
 };
 
 export const useRecipeCarousel = (dishType: string) => {
+  const { value: isFeatureEnabled, featureUsageExceeded } =
+    useSchematicEntitlement("api-calls-to-spoonacular");
+
   const { data, isError, isLoading } = useQuery<DiscoverRecipeItem>({
     queryKey: ["discover", dishType],
     queryFn: async () => {
+      if (!isFeatureEnabled || featureUsageExceeded) return null;
+
       return await getRecipes(dishType);
     },
     staleTime: Infinity,

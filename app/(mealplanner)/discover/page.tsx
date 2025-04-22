@@ -6,7 +6,7 @@ export const metadata: Metadata = {
   title: "Discover",
 };
 
-const Discover = async () => {
+const Discover = () => {
   return (
     <>
       <h1 className="text-3xl font-bold text-center uppercase items-center gap-2">
