@@ -18,9 +18,15 @@ export const getRecipes = async (dishType: string) => {
 
     await client.track({
       event: "api-calls-to-spoonacular",
+      company: {
+        id: userId,
+      },
+      user: {
+        id: userId,
+      },
     });
 
-    return res.data.recipes;
+    return res.data;
   } catch (error) {
     throw new Error(`Error fetching recipes: ${error}`);
   }
