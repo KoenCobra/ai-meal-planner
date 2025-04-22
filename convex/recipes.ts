@@ -1,8 +1,7 @@
 import { mutation, query } from "./_generated/server";
 import { v } from "convex/values";
-import { Doc } from "./_generated/dataModel";
+import { paginationOptsValidator } from "convex/server";
 
-// Recipe Mutations
 export const createRecipe = mutation({
   args: {
     userId: v.string(),
@@ -17,24 +16,17 @@ export const createRecipe = mutation({
     dishTypes: v.array(v.string()),
   },
   handler: async (ctx, args) => {
-    const recipeId = await ctx.db.insert("recipes", {
-      userId: args.userId,
-      title: args.title,
-      summary: args.summary,
-      servings: args.servings,
-      readyInMinutes: args.readyInMinutes,
-      image: args.image,
-      diets: args.diets,
-      instructions: args.instructions,
-      ingredients: args.ingredients,
-      dishTypes: args.dishTypes,
+    const { userId, ...recipeData } = args;
+    return await ctx.db.insert("recipes", {
+      userId,
+      ...recipeData,
     });
-    return recipeId;
   },
 });
 
 export const updateRecipe = mutation({
   args: {
+    userId: v.string(),
     id: v.id("recipes"),
     title: v.optional(v.string()),
     summary: v.optional(v.string()),
@@ -47,7 +39,11 @@ export const updateRecipe = mutation({
     dishTypes: v.optional(v.array(v.string())),
   },
   handler: async (ctx, args) => {
-    const { id, ...updates } = args;
+    const { id, userId, ...updates } = args;
+    const recipe = await ctx.db.get(id);
+    if (!recipe) throw new Error("Recipe not found");
+    if (recipe.userId !== userId) throw new Error("Not authorized");
+
     await ctx.db.patch(id, updates);
     return id;
   },
@@ -55,10 +51,15 @@ export const updateRecipe = mutation({
 
 export const deleteRecipe = mutation({
   args: {
+    userId: v.string(),
     id: v.id("recipes"),
   },
   handler: async (ctx, args) => {
-    // First delete all menu associations
+    const recipe = await ctx.db.get(args.id);
+    if (!recipe) throw new Error("Recipe not found");
+    if (recipe.userId !== args.userId) throw new Error("Not authorized");
+
+    // Delete all menu associations
     const menuAssociations = await ctx.db
       .query("menusOnRecipes")
       .withIndex("by_recipe", (q) => q.eq("recipeId", args.id))
@@ -68,168 +69,66 @@ export const deleteRecipe = mutation({
       await ctx.db.delete(association._id);
     }
 
-    // Then delete the recipe
     await ctx.db.delete(args.id);
   },
 });
 
-// Menu Mutations
-export const createMenu = mutation({
+// Recipe Queries
+export const getRecipe = query({
   args: {
     userId: v.string(),
-    name: v.string(),
+    id: v.id("recipes"),
   },
   handler: async (ctx, args) => {
-    const menuId = await ctx.db.insert("menus", {
-      userId: args.userId,
-      name: args.name,
-    });
-    return menuId;
+    const recipe = await ctx.db.get(args.id);
+    if (!recipe) return null;
+    if (recipe.userId !== args.userId) throw new Error("Not authorized");
+    return recipe;
   },
 });
 
-export const updateMenu = mutation({
+export const listRecipes = query({
   args: {
-    id: v.id("menus"),
-    name: v.string(),
+    userId: v.string(),
+    paginationOpts: paginationOptsValidator,
   },
-  handler: async (ctx, args) => {
-    await ctx.db.patch(args.id, { name: args.name });
-    return args.id;
-  },
-});
-
-export const deleteMenu = mutation({
-  args: {
-    id: v.id("menus"),
-  },
-  handler: async (ctx, args) => {
-    // First delete all recipe associations
-    const recipeAssociations = await ctx.db
-      .query("menusOnRecipes")
-      .withIndex("by_menu", (q) => q.eq("menuId", args.id))
-      .collect();
-
-    for (const association of recipeAssociations) {
-      await ctx.db.delete(association._id);
-    }
-
-    // Then delete the menu
-    await ctx.db.delete(args.id);
-  },
-});
-
-// Menu-Recipe Association Mutations
-export const addRecipeToMenu = mutation({
-  args: {
-    menuId: v.id("menus"),
-    recipeId: v.id("recipes"),
-  },
-  handler: async (ctx, args) => {
-    // Check if recipe exists in menu
-    const existing = await ctx.db
-      .query("menusOnRecipes")
-      .withIndex("by_menu_and_recipe", (q) =>
-        q.eq("menuId", args.menuId).eq("recipeId", args.recipeId),
-      )
-      .unique();
-
-    if (existing) {
-      return existing._id;
-    }
-
-    // Add recipe to menu
-    const id = await ctx.db.insert("menusOnRecipes", {
-      menuId: args.menuId,
-      recipeId: args.recipeId,
-    });
-    return id;
-  },
-});
-
-export const removeRecipeFromMenu = mutation({
-  args: {
-    menuId: v.id("menus"),
-    recipeId: v.id("recipes"),
-  },
-  handler: async (ctx, args) => {
-    const association = await ctx.db
-      .query("menusOnRecipes")
-      .withIndex("by_menu_and_recipe", (q) =>
-        q.eq("menuId", args.menuId).eq("recipeId", args.recipeId),
-      )
-      .unique();
-
-    if (association) {
-      await ctx.db.delete(association._id);
-    }
-  },
-});
-
-// Queries
-export const getRecipe = query({
-  args: { id: v.id("recipes") },
-  handler: async (ctx, args) => {
-    return await ctx.db.get(args.id);
-  },
-});
-
-export const getUserRecipes = query({
-  args: { userId: v.string() },
   handler: async (ctx, args) => {
     return await ctx.db
       .query("recipes")
       .withIndex("by_user", (q) => q.eq("userId", args.userId))
-      .collect();
+      .order("desc")
+      .paginate(args.paginationOpts);
   },
 });
 
-export const searchRecipesByTitle = query({
-  args: { searchTerm: v.string() },
+export const searchRecipes = query({
+  args: {
+    userId: v.string(),
+    query: v.string(),
+    paginationOpts: paginationOptsValidator,
+  },
   handler: async (ctx, args) => {
     return await ctx.db
       .query("recipes")
-      .withIndex("by_title")
-      .filter(
-        (q) =>
-          q.gte(q.field("title"), args.searchTerm) &&
-          q.lt(q.field("title"), args.searchTerm + "\uffff"),
+      .withSearchIndex("search_title", (q) =>
+        q.search("title", args.query).eq("userId", args.userId),
       )
-      .collect();
+      .paginate(args.paginationOpts);
   },
 });
 
-export const getMenu = query({
-  args: { id: v.id("menus") },
-  handler: async (ctx, args) => {
-    return await ctx.db.get(args.id);
+export const searchByIngredients = query({
+  args: {
+    userId: v.string(),
+    query: v.string(),
+    paginationOpts: paginationOptsValidator,
   },
-});
-
-export const getUserMenus = query({
-  args: { userId: v.string() },
   handler: async (ctx, args) => {
     return await ctx.db
-      .query("menus")
-      .withIndex("by_user", (q) => q.eq("userId", args.userId))
-      .collect();
-  },
-});
-
-export const getMenuRecipes = query({
-  args: { menuId: v.id("menus") },
-  handler: async (ctx, args) => {
-    const associations = await ctx.db
-      .query("menusOnRecipes")
-      .withIndex("by_menu", (q) => q.eq("menuId", args.menuId))
-      .collect();
-
-    const recipes = await Promise.all(
-      associations.map((assoc) => ctx.db.get(assoc.recipeId)),
-    );
-
-    return recipes.filter(
-      (recipe): recipe is Doc<"recipes"> => recipe !== null,
-    );
+      .query("recipes")
+      .withSearchIndex("search_ingredients", (q) =>
+        q.search("ingredients", args.query).eq("userId", args.userId),
+      )
+      .paginate(args.paginationOpts);
   },
 });

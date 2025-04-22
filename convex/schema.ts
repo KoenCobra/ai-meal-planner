@@ -1,11 +1,7 @@
 import { defineSchema, defineTable } from "convex/server";
 import { v } from "convex/values";
 
-// The schema is entirely optional.
-// You can delete this file (schema.ts) and the
-// app will continue to work.
-// The schema provides more precise TypeScript types.
-export default defineSchema({
+const applicationTables = {
   recipes: defineTable({
     userId: v.string(),
     title: v.string(),
@@ -19,14 +15,23 @@ export default defineSchema({
     dishTypes: v.array(v.string()),
   })
     .index("by_user", ["userId"])
-    .index("by_title", ["title"]),
+    .index("by_title", ["title"])
+    .searchIndex("search_title", {
+      searchField: "title",
+      filterFields: ["userId"],
+    })
+    .searchIndex("search_ingredients", {
+      searchField: "ingredients",
+      filterFields: ["userId"],
+    }),
 
   menus: defineTable({
     userId: v.string(),
     name: v.string(),
   })
     .index("by_user", ["userId"])
-    .index("by_name", ["name"]),
+    .index("by_name", ["name"])
+    .index("by_user_and_name", ["userId", "name"]),
 
   menusOnRecipes: defineTable({
     menuId: v.id("menus"),
@@ -35,4 +40,8 @@ export default defineSchema({
     .index("by_menu", ["menuId"])
     .index("by_recipe", ["recipeId"])
     .index("by_menu_and_recipe", ["menuId", "recipeId"]),
+};
+
+export default defineSchema({
+  ...applicationTables,
 });
