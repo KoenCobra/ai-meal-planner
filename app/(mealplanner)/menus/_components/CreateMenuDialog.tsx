@@ -62,8 +62,8 @@ const CreateMenuDialog = () => {
 
   const onSubmit = async (input: CreateMenuInput) => {
     try {
-      await createMenuMutation({ userId: user?.id ?? "", name: input.name });
       onClose();
+      await createMenuMutation({ userId: user?.id ?? "", name: input.name });
       form.reset();
       toast.success("Menu created successfully");
     } catch (error) {

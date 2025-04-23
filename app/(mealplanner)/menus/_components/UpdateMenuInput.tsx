@@ -56,12 +56,12 @@ const UpdateMenuInput = ({
 
   const onSubmit = async (input: CreateMenuInput) => {
     try {
+      setOpenUpdateMenu(false);
       await updateMenu({
         id: menuId,
         userId: user?.id ?? "",
         name: input.name,
       });
-      setOpenUpdateMenu(false);
       form.reset();
       toast.success("Menu updated successfully");
     } catch (error) {
