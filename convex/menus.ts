@@ -1,7 +1,6 @@
 import { mutation, query } from "./_generated/server";
 import { v, ConvexError } from "convex/values";
 
-// Menu Mutations
 export const createMenu = mutation({
   args: {
     userId: v.string(),
@@ -52,7 +51,6 @@ export const deleteMenu = mutation({
     }
 
     await ctx.db.delete(args.id);
-    return { success: "Menu deleted successfully" };
   },
 });
 
@@ -125,8 +123,11 @@ export const getMenu = query({
   },
   handler: async (ctx, args) => {
     const menu = await ctx.db.get(args.id);
-    if (!menu) return null;
+
+    if (!menu) throw new ConvexError("Menu not found");
+
     if (menu.userId !== args.userId) throw new ConvexError("Not authorized");
+
     return menu;
   },
 });
@@ -136,11 +137,15 @@ export const getMenus = query({
     userId: v.string(),
   },
   handler: async (ctx, args) => {
-    return await ctx.db
+    const menus = await ctx.db
       .query("menus")
       .withIndex("by_user", (q) => q.eq("userId", args.userId))
       .order("desc")
       .collect();
+
+    if (!menus) throw new ConvexError("Menus not found");
+
+    return menus;
   },
 });
 

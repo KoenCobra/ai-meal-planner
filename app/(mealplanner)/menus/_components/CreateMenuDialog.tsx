@@ -68,12 +68,7 @@ const CreateMenuDialog = () => {
       toast.success("Menu created successfully");
     } catch (error) {
       console.error("Failed to create menu:", error);
-      toast.error(
-        error instanceof Error
-          ? error.message
-          : "Failed to create menu. Please try again.",
-      );
-      // Optionally report to Sentry here
+      toast.error("Failed to create menu. Please try again.");
     }
   };
 
