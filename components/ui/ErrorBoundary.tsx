@@ -1,6 +1,8 @@
 "use client";
 
 import React from "react";
+import { ConvexError } from "convex/values";
+import { AlertCircle } from "lucide-react";
 
 interface ErrorBoundaryProps {
   children: React.ReactNode;
@@ -35,16 +37,24 @@ class ErrorBoundary extends React.Component<
 
   render() {
     if (this.state.hasError) {
+      let errorMessage =
+        "An unexpected error occurred. Please try again later.";
+      const { error } = this.state;
+      if (error instanceof ConvexError) {
+        errorMessage = error.data;
+      } else if (error instanceof Error) {
+        errorMessage = error.message;
+      }
       return (
         this.props.fallback || (
-          <div className="text-center text-red-500 py-8">
-            <h2 className="text-xl font-semibold mb-2">
-              Something went wrong.
-            </h2>
-            <p>
-              {this.state.error?.message ||
-                "An unexpected error occurred. Please try again later."}
-            </p>
+          <div className="fixed bottom-6 right-6 z-50 max-w-sm shadow w-full bg-white border border-red-200 shadow-lg rounded-lg p-4 flex items-start gap-3 text-red-600">
+            <AlertCircle className="w-6 h-6 flex-shrink-0 mt-1 text-red-600" />
+            <div>
+              <h2 className="text-base font-semibold mb-1">
+                Something went wrong
+              </h2>
+              <p className="text-sm">{errorMessage}</p>
+            </div>
           </div>
         )
       );

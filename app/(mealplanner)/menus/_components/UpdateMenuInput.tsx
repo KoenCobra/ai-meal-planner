@@ -17,6 +17,7 @@ import { useMutation } from "convex/react";
 import { api } from "@/convex/_generated/api";
 import { Id } from "@/convex/_generated/dataModel";
 import { useUser } from "@clerk/clerk-react";
+import { ConvexError } from "convex/values";
 
 interface UpdateMenuInputProps {
   name: string;
@@ -65,10 +66,9 @@ const UpdateMenuInput = ({
       form.reset();
       toast.success("Menu updated successfully");
     } catch (error) {
-      toast.error(
-        error instanceof Error ? error.message : "Failed to update menu",
-      );
-      // Optionally report to Sentry here
+      const errorMessage =
+        error instanceof ConvexError ? error.data : "Error updating menu";
+      toast.error(errorMessage);
     }
   };
 
