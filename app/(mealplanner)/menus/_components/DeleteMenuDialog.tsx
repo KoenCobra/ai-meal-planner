@@ -14,6 +14,7 @@ import { toast } from "sonner";
 import { api } from "@/convex/_generated/api";
 import { Id } from "@/convex/_generated/dataModel";
 import { useUser } from "@clerk/clerk-react";
+import { ConvexError } from "convex/values";
 interface DeleteMenuDialogProps {
   openDeleteMenu: boolean;
   setOpenDeleteMenu: (open: boolean) => void;
@@ -47,12 +48,9 @@ const DeleteMenuDialog = ({
       setOpenDeleteMenu(false);
       toast.success("Menu deleted successfully");
     } catch (error) {
-      toast.error(
-        error instanceof Error
-          ? error.message
-          : "Failed to delete menu. Please try again.",
-      );
-      // Optionally report to Sentry here
+      const errorMessage =
+        error instanceof ConvexError ? error.data : "Error deleting menu";
+      toast.error(errorMessage);
     }
   };
 

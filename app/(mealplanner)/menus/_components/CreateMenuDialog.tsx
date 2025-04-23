@@ -27,6 +27,7 @@ import { useMutation } from "convex/react";
 import { api } from "@/convex/_generated/api";
 import { useUser } from "@clerk/clerk-react";
 import { Doc, Id } from "@/convex/_generated/dataModel";
+import { ConvexError } from "convex/values";
 
 const CreateMenuDialog = () => {
   const { isOpen, onClose } = useCreateMenuDialog();
@@ -67,8 +68,9 @@ const CreateMenuDialog = () => {
       form.reset();
       toast.success("Menu created successfully");
     } catch (error) {
-      console.error("Failed to create menu:", error);
-      toast.error("Failed to create menu. Please try again.");
+      const errorMessage =
+        error instanceof ConvexError ? error.data : "Error creating menu";
+      toast.error(errorMessage);
     }
   };
 
