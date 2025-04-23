@@ -26,15 +26,33 @@ const DeleteMenuDialog = ({
   menuId,
 }: DeleteMenuDialogProps) => {
   const { user } = useUser();
-  const deleteMenu = useMutation(api.menus.deleteMenu);
+  const deleteMenu = useMutation(api.menus.deleteMenu).withOptimisticUpdate(
+    (localStore, args) => {
+      const menus = localStore.getQuery(api.menus.getMenus, {
+        userId: args.userId,
+      });
+      if (menus) {
+        localStore.setQuery(
+          api.menus.getMenus,
+          { userId: args.userId },
+          menus.filter((menu) => menu._id !== args.id),
+        );
+      }
+    },
+  );
 
   const handleDelete = async () => {
-    const result = await deleteMenu({ id: menuId, userId: user?.id ?? "" });
-    if (result?.success) {
+    try {
+      await deleteMenu({ id: menuId, userId: user?.id ?? "" });
       setOpenDeleteMenu(false);
       toast.success("Menu deleted successfully");
-    } else {
-      toast.error("Failed to delete menu. Please try again. ");
+    } catch (error) {
+      toast.error(
+        error instanceof Error
+          ? error.message
+          : "Failed to delete menu. Please try again.",
+      );
+      // Optionally report to Sentry here
     }
   };
 

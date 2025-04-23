@@ -26,6 +26,7 @@ import { CreateMenuInput, createMenuSchema } from "@/lib/validation";
 import { useMutation } from "convex/react";
 import { api } from "@/convex/_generated/api";
 import { useUser } from "@clerk/clerk-react";
+import { Doc, Id } from "@/convex/_generated/dataModel";
 
 const CreateMenuDialog = () => {
   const { isOpen, onClose } = useCreateMenuDialog();
@@ -38,7 +39,26 @@ const CreateMenuDialog = () => {
     },
   });
 
-  const createMenuMutation = useMutation(api.menus.createMenu);
+  const createMenuMutation = useMutation(
+    api.menus.createMenu,
+  ).withOptimisticUpdate((localStore, args) => {
+    const menus = localStore.getQuery(api.menus.getMenus, {
+      userId: args.userId,
+    });
+    if (menus) {
+      const now = Date.now();
+      const newMenu = {
+        _id: ("optimistic-" + now) as Id<"menus"> | string, // Temporary ID for optimistic UI
+        _creationTime: now,
+        userId: args.userId,
+        name: args.name,
+      };
+      localStore.setQuery(api.menus.getMenus, { userId: args.userId }, [
+        newMenu as Doc<"menus">,
+        ...menus,
+      ]);
+    }
+  });
 
   const onSubmit = async (input: CreateMenuInput) => {
     try {
@@ -48,7 +68,12 @@ const CreateMenuDialog = () => {
       toast.success("Menu created successfully");
     } catch (error) {
       console.error("Failed to create menu:", error);
-      toast.error("Failed to create menu. Please try again.");
+      toast.error(
+        error instanceof Error
+          ? error.message
+          : "Failed to create menu. Please try again.",
+      );
+      // Optionally report to Sentry here
     }
   };
 

@@ -6,14 +6,12 @@ import React, { useState } from "react";
 import Link from "next/link";
 import { useCreateMenuDialog } from "../hooks";
 import DeleteMenuDialog from "./DeleteMenuDialog";
-import { useQuery } from "convex/react";
-import { api } from "@/convex/_generated/api";
-import { Id } from "@/convex/_generated/dataModel";
+import { Doc, Id } from "@/convex/_generated/dataModel";
 import UpdateMenuInput from "./UpdateMenuInput";
 import MenuListActionsPopover from "./MenuListActionsPopover";
 import { useUser } from "@clerk/clerk-react";
 
-const MenuList = () => {
+const MenuList = ({ menus }: { menus: Doc<"menus">[] }) => {
   const { onOpen } = useCreateMenuDialog();
   const { user } = useUser();
 
@@ -21,13 +19,7 @@ const MenuList = () => {
   const [menuId, setMenuId] = useState<Id<"menus"> | null>(null);
   const [updateMenuId, setUpdateMenuId] = useState<string | null>("");
 
-  const menus = useQuery(api.menus.listMenus, { userId: user?.id ?? "" });
-
   if (!user) return null;
-
-  if (!menus) {
-    return <p>Loading...</p>;
-  }
 
   return (
     <>

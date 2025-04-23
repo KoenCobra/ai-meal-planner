@@ -1,5 +1,5 @@
 import { mutation, query } from "./_generated/server";
-import { v } from "convex/values";
+import { v, ConvexError } from "convex/values";
 
 // Menu Mutations
 export const createMenu = mutation({
@@ -23,8 +23,8 @@ export const updateMenu = mutation({
   },
   handler: async (ctx, args) => {
     const menu = await ctx.db.get(args.id);
-    if (!menu) throw new Error("Menu not found");
-    if (menu.userId !== args.userId) throw new Error("Not authorized");
+    if (!menu) throw new ConvexError("Menu not found");
+    if (menu.userId !== args.userId) throw new ConvexError("Not authorized");
 
     await ctx.db.patch(args.id, { name: args.name });
     return args.id;
@@ -38,8 +38,8 @@ export const deleteMenu = mutation({
   },
   handler: async (ctx, args) => {
     const menu = await ctx.db.get(args.id);
-    if (!menu) return { error: "Menu not found" };
-    if (menu.userId !== args.userId) return { error: "Not authorized" };
+    if (!menu) throw new ConvexError("Menu not found");
+    if (menu.userId !== args.userId) throw new ConvexError("Not authorized");
 
     // Delete all recipe associations first
     const recipeAssociations = await ctx.db
@@ -66,13 +66,13 @@ export const addRecipeToMenu = mutation({
   handler: async (ctx, args) => {
     // Verify menu ownership
     const menu = await ctx.db.get(args.menuId);
-    if (!menu) throw new Error("Menu not found");
-    if (menu.userId !== args.userId) throw new Error("Not authorized");
+    if (!menu) throw new ConvexError("Menu not found");
+    if (menu.userId !== args.userId) throw new ConvexError("Not authorized");
 
     // Verify recipe ownership
     const recipe = await ctx.db.get(args.recipeId);
-    if (!recipe) throw new Error("Recipe not found");
-    if (recipe.userId !== args.userId) throw new Error("Not authorized");
+    if (!recipe) throw new ConvexError("Recipe not found");
+    if (recipe.userId !== args.userId) throw new ConvexError("Not authorized");
 
     // Check if recipe already exists in menu
     const existing = await ctx.db
@@ -101,8 +101,8 @@ export const removeRecipeFromMenu = mutation({
   handler: async (ctx, args) => {
     // Verify menu ownership
     const menu = await ctx.db.get(args.menuId);
-    if (!menu) throw new Error("Menu not found");
-    if (menu.userId !== args.userId) throw new Error("Not authorized");
+    if (!menu) throw new ConvexError("Menu not found");
+    if (menu.userId !== args.userId) throw new ConvexError("Not authorized");
 
     const association = await ctx.db
       .query("menusOnRecipes")
@@ -126,12 +126,12 @@ export const getMenu = query({
   handler: async (ctx, args) => {
     const menu = await ctx.db.get(args.id);
     if (!menu) return null;
-    if (menu.userId !== args.userId) throw new Error("Not authorized");
+    if (menu.userId !== args.userId) throw new ConvexError("Not authorized");
     return menu;
   },
 });
 
-export const listMenus = query({
+export const getMenus = query({
   args: {
     userId: v.string(),
   },
@@ -152,8 +152,8 @@ export const getMenuRecipes = query({
   handler: async (ctx, args) => {
     // Verify menu ownership
     const menu = await ctx.db.get(args.menuId);
-    if (!menu) throw new Error("Menu not found");
-    if (menu.userId !== args.userId) throw new Error("Not authorized");
+    if (!menu) throw new ConvexError("Menu not found");
+    if (menu.userId !== args.userId) throw new ConvexError("Not authorized");
 
     const associations = await ctx.db
       .query("menusOnRecipes")

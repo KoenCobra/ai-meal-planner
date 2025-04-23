@@ -37,7 +37,22 @@ const UpdateMenuInput = ({
     },
   });
 
-  const updateMenu = useMutation(api.menus.updateMenu);
+  const updateMenu = useMutation(api.menus.updateMenu).withOptimisticUpdate(
+    (localStore, args) => {
+      const menus = localStore.getQuery(api.menus.getMenus, {
+        userId: args.userId,
+      });
+      if (menus) {
+        localStore.setQuery(
+          api.menus.getMenus,
+          { userId: args.userId },
+          menus.map((menu) =>
+            menu._id === args.id ? { ...menu, name: args.name } : menu,
+          ),
+        );
+      }
+    },
+  );
 
   const onSubmit = async (input: CreateMenuInput) => {
     try {
@@ -53,6 +68,7 @@ const UpdateMenuInput = ({
       toast.error(
         error instanceof Error ? error.message : "Failed to update menu",
       );
+      // Optionally report to Sentry here
     }
   };
 

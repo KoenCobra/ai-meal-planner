@@ -11,13 +11,15 @@ import { useUser } from "@clerk/clerk-react";
 const MenusOverview = () => {
   const { user } = useUser();
 
-  const menus = useQuery(api.menus.listMenus, { userId: user?.id ?? "" });
+  const menus = useQuery(api.menus.getMenus, { userId: user?.id ?? "" });
 
   if (!user) return null;
 
+  if (!menus) return <p>Loading...</p>;
+
   return (
     <>
-      {menus?.length === 0 ? <EmptyMenus /> : <MenuList />}
+      {menus?.length === 0 ? <EmptyMenus /> : <MenuList menus={menus} />}
       <CreateMenuDialog />
     </>
   );
