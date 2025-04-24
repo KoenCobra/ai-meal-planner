@@ -11,8 +11,8 @@ import { useUser } from "@clerk/clerk-react";
 import { Id } from "@/convex/_generated/dataModel";
 import AddToMenuDialog from "../../_components/AddToMenuDialog";
 import { useAddToMenuDialogStore } from "../../_stores/useAddToMenuDialogStore";
-import RecipeDetailHeader from "../../discover/_components/RecipeDetailHeader";
-import RecipeDetailInstructions from "../../discover/_components/RecipeDetailInstructions";
+import RecipeDetailHeader from "../_components/RecipeDetailHeader";
+import RecipeDetailInstructions from "../_components/RecipeDetailInstructions";
 
 const RecipeDetails = () => {
   const params = useParams();

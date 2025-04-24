@@ -1,6 +1,6 @@
 "use client";
 
-import React from "react";
+import React, { useState } from "react";
 import { Button } from "@/components/ui/button";
 import {
   Form,
@@ -14,13 +14,20 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { toast } from "sonner";
 
-import { GenerateRecipeInput, generateRecipeSchema } from "@/lib/validation";
+import {
+  GenerateRecipeInput,
+  generateRecipeSchema,
+  RecipeInput,
+} from "@/lib/validation";
 import { Loader2Icon, WandSparkles } from "lucide-react";
-import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { generateRecipe } from "../actions";
 
-const AiForm = () => {
-  const queryClient = useQueryClient();
+interface BibiAiFormProps {
+  onRecipeGenerated: (recipe: RecipeInput) => void;
+}
+
+const BibiAiForm = ({ onRecipeGenerated }: BibiAiFormProps) => {
+  const [isLoading, setIsLoading] = useState(false);
 
   const form = useForm<GenerateRecipeInput>({
     resolver: zodResolver(generateRecipeSchema),
@@ -29,20 +36,19 @@ const AiForm = () => {
     },
   });
 
-  const mutation = useMutation({
-    mutationFn: async (input: GenerateRecipeInput) => generateRecipe(input),
-    onSuccess: (data) => {
-      queryClient.setQueryData(["ai-recipe"], data);
-      form.reset();
-    },
-    onError: () => {
-      toast.error("Something went wrong. Please try again.");
-    },
-  });
-
   const onSubmit = async (input: GenerateRecipeInput) => {
-    await mutation.mutateAsync(input);
+    try {
+      setIsLoading(true);
+      const recipe = await generateRecipe(input);
+      onRecipeGenerated(recipe);
+      form.reset();
+    } catch {
+      toast.error("Something went wrong. Please try again.");
+    } finally {
+      setIsLoading(false);
+    }
   };
+
   return (
     <div className="md:w-1/2 mx-auto">
       <Form {...form}>
@@ -65,13 +71,9 @@ const AiForm = () => {
             )}
           />
           <div className="flex justify-center">
-            <Button
-              disabled={mutation.isPending}
-              type="submit"
-              className="mt-2"
-            >
+            <Button disabled={isLoading} type="submit" className="mt-2">
               Generate Recipe
-              {mutation.isPending ? (
+              {isLoading ? (
                 <Loader2Icon className="animate-spin" />
               ) : (
                 <WandSparkles />
@@ -84,4 +86,4 @@ const AiForm = () => {
   );
 };
 
-export default AiForm;
+export default BibiAiForm;

@@ -6,10 +6,6 @@ import { usePathname } from "next/navigation";
 import { cn } from "@/lib/utils";
 
 const navItems = [
-  { href: "/discover", label: "Discover", icon: null },
-  { href: "/recipes", label: "Recipes", icon: null },
-  { href: "/menus", label: "Menus", icon: null },
-  { href: "/grocery", label: "Grocery", icon: null },
   {
     href: "/bibi-ai",
     label: "Bibi AI",
@@ -17,6 +13,9 @@ const navItems = [
       <Sparkles className="size-4 absolute -top-1 -right-4 text-blue-500" />
     ),
   },
+  { href: "/recipes", label: "Recipes", icon: null },
+  { href: "/menus", label: "Menus", icon: null },
+  { href: "/grocery", label: "Grocery", icon: null },
 ] as const;
 
 const Navbar = () => {

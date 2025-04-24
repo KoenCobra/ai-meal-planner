@@ -1,16 +1,12 @@
 "use client";
 
-import React from "react";
+import React, { useState } from "react";
 import { RecipeInput } from "@/lib/validation";
-import { useQuery } from "@tanstack/react-query";
 import BibiAiForm from "./_components/BibiAiForm";
 import BibiAiResponse from "./_components/BibiAiResponse";
 
 const BibiAi = () => {
-  const { data } = useQuery<RecipeInput | null>({
-    queryKey: ["ai-recipe"],
-    queryFn: () => null,
-  });
+  const [recipeData, setRecipeData] = useState<RecipeInput | null>(null);
 
   return (
     <>
@@ -20,9 +16,9 @@ const BibiAi = () => {
           Generate recipes with Bibi AI.
         </p>
       </div>
-      <BibiAiForm />
+      <BibiAiForm onRecipeGenerated={setRecipeData} />
 
-      {data && <BibiAiResponse recipe={data} />}
+      {recipeData && <BibiAiResponse recipe={recipeData} />}
     </>
   );
 };
