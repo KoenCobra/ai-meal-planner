@@ -16,13 +16,13 @@ const RecipeDetails = () => {
 
   if (isLoading) return <div>Loading...</div>;
 
-  if (!data || isError) return <div>Recipe not found</div>;
+  if (!isLoading && isError) return <div>Recipe not found</div>;
 
   return (
     <>
       <div className="text-center">
-        <h1 className="text-4xl font-bold">{data.title.toUpperCase()}</h1>
-        <p className="text-muted-foreground mb-2">{data.diets?.join(" • ")}</p>
+        <h1 className="text-4xl font-bold">{data?.title.toUpperCase()}</h1>
+        <p className="text-muted-foreground mb-2">{data?.diets?.join(" • ")}</p>
         <div className="text-center border-t border-border">
           <h2 className="text-xl text-muted-foreground mt-5">
             Print or share this recipe
@@ -70,12 +70,8 @@ const RecipeDetails = () => {
         </TabsList>
         <TabsContent value="recipe">
           <RecipeDetailHeader recipeId={params.id as string} />
-          <RecipeDetailInstructions
-            extendedIngredients={data.extendedIngredients}
-            analyzedInstructions={data.analyzedInstructions}
-            servings={data.servings}
-            readyInMinutes={data.readyInMinutes}
-          />
+
+          <RecipeDetailInstructions />
         </TabsContent>
         <TabsContent value="nutrition"></TabsContent>
       </Tabs>

@@ -1,28 +1,21 @@
 import React from "react";
 import Image from "next/image";
-import { AnalyzedInstruction, ExtendedIngredient } from "@/app/types/recipe";
+import { useParams } from "next/navigation";
+import { useRecipe } from "../hooks";
 
-interface RecipeDetailInstructionsProps {
-  extendedIngredients: ExtendedIngredient[];
-  analyzedInstructions: AnalyzedInstruction[];
-  servings: number;
-  readyInMinutes: number;
-}
+const RecipeDetailInstructions = () => {
+  const params = useParams();
 
-const RecipeDetailInstructions = ({
-  servings,
-  readyInMinutes,
-  extendedIngredients,
-  analyzedInstructions,
-}: RecipeDetailInstructionsProps) => {
+  const { data } = useRecipe(params.id as string);
+
   return (
     <div className="grid lg:grid-cols-6 mt-10 gap-8 lg:gap-16">
       <div className="lg:col-span-2">
         <p className="font-bold text-xl">Ingredients</p>
         <p className="text-muted-foreground mb-6">
-          {servings} servings | {readyInMinutes} minutes
+          {data?.servings} servings | {data?.readyInMinutes} minutes
         </p>
-        {extendedIngredients.map((ingredient) => (
+        {data?.extendedIngredients.map((ingredient) => (
           <div
             key={`${ingredient.id}-${ingredient.originalName}-${ingredient.image}`}
             className="flex  items-center gap-5 mb-6"
@@ -54,7 +47,7 @@ const RecipeDetailInstructions = ({
       </div>
       <div className="lg:col-span-4">
         <p className="font-bold text-xl mb-6">Instructions</p>
-        {analyzedInstructions.map((instruction) => (
+        {data?.analyzedInstructions.map((instruction) => (
           <div key={instruction.name} className="mb-6">
             {instruction.steps.map((step, index) => (
               <div key={step.number} className="mb-2 flex gap-2">
