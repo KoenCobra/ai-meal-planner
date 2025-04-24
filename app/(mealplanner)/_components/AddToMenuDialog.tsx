@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import {
   Dialog,
   DialogContent,
@@ -38,7 +38,22 @@ const AddToMenuDialog: React.FC<AddToMenuDialogProps> = ({
     api.menus.getMenus,
     user ? { userId: user.id } : "skip",
   );
+
+  // Get all menus that contain this recipe
+  const menuRecipes = useQuery(
+    api.menus.getMenusContainingRecipe,
+    user && recipeId ? { userId: user.id, recipeId } : "skip",
+  ) as Doc<"menus">[] | undefined;
+
+  // Initialize selectedMenus with existing associations when dialog opens
+  useEffect(() => {
+    if (menuRecipes) {
+      setSelectedMenus(menuRecipes.map((menu: Doc<"menus">) => menu._id));
+    }
+  }, [menuRecipes, open]);
+
   const addRecipeToMenu = useMutation(api.menus.addRecipeToMenu);
+  const removeRecipeFromMenu = useMutation(api.menus.removeRecipeFromMenu);
 
   const handleCheckboxChange = (menuId: Id<"menus">) => {
     setSelectedMenus((prev) =>
@@ -49,24 +64,39 @@ const AddToMenuDialog: React.FC<AddToMenuDialogProps> = ({
   };
 
   const handleAdd = async () => {
-    if (!user) return;
+    if (!user || !menuRecipes) return;
     setLoading(true);
     setError(null);
     try {
-      selectedMenus.map((menuId) =>
-        addRecipeToMenu({
-          userId: user.id,
-          menuId,
-          recipeId,
-        }),
-      );
-      setSelectedMenus([]);
+      // Get the initial menu IDs that contained the recipe
+      const initialMenuIds = new Set(menuRecipes.map((menu) => menu._id));
+
+      // Add recipe to newly selected menus
+      for (const menuId of selectedMenus) {
+        if (!initialMenuIds.has(menuId)) {
+          await addRecipeToMenu({
+            userId: user.id,
+            menuId,
+            recipeId,
+          });
+        }
+      }
+
+      // Remove recipe from unselected menus
+      for (const menu of menuRecipes) {
+        if (!selectedMenus.includes(menu._id)) {
+          await removeRecipeFromMenu({
+            userId: user.id,
+            menuId: menu._id,
+            recipeId,
+          });
+        }
+      }
+
       onOpenChange(false);
       if (onSuccess) onSuccess();
     } catch (e: unknown) {
-      setError(
-        e instanceof Error ? e.message : "Failed to add recipe to menu(s)",
-      );
+      setError(e instanceof Error ? e.message : "Failed to update menu(s)");
     } finally {
       setLoading(false);
     }
@@ -104,11 +134,8 @@ const AddToMenuDialog: React.FC<AddToMenuDialogProps> = ({
         </div>
         {error && <div className="text-red-500 text-sm mb-2">{error}</div>}
         <DialogFooter>
-          <Button
-            onClick={handleAdd}
-            disabled={loading || selectedMenus.length === 0}
-          >
-            {loading ? "Adding..." : "Add to selected menu(s)"}
+          <Button onClick={handleAdd} disabled={loading}>
+            {loading ? "Saving..." : "Save changes"}
           </Button>
         </DialogFooter>
       </DialogContent>

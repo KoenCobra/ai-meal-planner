@@ -177,3 +177,36 @@ export const getMenuRecipes = query({
     );
   },
 });
+
+export const getMenusContainingRecipe = query({
+  args: {
+    userId: v.string(),
+    recipeId: v.id("recipes"),
+  },
+  handler: async (ctx, args) => {
+    // First get all menu-recipe associations for this recipe
+    const associations = await ctx.db
+      .query("menusOnRecipes")
+      .withIndex("by_recipe", (q) => q.eq("recipeId", args.recipeId))
+      .collect();
+
+    // Get all menu IDs from the associations
+    const menuIds = associations.map((assoc) => assoc.menuId);
+
+    // Get all menus that match these IDs and belong to the user
+    const menus = await Promise.all(
+      menuIds.map(async (menuId) => {
+        const menu = await ctx.db.get(menuId);
+        if (menu && menu.userId === args.userId) {
+          return menu;
+        }
+        return null;
+      }),
+    );
+
+    // Filter out any null values and return the menus
+    return menus.filter(
+      (menu): menu is NonNullable<typeof menu> => menu !== null,
+    );
+  },
+});
