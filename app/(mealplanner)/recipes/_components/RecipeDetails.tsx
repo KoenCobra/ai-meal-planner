@@ -1,7 +1,7 @@
 "use client";
 
-import React, { useState } from "react";
-import { useQuery, useMutation } from "convex/react";
+import React from "react";
+import { useQuery } from "convex/react";
 import { api } from "@/convex/_generated/api";
 import { useUser } from "@clerk/clerk-react";
 import Link from "next/link";
@@ -17,34 +17,36 @@ import { Button } from "@/components/ui/button";
 import { X } from "lucide-react";
 import Image from "next/image";
 import { Id } from "@/convex/_generated/dataModel";
-import { toast } from "sonner";
-import { ConvexError } from "convex/values";
 import DeleteRecipeDialog from "../../_components/DeleteRecipeDialog";
+import { useRecipeDelete } from "../_hooks/useRecipeDelete";
 
-const RecipeDetails = () => {
+interface RecipeDetailsProps {
+  menuId?: Id<"menus">;
+}
+
+const RecipeDetails = ({ menuId }: RecipeDetailsProps) => {
   const { user } = useUser();
-  const [recipeToDelete, setRecipeToDelete] = useState<{
-    id: Id<"recipes">;
-    title: string;
-  } | null>(null);
 
-  const recipes = useQuery(api.recipes.getAllRecipes, {
+  const {
+    recipeToDelete,
+    setRecipeToDelete,
+    handleDelete,
+    handleConfirmDelete,
+  } = useRecipeDelete({
+    userId: user?.id || "",
+    menuId,
+  });
+
+  const menuRecipes = useQuery(
+    api.menus.getMenuRecipes,
+    menuId ? { userId: user?.id || "", menuId } : "skip",
+  );
+
+  const allRecipes = useQuery(api.recipes.getAllRecipes, {
     userId: user?.id || "",
   });
-  const deleteRecipe = useMutation(
-    api.recipes.deleteRecipe,
-  ).withOptimisticUpdate((localStore, args) => {
-    const recipes = localStore.getQuery(api.recipes.getAllRecipes, {
-      userId: args.userId,
-    });
-    if (recipes) {
-      localStore.setQuery(
-        api.recipes.getAllRecipes,
-        { userId: args.userId },
-        recipes.filter((recipe) => recipe._id !== args.id),
-      );
-    }
-  });
+
+  const recipes = menuId ? menuRecipes : allRecipes;
 
   if (!user) return null;
 
@@ -52,36 +54,11 @@ const RecipeDetails = () => {
     return <div className="text-center mt-8">Loading...</div>;
   }
 
-  const handleDelete = (
-    e: React.MouseEvent,
-    recipeId: Id<"recipes">,
-    title: string,
-  ) => {
-    e.preventDefault(); // Prevent navigation
-    setRecipeToDelete({ id: recipeId, title });
-  };
-
-  const handleConfirmDelete = async () => {
-    if (!recipeToDelete) return;
-
-    try {
-      await deleteRecipe({
-        userId: user.id || "",
-        id: recipeToDelete.id,
-      });
-      toast.success("Recipe deleted successfully");
-    } catch (error) {
-      const errorMessage =
-        error instanceof ConvexError ? error.data : "Error deleting recipe";
-      toast.error(errorMessage);
-    }
-
-    setRecipeToDelete(null);
-  };
-
   return (
     <div className="container mx-auto py-8">
-      <h1 className="text-4xl font-bold mb-8 text-center">My Recipes</h1>
+      <h1 className="text-4xl font-bold mb-8 text-center">
+        {menuId ? "Menu Recipes" : "My Recipes"}
+      </h1>
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 ">
         {recipes.map((recipe) => (
           <Link

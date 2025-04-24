@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
+import React from "react";
 import {
   Dialog,
   DialogContent,
@@ -12,14 +12,13 @@ import {
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
 import { useUser } from "@clerk/clerk-react";
-import { useQuery, useMutation } from "convex/react";
-import { api } from "@/convex/_generated/api";
-import { Id, Doc } from "@/convex/_generated/dataModel";
+import { Id } from "@/convex/_generated/dataModel";
+import { useMenuAssociations } from "../_hooks/useMenuAssociations";
 
 interface AddToMenuDialogProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
-  recipeId: Id<"recipes">;
+  recipeId: Id<"recipes"> | null;
   onSuccess?: () => void;
 }
 
@@ -30,75 +29,26 @@ const AddToMenuDialog: React.FC<AddToMenuDialogProps> = ({
   onSuccess,
 }) => {
   const { user } = useUser();
-  const [selectedMenus, setSelectedMenus] = useState<Id<"menus">[]>([]);
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState<string | null>(null);
 
-  const menus = useQuery(
-    api.menus.getMenus,
-    user ? { userId: user.id } : "skip",
-  );
+  const {
+    menus,
+    selectedMenus,
+    loading,
+    error,
+    handleCheckboxChange,
+    saveMenuAssociations,
+  } = useMenuAssociations({
+    userId: user?.id || "",
+    recipeId,
+  });
 
-  // Get all menus that contain this recipe
-  const menuRecipes = useQuery(
-    api.menus.getMenusContainingRecipe,
-    user && recipeId ? { userId: user.id, recipeId } : "skip",
-  ) as Doc<"menus">[] | undefined;
+  if (!user || !recipeId) return null;
 
-  // Initialize selectedMenus with existing associations when dialog opens
-  useEffect(() => {
-    if (menuRecipes) {
-      setSelectedMenus(menuRecipes.map((menu: Doc<"menus">) => menu._id));
-    }
-  }, [menuRecipes, open]);
-
-  const addRecipeToMenu = useMutation(api.menus.addRecipeToMenu);
-  const removeRecipeFromMenu = useMutation(api.menus.removeRecipeFromMenu);
-
-  const handleCheckboxChange = (menuId: Id<"menus">) => {
-    setSelectedMenus((prev) =>
-      prev.includes(menuId)
-        ? prev.filter((id) => id !== menuId)
-        : [...prev, menuId],
-    );
-  };
-
-  const handleAdd = async () => {
-    if (!user || !menuRecipes) return;
-    setLoading(true);
-    setError(null);
-    try {
-      // Get the initial menu IDs that contained the recipe
-      const initialMenuIds = new Set(menuRecipes.map((menu) => menu._id));
-
-      // Add recipe to newly selected menus
-      for (const menuId of selectedMenus) {
-        if (!initialMenuIds.has(menuId)) {
-          await addRecipeToMenu({
-            userId: user.id,
-            menuId,
-            recipeId,
-          });
-        }
-      }
-
-      // Remove recipe from unselected menus
-      for (const menu of menuRecipes) {
-        if (!selectedMenus.includes(menu._id)) {
-          await removeRecipeFromMenu({
-            userId: user.id,
-            menuId: menu._id,
-            recipeId,
-          });
-        }
-      }
-
+  const handleSave = async () => {
+    const success = await saveMenuAssociations();
+    if (success) {
       onOpenChange(false);
-      if (onSuccess) onSuccess();
-    } catch (e: unknown) {
-      setError(e instanceof Error ? e.message : "Failed to update menu(s)");
-    } finally {
-      setLoading(false);
+      onSuccess?.();
     }
   };
 
@@ -117,7 +67,7 @@ const AddToMenuDialog: React.FC<AddToMenuDialogProps> = ({
           ) : menus.length === 0 ? (
             <div className="text-muted-foreground">No menus found.</div>
           ) : (
-            menus.map((menu: Doc<"menus">) => (
+            menus.map((menu) => (
               <label
                 key={menu._id}
                 className="flex items-center gap-2 cursor-pointer"
@@ -134,7 +84,7 @@ const AddToMenuDialog: React.FC<AddToMenuDialogProps> = ({
         </div>
         {error && <div className="text-red-500 text-sm mb-2">{error}</div>}
         <DialogFooter>
-          <Button onClick={handleAdd} disabled={loading}>
+          <Button onClick={handleSave} disabled={loading}>
             {loading ? "Saving..." : "Save changes"}
           </Button>
         </DialogFooter>
