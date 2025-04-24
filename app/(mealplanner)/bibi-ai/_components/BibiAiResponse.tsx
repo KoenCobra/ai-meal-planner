@@ -1,7 +1,7 @@
 import React from "react";
 import { RecipeInput } from "@/lib/validation";
 import { toast } from "sonner";
-import { Plus } from "lucide-react";
+import { Plus, Save } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import AddToMenuDialog from "../../_components/AddToMenuDialog";
 import { Id } from "@/convex/_generated/dataModel";
@@ -18,12 +18,14 @@ const AiResponse = ({ recipe }: BubuAiResponseProps) => {
   const { user } = useUser();
   const { open, recipeId, openDialog, closeDialog } = useAddToMenuDialogStore();
   const createRecipe = useMutation(api.recipes.createRecipe);
+  const [savedRecipeId, setSavedRecipeId] =
+    React.useState<Id<"recipes"> | null>(null);
 
   if (recipe?.error) {
     toast.error(recipe.error);
   }
 
-  const handleAddToMenu = async () => {
+  const handleSave = async () => {
     if (!user) return;
 
     try {
@@ -50,12 +52,20 @@ const AiResponse = ({ recipe }: BubuAiResponseProps) => {
         dishTypes: recipe.dishTypes || [],
       });
 
-      // Open the menu dialog with the new recipe ID
-      openDialog(newRecipeId);
+      setSavedRecipeId(newRecipeId);
+      toast.success("Recipe saved successfully!");
     } catch (error) {
-      toast.error("Failed to create recipe");
+      toast.error("Failed to save recipe");
       console.error(error);
     }
+  };
+
+  const handleAddToMenu = () => {
+    if (!savedRecipeId) {
+      toast.error("Please save the recipe first");
+      return;
+    }
+    openDialog(savedRecipeId);
   };
 
   return (
@@ -65,14 +75,25 @@ const AiResponse = ({ recipe }: BubuAiResponseProps) => {
         <p className="text-muted-foreground mb-2 text-sm">
           ({recipe?.diets?.join(" • ")})
         </p>
-        <Button
-          variant="secondary"
-          className="mt-4 text-xl p-7"
-          onClick={handleAddToMenu}
-        >
-          Add to a menu
-          <Plus size={14} />
-        </Button>
+        <div className="flex gap-4 justify-center">
+          <Button
+            variant="outline"
+            className="mt-4 text-xl p-7"
+            onClick={handleSave}
+            disabled={!!savedRecipeId}
+          >
+            {savedRecipeId ? "Recipe Saved" : "Save Recipe"}
+            <Save className="ml-2" size={14} />
+          </Button>
+          <Button
+            variant="secondary"
+            className="mt-4 text-xl p-7"
+            onClick={handleAddToMenu}
+          >
+            Add to a menu
+            <Plus className="ml-2" size={14} />
+          </Button>
+        </div>
         <div className="border-b border-t border-border mt-6 py-3">
           <p className="text-muted-foreground max-w-xl mx-auto">
             {recipe?.summary}
