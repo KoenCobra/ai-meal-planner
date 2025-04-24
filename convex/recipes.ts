@@ -1,5 +1,5 @@
 import { mutation, query } from "./_generated/server";
-import { v } from "convex/values";
+import { v, ConvexError } from "convex/values";
 import { paginationOptsValidator } from "convex/server";
 
 export const createRecipe = mutation({
@@ -56,10 +56,10 @@ export const deleteRecipe = mutation({
   },
   handler: async (ctx, args) => {
     const recipe = await ctx.db.get(args.id);
-    if (!recipe) throw new Error("Recipe not found");
-    if (recipe.userId !== args.userId) throw new Error("Not authorized");
+    if (!recipe) throw new ConvexError("Recipe not found");
+    if (recipe.userId !== args.userId) throw new ConvexError("Not authorized");
 
-    // Delete all menu associations
+    // Delete all menu associations first
     const menuAssociations = await ctx.db
       .query("menusOnRecipes")
       .withIndex("by_recipe", (q) => q.eq("recipeId", args.id))
@@ -69,6 +69,7 @@ export const deleteRecipe = mutation({
       await ctx.db.delete(association._id);
     }
 
+    // Delete the recipe
     await ctx.db.delete(args.id);
   },
 });
