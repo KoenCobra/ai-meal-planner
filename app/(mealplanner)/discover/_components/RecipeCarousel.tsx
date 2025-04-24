@@ -16,6 +16,7 @@ import DiscoverRecipeCard from "./DiscoverRecipeCard";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useRecipeCarousel } from "../hooks";
 import { useSchematicEntitlement } from "@schematichq/schematic-react";
+import { Id } from "@/convex/_generated/dataModel";
 
 interface RecipeCarouselProps {
   dishType: string;
@@ -100,7 +101,7 @@ const RecipeCarousel = ({ dishType }: RecipeCarouselProps) => {
             <CarouselItem key={recipe.id}>
               <DiscoverRecipeCard
                 key={recipe.id}
-                id={recipe.id}
+                id={recipe.id as Id<"recipes">}
                 title={recipe.title}
                 readyInMinutes={recipe.readyInMinutes}
                 image={recipe.image}

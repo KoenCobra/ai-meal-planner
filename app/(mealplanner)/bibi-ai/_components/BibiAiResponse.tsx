@@ -3,15 +3,63 @@ import { RecipeInput } from "@/lib/validation";
 import { toast } from "sonner";
 import { Plus } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import AddToMenuDialog from "../../_components/AddToMenuDialog";
+import { Id } from "@/convex/_generated/dataModel";
+import { useAddToMenuDialogStore } from "../../_stores/useAddToMenuDialogStore";
+import { useMutation } from "convex/react";
+import { api } from "@/convex/_generated/api";
+import { useUser } from "@clerk/clerk-react";
 
 interface BubuAiResponseProps {
   recipe: RecipeInput;
 }
 
 const AiResponse = ({ recipe }: BubuAiResponseProps) => {
+  const { user } = useUser();
+  const { open, recipeId, openDialog, closeDialog } = useAddToMenuDialogStore();
+  const createRecipe = useMutation(api.recipes.createRecipe);
+
   if (recipe?.error) {
     toast.error(recipe.error);
   }
+
+  const handleAddToMenu = async () => {
+    if (!user) {
+      toast.error("You must be logged in to add recipes to menus");
+      return;
+    }
+
+    try {
+      // Transform ingredients to string array
+      const ingredients = recipe.ingredients.map(
+        (ing) => `${ing.name} - ${ing.measures.amount} ${ing.measures.unit}`,
+      );
+
+      // Transform instructions to a single string
+      const instructions = recipe.instructions.steps
+        .map((step, index) => `${index + 1}. ${step.step}`)
+        .join("\n");
+
+      // Create the recipe in the database
+      const newRecipeId = await createRecipe({
+        userId: user.id,
+        title: recipe.title,
+        summary: recipe.summary,
+        servings: recipe.servings,
+        readyInMinutes: recipe.readyInMinutes,
+        diets: recipe.diets,
+        instructions,
+        ingredients,
+        dishTypes: recipe.dishTypes || [],
+      });
+
+      // Open the menu dialog with the new recipe ID
+      openDialog(newRecipeId);
+    } catch (error) {
+      toast.error("Failed to create recipe");
+      console.error(error);
+    }
+  };
 
   return (
     <>
@@ -20,7 +68,11 @@ const AiResponse = ({ recipe }: BubuAiResponseProps) => {
         <p className="text-muted-foreground mb-2 text-sm">
           ({recipe?.diets?.join(" • ")})
         </p>
-        <Button variant="secondary" className="mt-4 text-xl p-7">
+        <Button
+          variant="secondary"
+          className="mt-4 text-xl p-7"
+          onClick={handleAddToMenu}
+        >
           Add to a menu
           <Plus size={14} />
         </Button>
@@ -58,6 +110,12 @@ const AiResponse = ({ recipe }: BubuAiResponseProps) => {
           ))}
         </div>
       </div>
+
+      <AddToMenuDialog
+        open={open}
+        onOpenChange={closeDialog}
+        recipeId={recipeId as Id<"recipes">}
+      />
     </>
   );
 };
