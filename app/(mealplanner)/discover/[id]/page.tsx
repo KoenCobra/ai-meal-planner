@@ -5,24 +5,41 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Button } from "@/components/ui/button";
 import Image from "next/image";
 import { Printer } from "lucide-react";
-import { useRecipe } from "../hooks";
 import RecipeDetailHeader from "../_components/RecipeDetailHeader";
 import RecipeDetailInstructions from "../_components/RecipeDetailInstructions";
+import { useQuery } from "convex/react";
+import { api } from "@/convex/_generated/api";
+import { useUser } from "@clerk/clerk-react";
+import { Id } from "@/convex/_generated/dataModel";
+import AddToMenuDialog from "../../_components/AddToMenuDialog";
+import { useAddToMenuDialogStore } from "../../_stores/useAddToMenuDialogStore";
 
 const RecipeDetails = () => {
   const params = useParams();
+  const { user } = useUser();
+  const { open, recipeId, openDialog, closeDialog } = useAddToMenuDialogStore();
+  const recipe = useQuery(api.recipes.getRecipe, {
+    userId: user?.id || "",
+    id: params.id as Id<"recipes">,
+  });
 
-  const { data, isError, isLoading } = useRecipe(params.id as string);
+  if (!user) return null;
 
-  if (isLoading) return <div>Loading...</div>;
+  if (recipe === undefined) {
+    return <div className="text-center mt-8">Loading...</div>;
+  }
 
-  if (!isLoading && isError) return <div>Recipe not found</div>;
+  if (recipe === null) {
+    return <div className="text-center mt-8">Recipe not found.</div>;
+  }
 
   return (
     <>
       <div className="text-center">
-        <h1 className="text-4xl font-bold">{data?.title.toUpperCase()}</h1>
-        <p className="text-muted-foreground mb-2">{data?.diets?.join(" • ")}</p>
+        <h1 className="text-4xl font-bold">{recipe.title.toUpperCase()}</h1>
+        <p className="text-muted-foreground mb-2">
+          {recipe.diets?.join(" • ")}
+        </p>
         <div className="text-center border-t border-border">
           <h2 className="text-xl text-muted-foreground mt-5">
             Print or share this recipe
@@ -39,27 +56,31 @@ const RecipeDetails = () => {
             <Image
               className="cursor-pointer"
               src="/instagram.svg"
-              alt="facebook"
+              alt="instagram"
               width={18}
               height={18}
             />
             <Image
               className="cursor-pointer"
               src="/x.svg"
-              alt="facebook"
+              alt="x"
               width={18}
               height={18}
             />
             <Image
               className="cursor-pointer"
               src="/pinterest.svg"
-              alt="facebook"
+              alt="pinterest"
               width={18}
               height={18}
             />
           </div>
         </div>
-        <Button variant="outline" className="mt-4 mb-6 text-2xl p-7">
+        <Button
+          variant="outline"
+          className="mt-4 mb-6 text-2xl p-7"
+          onClick={() => openDialog(params.id as Id<"recipes">)}
+        >
           ADD +
         </Button>
       </div>
@@ -69,12 +90,23 @@ const RecipeDetails = () => {
           <TabsTrigger value="nutrition">NUTRITION</TabsTrigger>
         </TabsList>
         <TabsContent value="recipe">
-          <RecipeDetailHeader recipeId={params.id as string} />
+          <RecipeDetailHeader />
 
-          <RecipeDetailInstructions />
+          <RecipeDetailInstructions
+            ingredients={recipe.ingredients}
+            instructions={recipe.instructions}
+            servings={recipe.servings}
+            readyInMinutes={recipe.readyInMinutes}
+          />
         </TabsContent>
         <TabsContent value="nutrition"></TabsContent>
       </Tabs>
+
+      <AddToMenuDialog
+        open={open}
+        onOpenChange={closeDialog}
+        recipeId={recipeId as Id<"recipes">}
+      />
     </>
   );
 };

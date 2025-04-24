@@ -24,10 +24,7 @@ const AiResponse = ({ recipe }: BubuAiResponseProps) => {
   }
 
   const handleAddToMenu = async () => {
-    if (!user) {
-      toast.error("You must be logged in to add recipes to menus");
-      return;
-    }
+    if (!user) return;
 
     try {
       // Transform ingredients to string array

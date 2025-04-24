@@ -3,14 +3,17 @@
 import React from "react";
 import Image from "next/image";
 
-interface RecipeDetailProps {
-  recipeId: string;
-}
-
-const RecipeDetailHeader = ({ recipeId }: RecipeDetailProps) => {
+const RecipeDetailHeader = () => {
   return (
     <>
       <Image
+        src="/images/image-placeholder.jpeg"
+        alt="image"
+        width={1000}
+        height={1000}
+        className="rounded-md"
+      />
+      {/* <Image
         src={
           recipeId
             ? `https://img.spoonacular.com/recipes/${recipeId}-636x393.jpg`
@@ -20,7 +23,7 @@ const RecipeDetailHeader = ({ recipeId }: RecipeDetailProps) => {
         width={1000}
         height={1000}
         className="rounded-md"
-      />
+      /> */}
     </>
   );
 };

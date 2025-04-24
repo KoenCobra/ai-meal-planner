@@ -7,6 +7,7 @@ import { useUser } from "@clerk/clerk-react";
 import { useParams } from "next/navigation";
 import { Id } from "@/convex/_generated/dataModel";
 import Image from "next/image";
+import Link from "next/link";
 
 const MenuOverviewPage = () => {
   const { user } = useUser();
@@ -24,8 +25,7 @@ const MenuOverviewPage = () => {
     user && menuId ? { userId: user.id, menuId } : "skip",
   );
 
-  if (!user)
-    return <div className="p-8">You must be signed in to view this menu.</div>;
+  if (!user) return null;
   if (!menu) return <div className="p-8">Loading menu...</div>;
   if (!recipes) return <div className="p-8">Loading recipes...</div>;
 
@@ -40,30 +40,33 @@ const MenuOverviewPage = () => {
       ) : (
         <div className="space-y-4">
           {recipes.map((recipe) => (
-            <div
+            <Link
               key={recipe._id}
-              className="border rounded-md p-4 flex gap-4 items-center bg-card"
+              href={`/discover/${recipe._id}`}
+              className="block hover:opacity-75 transition-opacity"
             >
-              {recipe.image && (
-                <Image
-                  src={recipe.image}
-                  alt={recipe.title}
-                  className="object-cover rounded-md border"
-                  width={80}
-                  height={80}
-                />
-              )}
-              <div>
-                <div className="text-lg font-semibold">{recipe.title}</div>
-                <div className="text-sm text-muted-foreground mb-1">
-                  {recipe.summary}
-                </div>
-                <div className="text-xs text-muted-foreground">
-                  Servings: {recipe.servings} | Ready in {recipe.readyInMinutes}{" "}
-                  min
+              <div className="border rounded-md p-4 flex gap-4 items-center bg-card">
+                {recipe.image && (
+                  <Image
+                    src={recipe.image}
+                    alt={recipe.title}
+                    className="object-cover rounded-md border"
+                    width={80}
+                    height={80}
+                  />
+                )}
+                <div>
+                  <div className="text-lg font-semibold">{recipe.title}</div>
+                  <div className="text-sm text-muted-foreground mb-1">
+                    {recipe.summary}
+                  </div>
+                  <div className="text-xs text-muted-foreground">
+                    Servings: {recipe.servings} | Ready in{" "}
+                    {recipe.readyInMinutes} min
+                  </div>
                 </div>
               </div>
-            </div>
+            </Link>
           ))}
         </div>
       )}
