@@ -63,6 +63,12 @@ const BibiAiForm = ({ onRecipeGenerated }: BibiAiFormProps) => {
                     placeholder={`E.g. "I want a recipe for a healthy breakfast" (in any language you prefer)`}
                     rows={4}
                     autoFocus
+                    onKeyDown={(e) => {
+                      if (e.key === "Enter" && !e.shiftKey) {
+                        e.preventDefault();
+                        form.handleSubmit(onSubmit)();
+                      }
+                    }}
                   />
                 </FormControl>
                 <FormMessage />

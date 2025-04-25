@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { RecipeInput } from "@/lib/validation";
 import { toast } from "sonner";
 import { Save } from "lucide-react";
@@ -17,6 +17,11 @@ const AiResponse = ({ recipe }: BubuAiResponseProps) => {
   const createRecipe = useMutation(api.recipes.createRecipe);
   const [savedRecipeId, setSavedRecipeId] =
     React.useState<Id<"recipes"> | null>(null);
+
+  useEffect(() => {
+    // Reset savedRecipeId when a new recipe is received
+    setSavedRecipeId(null);
+  }, [recipe]);
 
   if (recipe?.error) {
     toast.error(recipe.error);
