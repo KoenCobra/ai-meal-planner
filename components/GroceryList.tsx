@@ -118,16 +118,7 @@ export function GroceryList() {
 
   return (
     <div className="w-full max-w-2xl mx-auto p-4 space-y-4">
-      <div className="flex justify-between items-center">
-        <h2 className="text-2xl font-bold">Grocery List</h2>
-        <Button
-          variant="outline"
-          onClick={handleClearChecked}
-          className="text-sm"
-        >
-          Clear Checked Items
-        </Button>
-      </div>
+      <h2 className="text-2xl font-bold">Grocery List</h2>
 
       <form onSubmit={handleAddItem} className="flex gap-2">
         <Input
