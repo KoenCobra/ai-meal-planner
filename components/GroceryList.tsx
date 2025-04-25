@@ -159,7 +159,11 @@ export function GroceryList() {
               checked={item.checked}
               onCheckedChange={() => handleToggleItem(item._id)}
             />
-            <div className="flex-1">
+            <div
+              className="flex-1"
+              onClick={() => handleToggleItem(item._id)}
+              style={{ cursor: "pointer" }}
+            >
               <span
                 className={`${
                   item.checked ? "line-through text-muted-foreground" : ""
