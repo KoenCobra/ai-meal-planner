@@ -149,44 +149,100 @@ export function GroceryList() {
         </Button>
       </form>
 
-      <div className="space-y-2">
-        {items?.map((item) => (
-          <div
-            key={item._id}
-            className="flex items-center gap-2 p-2 bg-background rounded-lg border"
-          >
-            <Checkbox
-              checked={item.checked}
-              onCheckedChange={() => handleToggleItem(item._id)}
-            />
-            <div
-              className="flex-1"
-              onClick={() => handleToggleItem(item._id)}
-              style={{ cursor: "pointer" }}
-            >
-              <span
-                className={`${
-                  item.checked ? "line-through text-muted-foreground" : ""
-                }`}
-              >
-                {item.name}
-              </span>
-              {item.quantity && (
-                <span className="text-sm text-muted-foreground ml-2">
-                  ({item.quantity})
-                </span>
-              )}
-            </div>
-            <Button
-              variant="ghost"
-              size="sm"
-              onClick={() => handleDeleteItem(item._id)}
-            >
-              <X className="h-4 w-4" />
-            </Button>
+      {items && items.length > 0 && (
+        <div className="space-y-6">
+          {/* Active Items Section */}
+          <div className="space-y-2">
+            <h3 className="text-lg font-semibold text-foreground">
+              Active Items
+            </h3>
+            {items
+              .filter((item) => !item.checked)
+              .map((item) => (
+                <div
+                  key={item._id}
+                  className="flex items-center gap-2 p-2 bg-background rounded-lg border"
+                >
+                  <Checkbox
+                    checked={item.checked}
+                    onCheckedChange={() => handleToggleItem(item._id)}
+                  />
+                  <div
+                    className="flex-1"
+                    onClick={() => handleToggleItem(item._id)}
+                    style={{ cursor: "pointer" }}
+                  >
+                    <span>{item.name}</span>
+                    {item.quantity && (
+                      <span className="text-sm text-muted-foreground ml-2">
+                        ({item.quantity})
+                      </span>
+                    )}
+                  </div>
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    onClick={() => handleDeleteItem(item._id)}
+                  >
+                    <X className="h-4 w-4" />
+                  </Button>
+                </div>
+              ))}
           </div>
-        ))}
-      </div>
+
+          {/* Completed Items Section */}
+          {items.some((item) => item.checked) && (
+            <div className="space-y-2">
+              <div className="flex items-center justify-between">
+                <h3 className="text-lg font-semibold text-muted-foreground">
+                  Completed Items
+                </h3>
+                <Button
+                  variant="ghost"
+                  onClick={handleClearChecked}
+                  className="text-sm h-8"
+                >
+                  Clear All
+                </Button>
+              </div>
+              {items
+                .filter((item) => item.checked)
+                .map((item) => (
+                  <div
+                    key={item._id}
+                    className="flex items-center gap-2 p-2 bg-muted/50 rounded-lg border border-muted"
+                  >
+                    <Checkbox
+                      checked={item.checked}
+                      onCheckedChange={() => handleToggleItem(item._id)}
+                    />
+                    <div
+                      className="flex-1"
+                      onClick={() => handleToggleItem(item._id)}
+                      style={{ cursor: "pointer" }}
+                    >
+                      <span className="line-through text-muted-foreground">
+                        {item.name}
+                      </span>
+                      {item.quantity && (
+                        <span className="text-sm text-muted-foreground ml-2">
+                          ({item.quantity})
+                        </span>
+                      )}
+                    </div>
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      onClick={() => handleDeleteItem(item._id)}
+                    >
+                      <X className="h-4 w-4" />
+                    </Button>
+                  </div>
+                ))}
+            </div>
+          )}
+        </div>
+      )}
     </div>
   );
 }
