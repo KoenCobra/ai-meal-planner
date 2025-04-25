@@ -41,7 +41,6 @@ const BibiAiForm = ({ onRecipeGenerated }: BibiAiFormProps) => {
       setIsLoading(true);
       const recipe = await generateRecipe(input);
       onRecipeGenerated(recipe);
-      form.reset();
     } catch {
       toast.error("Something went wrong. Please try again.");
     } finally {

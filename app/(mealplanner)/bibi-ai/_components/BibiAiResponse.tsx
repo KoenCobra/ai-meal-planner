@@ -1,11 +1,9 @@
 import React from "react";
 import { RecipeInput } from "@/lib/validation";
 import { toast } from "sonner";
-import { Plus, Save } from "lucide-react";
+import { Save } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import AddToMenuDialog from "../../_components/AddToMenuDialog";
 import { Id } from "@/convex/_generated/dataModel";
-import { useAddToMenuDialogStore } from "../../_stores/useAddToMenuDialogStore";
 import { useMutation } from "convex/react";
 import { api } from "@/convex/_generated/api";
 import { useUser } from "@clerk/clerk-react";
@@ -16,7 +14,6 @@ interface BubuAiResponseProps {
 
 const AiResponse = ({ recipe }: BubuAiResponseProps) => {
   const { user } = useUser();
-  const { open, recipeId, openDialog, closeDialog } = useAddToMenuDialogStore();
   const createRecipe = useMutation(api.recipes.createRecipe);
   const [savedRecipeId, setSavedRecipeId] =
     React.useState<Id<"recipes"> | null>(null);
@@ -60,14 +57,6 @@ const AiResponse = ({ recipe }: BubuAiResponseProps) => {
     }
   };
 
-  const handleAddToMenu = () => {
-    if (!savedRecipeId) {
-      toast.error("Please save the recipe first");
-      return;
-    }
-    openDialog(savedRecipeId);
-  };
-
   return (
     <>
       <div className="text-center mt-16">
@@ -84,14 +73,6 @@ const AiResponse = ({ recipe }: BubuAiResponseProps) => {
           >
             {savedRecipeId ? "Recipe Saved" : "Save Recipe"}
             <Save className="ml-2" size={14} />
-          </Button>
-          <Button
-            variant="secondary"
-            className="mt-4 text-xl p-7"
-            onClick={handleAddToMenu}
-          >
-            Add to a menu
-            <Plus className="ml-2" size={14} />
           </Button>
         </div>
         <div className="border-b border-t border-border mt-6 py-3">
@@ -128,12 +109,6 @@ const AiResponse = ({ recipe }: BubuAiResponseProps) => {
           ))}
         </div>
       </div>
-
-      <AddToMenuDialog
-        open={open}
-        onOpenChange={closeDialog}
-        recipeId={recipeId as Id<"recipes">}
-      />
     </>
   );
 };
