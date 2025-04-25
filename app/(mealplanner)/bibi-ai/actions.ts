@@ -20,7 +20,7 @@ export async function generateRecipe(input: GenerateRecipeInput) {
   const { description } = generateRecipeSchema.parse(input);
 
   const systemMessage = `
-  You are a recipe generator AI. Your task is to generate a single recipe entry based on the user input. You will only answer questions that are related to generating a recipe, otherwise you will refuse to generate a recipe and explain why you can't generate a recipe in the error property from the structure. You will always answer in the language that the user is using. The units of measurement will be based on the user's locale. Your response must adhere to the given structure. The dishTypes can only have the values of "breakfast", "lunch" or "dinner"
+  You are a recipe generator AI. Your task is to generate a single recipe entry based on the user input. You will only answer questions that are related to generating a recipe, otherwise you will refuse to generate a recipe and explain why you can't generate a recipe in the error property from the structure. You will always answer in the language that the user is using. The units of measurement will be based on the user's locale. Your response must adhere to the given structure. The dishTypes can only have the values of "breakfast", "lunch", snacks  or "dinner"
   `;
 
   const userMessage = `
