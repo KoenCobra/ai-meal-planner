@@ -62,8 +62,6 @@ export const addRecipeToMenu = mutation({
     recipeId: v.id("recipes"),
   },
   handler: async (ctx, args) => {
-    console.log("Adding recipe to menu", args);
-
     // Verify menu ownership
     const menu = await ctx.db.get(args.menuId);
     if (!menu) throw new ConvexError("Menu not found");
