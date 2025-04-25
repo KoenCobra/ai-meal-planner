@@ -40,6 +40,18 @@ const applicationTables = {
     .index("by_menu", ["menuId"])
     .index("by_recipe", ["recipeId"])
     .index("by_menu_and_recipe", ["menuId", "recipeId"]),
+
+  groceryItems: defineTable({
+    userId: v.string(),
+    name: v.string(),
+    quantity: v.optional(v.string()),
+    checked: v.boolean(),
+  })
+    .index("by_user", ["userId"])
+    .searchIndex("search_name", {
+      searchField: "name",
+      filterFields: ["userId"],
+    }),
 };
 
 export default defineSchema({
