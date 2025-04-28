@@ -141,25 +141,26 @@ export function GroceryList() {
       </form>
 
       {items && items.length > 0 && (
-        <div className="space-y-6">
+        <div>
           {/* Active Items Section */}
-          <div className="space-y-2">
-            <h3 className="text-lg font-semibold text-foreground">
-              Active Items
-            </h3>
+          <h3 className="text-lg font-semibold text-foreground mb-2">
+            Active Items
+          </h3>
+          <div className="flex flex-col gap-2">
             {items
               .filter((item) => !item.checked)
               .map((item) => (
                 <div
                   key={item._id}
-                  className="flex items-center gap-2 p-2 bg-background rounded-lg border"
+                  className="flex items-center gap-2 bg-background rounded-lg border m-0"
                 >
                   <Checkbox
                     checked={item.checked}
                     onCheckedChange={() => handleToggleItem(item._id)}
+                    className="ml-2"
                   />
                   <div
-                    className="flex-1"
+                    className="flex-1 p-2"
                     onClick={() => handleToggleItem(item._id)}
                     style={{ cursor: "pointer" }}
                   >
@@ -174,6 +175,7 @@ export function GroceryList() {
                     variant="ghost"
                     size="sm"
                     onClick={() => handleDeleteItem(item._id)}
+                    className="mr-2"
                   >
                     <X className="h-4 w-4" />
                   </Button>
@@ -183,7 +185,7 @@ export function GroceryList() {
 
           {/* Completed Items Section */}
           {items.some((item) => item.checked) && (
-            <div className="space-y-2">
+            <div className="space-y-2 mt-4">
               <div className="flex items-center justify-between">
                 <h3 className="text-lg font-semibold text-muted-foreground">
                   Completed Items
@@ -201,14 +203,15 @@ export function GroceryList() {
                 .map((item) => (
                   <div
                     key={item._id}
-                    className="flex items-center gap-2 p-2 bg-muted/50 rounded-lg border border-muted"
+                    className="flex items-center gap-2 bg-muted/50 rounded-lg border border-muted"
                   >
                     <Checkbox
                       checked={item.checked}
                       onCheckedChange={() => handleToggleItem(item._id)}
+                      className="ml-2"
                     />
                     <div
-                      className="flex-1"
+                      className="flex-1 p-2"
                       onClick={() => handleToggleItem(item._id)}
                       style={{ cursor: "pointer" }}
                     >
@@ -225,6 +228,7 @@ export function GroceryList() {
                       variant="ghost"
                       size="sm"
                       onClick={() => handleDeleteItem(item._id)}
+                      className="mr-2"
                     >
                       <X className="h-4 w-4" />
                     </Button>
