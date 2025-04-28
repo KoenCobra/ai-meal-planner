@@ -1,6 +1,6 @@
 "use client";
 
-import React from "react";
+import React, { useState } from "react";
 import { useQuery } from "convex/react";
 import { api } from "@/convex/_generated/api";
 import { useUser } from "@clerk/clerk-react";
@@ -33,6 +33,7 @@ interface RecipeDetailsProps {
 }
 
 const RecipeDetails = ({ menuId }: RecipeDetailsProps) => {
+  const [open, setOpen] = useState(false);
   const { user } = useUser();
 
   const {
@@ -94,7 +95,7 @@ const RecipeDetails = ({ menuId }: RecipeDetailsProps) => {
           className="relative group"
         >
           <div className="absolute right-2 top-2 z-10">
-            <DropdownMenu>
+            <DropdownMenu open={open} onOpenChange={setOpen}>
               <DropdownMenuTrigger asChild>
                 <Button size="icon" className="rounded-full bg-gray-300">
                   <MoreVertical className="h-4 w-4" />
@@ -115,6 +116,7 @@ const RecipeDetails = ({ menuId }: RecipeDetailsProps) => {
                   onClick={(e) => {
                     e.preventDefault();
                     handleSyncIngredients(recipe._id);
+                    setOpen(false);
                   }}
                 >
                   <ShoppingCart className="h-4 w-4 mr-2" />
