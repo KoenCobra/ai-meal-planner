@@ -6,28 +6,48 @@ import { api } from "@/convex/_generated/api";
 import { useUser } from "@clerk/clerk-react";
 import { useParams } from "next/navigation";
 import { Id } from "@/convex/_generated/dataModel";
+import { Button } from "@/components/ui/button";
+import { ShoppingCart } from "lucide-react";
+import { useSyncMenuIngredients } from "../_hooks/useSyncMenuIngredients";
 import RecipeDetails from "../../recipes/_components/RecipeDetails";
 
-const MenuOverviewPage = () => {
-  const { user } = useUser();
+const MenuPage = () => {
   const params = useParams();
-  const menuId = params?.id as Id<"menus"> | undefined;
+  const { user } = useUser();
+  const { handleSyncMenuIngredients } = useSyncMenuIngredients(user?.id || "");
 
-  // Fetch menu details
-  const menu = useQuery(
-    api.menus.getMenu,
-    user && menuId ? { userId: user.id, id: menuId } : "skip",
-  );
+  const menu = useQuery(api.menus.getMenu, {
+    userId: user?.id || "",
+    id: params.id as Id<"menus">,
+  });
 
   if (!user) return null;
-  if (!menu) return <div className="p-8">Loading menu...</div>;
+
+  if (menu === undefined) {
+    return <div className="text-center mt-8">Loading...</div>;
+  }
+
+  if (menu === null) {
+    return <div className="text-center mt-8">Menu not found.</div>;
+  }
 
   return (
-    <div className="max-w-7xl mx-auto p-6">
-      <h1 className="text-4xl font-bold mb-8 text-center">{menu.name}</h1>
-      <RecipeDetails menuId={menuId} />
+    <div className="container mx-auto py-8">
+      <div className="text-center mb-8">
+        <h1 className="text-4xl font-bold mb-4">{menu.name}</h1>
+        <Button
+          onClick={() => handleSyncMenuIngredients(menu._id)}
+          variant="outline"
+          size="lg"
+          className="gap-2"
+        >
+          <ShoppingCart className="h-5 w-5" />
+          Add All Ingredients to Grocery List
+        </Button>
+      </div>
+      <RecipeDetails menuId={menu._id} />
     </div>
   );
 };
 
-export default MenuOverviewPage;
+export default MenuPage;

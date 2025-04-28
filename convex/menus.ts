@@ -208,3 +208,43 @@ export const getMenusContainingRecipe = query({
     );
   },
 });
+
+export const syncMenuIngredientsToGroceryList = mutation({
+  args: {
+    userId: v.string(),
+    menuId: v.id("menus"),
+  },
+  returns: v.null(),
+  handler: async (ctx, args) => {
+    // Verify menu ownership
+    const menu = await ctx.db.get(args.menuId);
+    if (!menu) throw new ConvexError("Menu not found");
+    if (menu.userId !== args.userId) throw new ConvexError("Not authorized");
+
+    // Get all recipes in the menu
+    const associations = await ctx.db
+      .query("menusOnRecipes")
+      .withIndex("by_menu", (q) => q.eq("menuId", args.menuId))
+      .collect();
+
+    // Get all recipes and their ingredients
+    const recipes = await Promise.all(
+      associations.map(async (assoc) => await ctx.db.get(assoc.recipeId)),
+    );
+
+    // Add all ingredients to the grocery list
+    for (const recipe of recipes) {
+      if (recipe) {
+        for (const ingredient of recipe.ingredients) {
+          await ctx.db.insert("groceryItems", {
+            userId: args.userId,
+            name: ingredient,
+            checked: false,
+          });
+        }
+      }
+    }
+
+    return null;
+  },
+});

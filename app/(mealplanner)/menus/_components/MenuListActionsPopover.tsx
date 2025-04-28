@@ -38,7 +38,7 @@ const MenuListActionsPopover = ({
           variant="ghost"
           className="rounded-full text-muted-foreground"
         >
-          <Pencil size={14} />
+          <Pencil size={14} className="mr-2" />
           Update
         </Button>
         <Button
@@ -49,7 +49,7 @@ const MenuListActionsPopover = ({
           variant="ghost"
           className="rounded-full text-muted-foreground"
         >
-          <Trash size={14} />
+          <Trash size={14} className="mr-2" />
           Delete
         </Button>
       </PopoverContent>
