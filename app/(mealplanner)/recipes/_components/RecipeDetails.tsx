@@ -107,7 +107,7 @@ const RecipeDetails = ({ menuId }: RecipeDetailsProps) => {
                     e.preventDefault();
                     handleDelete(e, recipe._id, recipe.title);
                   }}
-                  className="text-destructive"
+                  className="text-destructive cursor-pointer"
                 >
                   <Trash className="h-4 w-4 mr-2" />
                   Delete Recipe
@@ -118,6 +118,7 @@ const RecipeDetails = ({ menuId }: RecipeDetailsProps) => {
                     handleSyncIngredients(recipe._id);
                     setOpen(false);
                   }}
+                  className="cursor-pointer"
                 >
                   <ShoppingCart className="h-4 w-4 mr-2" />
                   Add to Grocery List

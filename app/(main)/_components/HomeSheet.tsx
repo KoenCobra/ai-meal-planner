@@ -27,11 +27,7 @@ const HomeSheet = ({ open, setOpen }: Props) => {
           <Link className="py-2" onClick={() => setOpen(false)} href="/blog">
             Blog
           </Link>
-          <Link
-            className="py-2"
-            onClick={() => setOpen(false)}
-            href="/discover"
-          >
+          <Link className="py-2" onClick={() => setOpen(false)} href="/bibi-ai">
             Meal Planner
           </Link>
           <div className="mt-5 flex items-center gap-3 ">
