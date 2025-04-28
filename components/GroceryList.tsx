@@ -185,7 +185,7 @@ export function GroceryList() {
 
           {/* Completed Items Section */}
           {items.some((item) => item.checked) && (
-            <div className="space-y-2 mt-4">
+            <div className="space-y-2 mt-6">
               <div className="flex items-center justify-between">
                 <h3 className="text-lg font-semibold text-muted-foreground">
                   Completed Items
