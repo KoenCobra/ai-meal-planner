@@ -13,11 +13,15 @@ import AddToMenuDialog from "../../_components/AddToMenuDialog";
 import { useAddToMenuDialogStore } from "../../_stores/useAddToMenuDialogStore";
 import RecipeDetailHeader from "../_components/RecipeDetailHeader";
 import RecipeDetailInstructions from "../_components/RecipeDetailInstructions";
+import { useSyncIngredients } from "../_hooks/useSyncIngredients";
+import { ShoppingCart } from "lucide-react";
 
 const RecipeDetails = () => {
   const params = useParams();
   const { user } = useUser();
   const { open, recipeId, openDialog, closeDialog } = useAddToMenuDialogStore();
+  const { handleSyncIngredients } = useSyncIngredients(user?.id || "");
+
   const recipe = useQuery(api.recipes.getRecipe, {
     userId: user?.id || "",
     id: params.id as Id<"recipes">,
@@ -76,13 +80,23 @@ const RecipeDetails = () => {
             />
           </div>
         </div>
-        <Button
-          variant="outline"
-          className="mt-4 mb-6 text-2xl p-7"
-          onClick={() => openDialog(params.id as Id<"recipes">)}
-        >
-          ADD +
-        </Button>
+        <div className="flex justify-center gap-4 mt-4 mb-6">
+          <Button
+            variant="outline"
+            className="text-2xl p-7"
+            onClick={() => openDialog(params.id as Id<"recipes">)}
+          >
+            ADD +
+          </Button>
+          <Button
+            variant="outline"
+            className="text-2xl p-7"
+            onClick={() => handleSyncIngredients(params.id as Id<"recipes">)}
+          >
+            <ShoppingCart className="mr-2 h-6 w-6" />
+            Add to Grocery List
+          </Button>
+        </div>
       </div>
       <Tabs defaultValue="recipe">
         <TabsList className="w-full grid grid-cols-2">

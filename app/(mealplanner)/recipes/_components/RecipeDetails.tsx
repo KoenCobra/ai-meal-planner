@@ -14,12 +14,19 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { X } from "lucide-react";
+import { MoreVertical, Trash, ShoppingCart } from "lucide-react";
 import Image from "next/image";
 import { Id } from "@/convex/_generated/dataModel";
 import DeleteRecipeDialog from "../../_components/DeleteRecipeDialog";
 import { useRecipeDelete } from "../_hooks/useRecipeDelete";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+import { useSyncIngredients } from "../_hooks/useSyncIngredients";
 
 interface RecipeDetailsProps {
   menuId?: Id<"menus">;
@@ -37,6 +44,8 @@ const RecipeDetails = ({ menuId }: RecipeDetailsProps) => {
     userId: user?.id || "",
     menuId,
   });
+
+  const { handleSyncIngredients } = useSyncIngredients(user?.id || "");
 
   const menuRecipes = useQuery(
     api.menus.getMenuRecipes,
@@ -82,15 +91,38 @@ const RecipeDetails = ({ menuId }: RecipeDetailsProps) => {
         <Link
           key={recipe._id}
           href={`/recipes/${recipe._id}`}
-          className="relative"
+          className="relative group"
         >
-          <Button
-            size="icon"
-            className="absolute right-2 top-2 transition-opacity rounded-full z-10"
-            onClick={(e) => handleDelete(e, recipe._id, recipe.title)}
-          >
-            <X className="h-4 w-4" />
-          </Button>
+          <div className="absolute right-2 top-2 z-10">
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button size="icon" className="rounded-full bg-gray-300">
+                  <MoreVertical className="h-4 w-4" />
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent>
+                <DropdownMenuItem
+                  onClick={(e) => {
+                    e.preventDefault();
+                    handleDelete(e, recipe._id, recipe.title);
+                  }}
+                  className="text-destructive"
+                >
+                  <Trash className="h-4 w-4 mr-2" />
+                  Delete Recipe
+                </DropdownMenuItem>
+                <DropdownMenuItem
+                  onClick={(e) => {
+                    e.preventDefault();
+                    handleSyncIngredients(recipe._id);
+                  }}
+                >
+                  <ShoppingCart className="h-4 w-4 mr-2" />
+                  Add to Grocery List
+                </DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
+          </div>
           <Card className="h-full hover:shadow-lg transition-shadow cursor-pointer pt-0">
             {recipe.image ? (
               <div className="relative w-full h-48">

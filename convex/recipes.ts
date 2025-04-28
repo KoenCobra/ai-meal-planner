@@ -145,3 +145,28 @@ export const getAllRecipes = query({
       .collect();
   },
 });
+
+export const syncIngredientsToGroceryList = mutation({
+  args: {
+    userId: v.string(),
+    recipeId: v.id("recipes"),
+  },
+  returns: v.null(),
+  handler: async (ctx, args) => {
+    // Get the recipe
+    const recipe = await ctx.db.get(args.recipeId);
+    if (!recipe) throw new ConvexError("Recipe not found");
+    if (recipe.userId !== args.userId) throw new ConvexError("Not authorized");
+
+    // Add each ingredient to the grocery list
+    for (const ingredient of recipe.ingredients) {
+      await ctx.db.insert("groceryItems", {
+        userId: args.userId,
+        name: ingredient,
+        checked: false,
+      });
+    }
+
+    return null;
+  },
+});
