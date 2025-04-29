@@ -27,6 +27,7 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { useSyncIngredients } from "../_hooks/useSyncIngredients";
+import { toast } from "sonner";
 
 interface RecipeDetailsProps {
   menuId?: Id<"menus">;
@@ -95,6 +96,8 @@ const RecipeDetails = ({ menuId }: RecipeDetailsProps) => {
       recipe.storageId ? { storageId: recipe.storageId } : "skip",
     );
 
+    const MAX_FILE_SIZE = 5 * 1024 * 1024; // 5MB in bytes
+
     const handleImageUpload = async (
       e: React.ChangeEvent<HTMLInputElement>,
     ) => {
@@ -103,6 +106,12 @@ const RecipeDetails = ({ menuId }: RecipeDetailsProps) => {
 
       const file = e.target.files?.[0];
       if (!file || !user) return;
+
+      // Check file size
+      if (file.size > MAX_FILE_SIZE) {
+        toast.error("Image size must be less than 5MB");
+        return;
+      }
 
       try {
         // Get the upload URL
@@ -127,8 +136,11 @@ const RecipeDetails = ({ menuId }: RecipeDetailsProps) => {
           recipeId: recipe._id,
           storageId,
         });
+
+        toast.success("Image uploaded successfully");
       } catch (error) {
         console.error("Error uploading image:", error);
+        toast.error("Failed to upload image");
       }
     };
 
