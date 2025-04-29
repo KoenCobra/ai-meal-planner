@@ -145,9 +145,9 @@ const RecipeDetails = ({ menuId }: RecipeDetailsProps) => {
               fill
               className="object-cover rounded-t-lg"
             />
-            <div className="absolute inset-0 bg-black bg-opacity-0 hover:bg-opacity-40 transition-opacity flex items-center justify-center">
-              <label className="cursor-pointer p-4 rounded-full bg-white bg-opacity-0 hover:bg-opacity-90 transition-all transform hover:scale-110">
-                <Camera className="h-6 w-6 text-transparent hover:text-gray-600" />
+            <div className="absolute inset-0 flex items-center justify-center">
+              <label className="cursor-pointer p-3 rounded-full bg-white/80 hover:bg-white transition-all transform hover:scale-110 shadow-sm">
+                <Camera className="h-5 w-5 text-gray-700" />
                 <input
                   type="file"
                   accept="image/*"
