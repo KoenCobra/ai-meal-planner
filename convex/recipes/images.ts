@@ -1,5 +1,5 @@
 import { mutation, query } from "../_generated/server";
-import { v } from "convex/values";
+import { ConvexError, v } from "convex/values";
 
 export const generateUploadUrl = mutation({
   args: {
@@ -29,10 +29,10 @@ export const updateRecipeImage = mutation({
   handler: async (ctx, args) => {
     const recipe = await ctx.db.get(args.recipeId);
     if (!recipe) {
-      throw new Error("Recipe not found");
+      throw new ConvexError("Recipe not found");
     }
     if (recipe.userId !== args.userId) {
-      throw new Error("Not authorized");
+      throw new ConvexError("Not authorized");
     }
 
     // If there's an existing image, delete it
