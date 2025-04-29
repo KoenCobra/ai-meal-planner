@@ -59,6 +59,11 @@ export const deleteRecipe = mutation({
     if (!recipe) throw new ConvexError("Recipe not found");
     if (recipe.userId !== args.userId) throw new ConvexError("Not authorized");
 
+    // Delete the image from storage if it exists
+    if (recipe.storageId) {
+      await ctx.storage.delete(recipe.storageId);
+    }
+
     // Delete all menu associations first
     const menuAssociations = await ctx.db
       .query("menusOnRecipes")

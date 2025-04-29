@@ -8,7 +8,7 @@ const applicationTables = {
     summary: v.string(),
     servings: v.number(),
     readyInMinutes: v.number(),
-    image: v.optional(v.string()),
+    storageId: v.optional(v.id("_storage")),
     diets: v.array(v.string()),
     instructions: v.string(),
     ingredients: v.array(v.string()),
