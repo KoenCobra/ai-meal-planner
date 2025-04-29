@@ -104,7 +104,7 @@ const RecipeDetails = () => {
           <TabsTrigger value="nutrition">NUTRITION</TabsTrigger>
         </TabsList>
         <TabsContent value="recipe">
-          <RecipeDetailHeader />
+          <RecipeDetailHeader recipe={recipe} />
 
           <RecipeDetailInstructions
             ingredients={recipe.ingredients}

@@ -7,6 +7,7 @@ import { Id } from "@/convex/_generated/dataModel";
 import Image from "next/image";
 import { Camera } from "lucide-react";
 import { toast } from "sonner";
+import { cn } from "@/lib/utils";
 
 interface RecipeImageProps {
   recipe: {
@@ -14,9 +15,10 @@ interface RecipeImageProps {
     title: string;
     storageId?: Id<"_storage">;
   };
+  className?: string;
 }
 
-export const RecipeImage = ({ recipe }: RecipeImageProps) => {
+export const RecipeImage = ({ recipe, className }: RecipeImageProps) => {
   const { user } = useUser();
   const generateUploadUrl = useMutation(api.recipes.images.generateUploadUrl);
   const updateRecipeImage = useMutation(api.recipes.images.updateRecipeImage);
@@ -72,7 +74,10 @@ export const RecipeImage = ({ recipe }: RecipeImageProps) => {
   };
 
   return (
-    <div className="relative w-full h-48" onClick={(e) => e.stopPropagation()}>
+    <div
+      className={cn("relative w-full h-48", className)}
+      onClick={(e) => e.stopPropagation()}
+    >
       {imageUrl ? (
         <div className="relative w-full h-full">
           <Image
@@ -81,7 +86,7 @@ export const RecipeImage = ({ recipe }: RecipeImageProps) => {
             fill
             className="object-cover rounded-t-lg"
           />
-          <div className="absolute inset-0 flex items-center justify-center">
+          <div className="absolute inset-0 flex items-center justify-center opacity-0 hover:opacity-100 transition-opacity">
             <label className="cursor-pointer p-3 rounded-full bg-white/80 hover:bg-white transition-all transform hover:scale-110 shadow-sm">
               <Camera className="h-5 w-5 text-gray-700" />
               <input

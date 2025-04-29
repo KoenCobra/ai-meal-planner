@@ -1,17 +1,22 @@
 "use client";
 
 import React from "react";
-import Image from "next/image";
+import { Id } from "@/convex/_generated/dataModel";
+import { RecipeImage } from "./RecipeImage";
 
-const RecipeDetailHeader = () => {
+interface RecipeDetailHeaderProps {
+  recipe: {
+    _id: Id<"recipes">;
+    title: string;
+    storageId?: Id<"_storage">;
+  };
+}
+
+const RecipeDetailHeader = ({ recipe }: RecipeDetailHeaderProps) => {
   return (
-    <Image
-      src="/images/image-placeholder.jpeg"
-      alt="image"
-      width={1000}
-      height={1000}
-      className="rounded-md"
-    />
+    <div className="w-full h-full rounded-lg overflow-hidden shadow-lg">
+      <RecipeImage recipe={recipe} />
+    </div>
   );
 };
 
