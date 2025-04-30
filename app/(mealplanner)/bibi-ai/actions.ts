@@ -9,6 +9,11 @@ import {
 } from "@/lib/validation";
 
 import { auth } from "@clerk/nextjs/server";
+import { api } from "@/convex/_generated/api";
+import { ConvexHttpClient } from "convex/browser";
+
+// Initialize Convex client
+const convex = new ConvexHttpClient(process.env.NEXT_PUBLIC_CONVEX_URL!);
 
 export async function generateRecipe(input: GenerateRecipeInput) {
   const { userId } = await auth();
@@ -47,6 +52,40 @@ export async function generateRecipe(input: GenerateRecipeInput) {
 
   if (!aiResponse) {
     throw new Error("Failed to generate AI response");
+  }
+
+  // Create recipe in Convex
+  const recipeId = await convex.mutation(api.recipes.createRecipe, {
+    userId,
+    title: aiResponse.title,
+    summary: aiResponse.summary,
+    servings: aiResponse.servings,
+    readyInMinutes: aiResponse.readyInMinutes,
+    diets: aiResponse.diets,
+    instructions: aiResponse.instructions,
+    ingredients: aiResponse.ingredients,
+    dishTypes: aiResponse.dishTypes,
+  });
+
+  try {
+    const imageResponse = await openai.images.generate({
+      model: "gpt-image-1",
+      prompt: `A professional, appetizing photo of ${aiResponse.title} and ${aiResponse.ingredients}. Food photography style, well-lit, on a beautiful plate or setting.`,
+      size: "1024x1024",
+      quality: "low",
+    });
+
+    if (imageResponse.data?.[0]?.b64_json) {
+      // Upload image to Convex
+      await convex.action(api.recipes.images.uploadGeneratedImage, {
+        userId,
+        recipeId,
+        imageBlob: `data:image/png;base64,${imageResponse.data[0].b64_json}`,
+      });
+    }
+  } catch (error) {
+    console.error("Failed to generate or upload image:", error);
+    // Continue without image if generation fails
   }
 
   return {

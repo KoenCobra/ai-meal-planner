@@ -31,16 +31,6 @@ const AiResponse = ({ recipe }: BubuAiResponseProps) => {
     if (!user) return;
 
     try {
-      // Transform ingredients to string array
-      const ingredients = recipe.ingredients.map(
-        (ing) => `${ing.name} - ${ing.measures.amount} ${ing.measures.unit}`,
-      );
-
-      // Transform instructions to a single string
-      const instructions = recipe.instructions.steps
-        .map((step, index) => `${index + 1}. ${step.step}`)
-        .join("\n");
-
       // Create the recipe in the database
       const newRecipeId = await createRecipe({
         userId: user.id,
@@ -49,8 +39,11 @@ const AiResponse = ({ recipe }: BubuAiResponseProps) => {
         servings: recipe.servings,
         readyInMinutes: recipe.readyInMinutes,
         diets: recipe.diets,
-        instructions,
-        ingredients,
+        instructions: {
+          name: recipe.title,
+          steps: recipe.instructions.steps,
+        },
+        ingredients: recipe.ingredients,
         dishTypes: recipe.dishTypes || [],
       });
 
@@ -65,7 +58,7 @@ const AiResponse = ({ recipe }: BubuAiResponseProps) => {
   return (
     <>
       <div className="text-center mt-16">
-        <h1 className="text-4xl font-bold">{recipe?.title.toUpperCase()}</h1>
+        <h1 className="text-4xl font-bold">{recipe?.title?.toUpperCase()}</h1>
         <p className="text-muted-foreground mb-2 text-sm">
           ({recipe?.diets?.join(" • ")})
         </p>
@@ -95,11 +88,11 @@ const AiResponse = ({ recipe }: BubuAiResponseProps) => {
           {recipe?.ingredients?.map((ingredient) => (
             <div key={ingredient.name} className="gap-5 mb-6">
               <p>
-                {ingredient.name.charAt(0).toUpperCase() +
-                  ingredient.name.slice(1)}
+                {ingredient.name?.charAt(0).toUpperCase() +
+                  ingredient.name?.slice(1)}
               </p>
               <p className="text-muted-foreground">
-                {ingredient.measures.amount} {ingredient.measures.unit}
+                {ingredient.measures?.amount} {ingredient.measures?.unit}
               </p>
             </div>
           ))}

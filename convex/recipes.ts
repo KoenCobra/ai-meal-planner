@@ -11,8 +11,24 @@ export const createRecipe = mutation({
     readyInMinutes: v.number(),
     image: v.optional(v.string()),
     diets: v.array(v.string()),
-    instructions: v.string(),
-    ingredients: v.array(v.string()),
+    instructions: v.object({
+      name: v.string(),
+      steps: v.array(
+        v.object({
+          number: v.number(),
+          step: v.string(),
+        }),
+      ),
+    }),
+    ingredients: v.array(
+      v.object({
+        name: v.string(),
+        measures: v.object({
+          amount: v.number(),
+          unit: v.string(),
+        }),
+      }),
+    ),
     dishTypes: v.array(v.string()),
   },
   handler: async (ctx, args) => {
@@ -34,8 +50,28 @@ export const updateRecipe = mutation({
     readyInMinutes: v.optional(v.number()),
     image: v.optional(v.string()),
     diets: v.optional(v.array(v.string())),
-    instructions: v.optional(v.string()),
-    ingredients: v.optional(v.array(v.string())),
+    instructions: v.optional(
+      v.object({
+        name: v.string(),
+        steps: v.array(
+          v.object({
+            number: v.number(),
+            step: v.string(),
+          }),
+        ),
+      }),
+    ),
+    ingredients: v.optional(
+      v.array(
+        v.object({
+          name: v.string(),
+          measures: v.object({
+            amount: v.number(),
+            unit: v.string(),
+          }),
+        }),
+      ),
+    ),
     dishTypes: v.optional(v.array(v.string())),
   },
   handler: async (ctx, args) => {
@@ -167,7 +203,7 @@ export const syncIngredientsToGroceryList = mutation({
     for (const ingredient of recipe.ingredients) {
       await ctx.db.insert("groceryItems", {
         userId: args.userId,
-        name: ingredient,
+        name: ingredient.name,
         checked: false,
       });
     }

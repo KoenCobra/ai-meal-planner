@@ -10,8 +10,24 @@ const applicationTables = {
     readyInMinutes: v.number(),
     storageId: v.optional(v.id("_storage")),
     diets: v.array(v.string()),
-    instructions: v.string(),
-    ingredients: v.array(v.string()),
+    instructions: v.object({
+      name: v.string(),
+      steps: v.array(
+        v.object({
+          number: v.number(),
+          step: v.string(),
+        }),
+      ),
+    }),
+    ingredients: v.array(
+      v.object({
+        name: v.string(),
+        measures: v.object({
+          amount: v.number(),
+          unit: v.string(),
+        }),
+      }),
+    ),
     dishTypes: v.array(v.string()),
   })
     .index("by_user", ["userId"])

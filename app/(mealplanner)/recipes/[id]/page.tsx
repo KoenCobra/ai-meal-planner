@@ -107,8 +107,13 @@ const RecipeDetails = () => {
           <RecipeDetailHeader recipe={recipe} />
 
           <RecipeDetailInstructions
-            ingredients={recipe.ingredients}
-            instructions={recipe.instructions}
+            ingredients={recipe.ingredients.map(
+              (ingredient) =>
+                `${ingredient.name} - ${ingredient.measures.amount} ${ingredient.measures.unit}`,
+            )}
+            instructions={recipe.instructions.steps
+              .map((step) => `${step.number}. ${step.step}`)
+              .join("\n")}
             servings={recipe.servings}
             readyInMinutes={recipe.readyInMinutes}
           />

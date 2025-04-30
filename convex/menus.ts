@@ -238,7 +238,7 @@ export const syncMenuIngredientsToGroceryList = mutation({
         for (const ingredient of recipe.ingredients) {
           await ctx.db.insert("groceryItems", {
             userId: args.userId,
-            name: ingredient,
+            name: ingredient.name,
             checked: false,
           });
         }
