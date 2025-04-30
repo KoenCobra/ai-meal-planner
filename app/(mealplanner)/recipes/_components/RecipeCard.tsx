@@ -79,7 +79,9 @@ export const RecipeCard = ({
         </DropdownMenu>
       </div>
       <Card className="h-full hover:shadow-lg relative transition-shadow cursor-pointer pt-0">
-        <RecipeImage recipe={recipe} />
+        <div className="h-48">
+          <RecipeImage recipe={recipe} />
+        </div>
         <CardHeader>
           <CardTitle>{recipe.title}</CardTitle>
           <CardDescription>

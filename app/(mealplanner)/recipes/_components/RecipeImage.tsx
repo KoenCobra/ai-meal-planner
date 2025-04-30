@@ -75,7 +75,7 @@ export const RecipeImage = ({ recipe, className }: RecipeImageProps) => {
 
   return (
     <div
-      className={cn("relative w-full h-48", className)}
+      className={cn("relative w-full h-full", className)}
       onClick={(e) => e.stopPropagation()}
     >
       {imageUrl ? (
@@ -86,7 +86,7 @@ export const RecipeImage = ({ recipe, className }: RecipeImageProps) => {
             fill
             className="object-cover rounded-t-lg"
           />
-          <div className="absolute inset-0 flex items-center justify-center opacity-0 hover:opacity-100 transition-opacity">
+          <div className="absolute inset-0 flex items-center justify-center">
             <label className="cursor-pointer p-3 rounded-full bg-white/80 hover:bg-white transition-all transform hover:scale-110 shadow-sm">
               <Camera className="h-5 w-5 text-gray-700" />
               <input
