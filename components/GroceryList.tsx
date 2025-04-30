@@ -90,6 +90,12 @@ export function GroceryList() {
     }
   });
 
+  const clearAllItems = useMutation(
+    api.groceryList.clearAllItems,
+  ).withOptimisticUpdate((localStore, args) => {
+    localStore.setQuery(api.groceryList.listItems, { userId: args.userId }, []);
+  });
+
   const handleAddItem = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!newItemName.trim()) return;
@@ -120,25 +126,36 @@ export function GroceryList() {
     <div className="w-full max-w-2xl mx-auto p-4 space-y-4">
       <h2 className="text-2xl font-bold">Grocery List</h2>
 
-      <form onSubmit={handleAddItem} className="flex gap-2">
-        <Input
-          type="text"
-          placeholder="Item name"
-          value={newItemName}
-          onChange={(e) => setNewItemName(e.target.value)}
-          className="flex-1"
-        />
-        <Input
-          type="text"
-          placeholder="Quantity (optional)"
-          value={newItemQuantity}
-          onChange={(e) => setNewItemQuantity(e.target.value)}
-          className="w-32"
-        />
-        <Button type="submit">
-          <Plus className="h-4 w-4" />
-        </Button>
-      </form>
+      <div className="flex justify-between items-center">
+        <form onSubmit={handleAddItem} className="flex gap-2 flex-1">
+          <Input
+            type="text"
+            placeholder="Item name"
+            value={newItemName}
+            onChange={(e) => setNewItemName(e.target.value)}
+            className="flex-1"
+          />
+          <Input
+            type="text"
+            placeholder="Quantity (optional)"
+            value={newItemQuantity}
+            onChange={(e) => setNewItemQuantity(e.target.value)}
+            className="w-32"
+          />
+          <Button type="submit">
+            <Plus className="h-4 w-4" />
+          </Button>
+        </form>
+        {items && items.length > 0 && (
+          <Button
+            variant="destructive"
+            onClick={() => clearAllItems({ userId: user?.id ?? "" })}
+            className="ml-4"
+          >
+            Clear All Items
+          </Button>
+        )}
+      </div>
 
       {items && items.length > 0 && (
         <div>

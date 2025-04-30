@@ -116,3 +116,20 @@ export const clearCheckedItems = mutation({
     }
   },
 });
+
+// Clear all items from the list
+export const clearAllItems = mutation({
+  args: {
+    userId: v.string(),
+  },
+  handler: async (ctx, args) => {
+    const allItems = await ctx.db
+      .query("groceryItems")
+      .withIndex("by_user", (q) => q.eq("userId", args.userId))
+      .collect();
+
+    for (const item of allItems) {
+      await ctx.db.delete(item._id);
+    }
+  },
+});
