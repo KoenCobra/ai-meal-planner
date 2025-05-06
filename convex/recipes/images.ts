@@ -1,8 +1,15 @@
-import { mutation, query, action } from "../_generated/server";
 import { ConvexError, v } from "convex/values";
-import { Id } from "../_generated/dataModel";
-import { ActionCtx, MutationCtx, QueryCtx } from "../_generated/server";
+import openai from "../../lib/openai";
 import { api } from "../_generated/api";
+import { Id } from "../_generated/dataModel";
+import {
+  action,
+  ActionCtx,
+  mutation,
+  MutationCtx,
+  query,
+  QueryCtx,
+} from "../_generated/server";
 
 // Helper function to decode base64
 function base64ToUint8Array(base64: string): Uint8Array {
@@ -102,6 +109,72 @@ export const uploadGeneratedImage = action({
       return storageId;
     } catch (error) {
       throw new Error("Failed to upload image: " + error);
+    }
+  },
+});
+
+// New action for generating recipe images with OpenAI
+export const generateRecipeImage = action({
+  args: {
+    userId: v.string(),
+    recipeId: v.id("recipes"),
+    recipeTitle: v.string(),
+    recipeDescription: v.string(),
+  },
+  handler: async (ctx: ActionCtx, args): Promise<Id<"_storage">> => {
+    try {
+      // Initialize OpenAI client
+
+      // Generate image with OpenAI
+      const response = await openai.images.generate({
+        model: "gpt-image-1",
+        prompt: `Professional food photography of ${args.recipeTitle}. ${args.recipeDescription}. Top-down view, beautiful plating, restaurant quality, soft natural lighting.`,
+        n: 1,
+        size: "1024x1024",
+        quality: "standard",
+        response_format: "b64_json",
+      });
+
+      const imageData = response.data?.[0]?.b64_json;
+      if (!imageData) {
+        throw new Error("No image generated");
+      }
+
+      // Convert base64 to Uint8Array
+      const binaryData = base64ToUint8Array(imageData);
+
+      // Generate upload URL
+      const postUrl = await ctx.runMutation(
+        api.recipes.images.generateUploadUrl,
+        {
+          userId: args.userId,
+        },
+      );
+
+      // Upload the file
+      const result = await fetch(postUrl, {
+        method: "POST",
+        headers: { "Content-Type": "image/png" },
+        body: binaryData,
+      });
+
+      if (!result.ok) {
+        throw new Error("Failed to upload image");
+      }
+
+      const { storageId } = await result.json();
+
+      // Update the recipe with the new storage ID
+      await ctx.runMutation(api.recipes.images.updateRecipeImage, {
+        userId: args.userId,
+        recipeId: args.recipeId,
+        storageId,
+      });
+
+      return storageId;
+    } catch (error) {
+      console.error("Failed to generate or upload image:", error);
+      throw new Error("Failed to generate or upload image: " + error);
     }
   },
 });

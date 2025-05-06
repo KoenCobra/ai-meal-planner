@@ -1,12 +1,12 @@
-import React, { useEffect } from "react";
-import { RecipeInput } from "@/lib/validation";
-import { toast } from "sonner";
-import { Save } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { Id } from "@/convex/_generated/dataModel";
-import { useMutation } from "convex/react";
 import { api } from "@/convex/_generated/api";
+import { Id } from "@/convex/_generated/dataModel";
+import { RecipeInput } from "@/lib/validation";
 import { useUser } from "@clerk/clerk-react";
+import { useAction, useMutation, useQuery } from "convex/react";
+import { Image, Save } from "lucide-react";
+import React, { useEffect } from "react";
+import { toast } from "sonner";
 
 interface BubuAiResponseProps {
   recipe: RecipeInput;
@@ -14,13 +14,23 @@ interface BubuAiResponseProps {
 
 const AiResponse = ({ recipe }: BubuAiResponseProps) => {
   const { user } = useUser();
-  const createRecipe = useMutation(api.recipes.createRecipe);
   const [savedRecipeId, setSavedRecipeId] =
     React.useState<Id<"recipes"> | null>(null);
+  const [recipeImageId, setRecipeImageId] =
+    React.useState<Id<"_storage"> | null>(null);
+  const [isGeneratingImage, setIsGeneratingImage] = React.useState(false);
+
+  const createRecipe = useMutation(api.recipes.createRecipe);
+  const generateImage = useAction(api.recipes.images.generateRecipeImage);
+  const getImageUrl = useQuery(
+    api.recipes.images.getImageUrl,
+    savedRecipeId && recipeImageId ? { storageId: recipeImageId } : "skip",
+  );
 
   useEffect(() => {
-    // Reset savedRecipeId when a new recipe is received
+    // Reset states when a new recipe is received
     setSavedRecipeId(null);
+    setRecipeImageId(null);
   }, [recipe]);
 
   if (recipe?.error) {
@@ -55,6 +65,31 @@ const AiResponse = ({ recipe }: BubuAiResponseProps) => {
     }
   };
 
+  const handleGenerateImage = async () => {
+    if (!user || !savedRecipeId) {
+      toast.error("Please save the recipe first");
+      return;
+    }
+
+    try {
+      setIsGeneratingImage(true);
+      const storageId = await generateImage({
+        userId: user.id,
+        recipeId: savedRecipeId,
+        recipeTitle: recipe.title,
+        recipeDescription: recipe.summary,
+      });
+
+      setRecipeImageId(storageId);
+      toast.success("Image generated successfully!");
+    } catch (error) {
+      toast.error("Failed to generate image");
+      console.error(error);
+    } finally {
+      setIsGeneratingImage(false);
+    }
+  };
+
   return (
     <>
       <div className="text-center mt-16">
@@ -72,7 +107,25 @@ const AiResponse = ({ recipe }: BubuAiResponseProps) => {
             {savedRecipeId ? "Recipe Saved" : "Save Recipe"}
             <Save className="ml-2" size={14} />
           </Button>
+          <Button
+            variant="outline"
+            className="mt-4 text-xl p-7"
+            onClick={handleGenerateImage}
+            disabled={!savedRecipeId || isGeneratingImage}
+          >
+            {isGeneratingImage ? "Generating..." : "Generate Image"}
+            <Image className="ml-2" size={14} />
+          </Button>
         </div>
+        {getImageUrl && (
+          <div className="mt-6">
+            <img
+              src={getImageUrl}
+              alt={recipe.title}
+              className="mx-auto rounded-lg shadow-lg max-w-2xl"
+            />
+          </div>
+        )}
         <div className="border-b border-t border-border mt-6 py-3">
           <p className="text-muted-foreground max-w-xl mx-auto">
             {recipe?.summary}
