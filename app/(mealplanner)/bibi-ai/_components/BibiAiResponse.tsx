@@ -19,6 +19,7 @@ const AiResponse = ({ recipe }: BubuAiResponseProps) => {
   const [recipeImageId, setRecipeImageId] =
     React.useState<Id<"_storage"> | null>(null);
   const [isGeneratingImage, setIsGeneratingImage] = React.useState(false);
+  const [hasGeneratedImage, setHasGeneratedImage] = React.useState(false);
 
   const createRecipe = useMutation(api.recipes.createRecipe);
   const generateImage = useAction(api.recipes.images.generateRecipeImage);
@@ -32,6 +33,7 @@ const AiResponse = ({ recipe }: BubuAiResponseProps) => {
     // Reset states when a new recipe is received
     setSavedRecipeId(null);
     setRecipeImageId(null);
+    setHasGeneratedImage(false);
   }, [recipe]);
 
   if (recipe?.error) {
@@ -80,28 +82,27 @@ const AiResponse = ({ recipe }: BubuAiResponseProps) => {
 
     try {
       setIsGeneratingImage(true);
+      console.log(
+        "Generating image for recipe:",
+        savedRecipeId || "unsaved recipe",
+      );
+
       const storageId = await generateImage({
         userId: user.id,
-        recipeId: savedRecipeId || undefined, // Make recipeId optional
+        recipeId: savedRecipeId || undefined,
         recipeTitle: recipe.title,
         recipeDescription: recipe.summary,
       });
 
+      console.log("Image generated with storageId:", storageId);
       setRecipeImageId(storageId);
+      setHasGeneratedImage(true);
 
-      // If recipe is already saved, update it with the new image
-      if (savedRecipeId) {
-        await updateRecipeImage({
-          userId: user.id,
-          recipeId: savedRecipeId,
-          storageId: storageId,
-        });
-      }
-
+      // Remove the duplicate update since it's already handled in the generateRecipeImage action
       toast.success("Image generated successfully!");
     } catch (error) {
+      console.error("Failed to generate image:", error);
       toast.error("Failed to generate image");
-      console.error(error);
     } finally {
       setIsGeneratingImage(false);
     }
@@ -140,9 +141,13 @@ const AiResponse = ({ recipe }: BubuAiResponseProps) => {
             variant="outline"
             className="mt-4 text-xl p-7"
             onClick={handleGenerateImage}
-            disabled={isGeneratingImage}
+            disabled={isGeneratingImage || hasGeneratedImage}
           >
-            {isGeneratingImage ? "Generating..." : "Generate Image"}
+            {isGeneratingImage
+              ? "Generating..."
+              : hasGeneratedImage
+                ? "Image Generated"
+                : "Generate Image"}
             <Image className="ml-2" size={14} />
           </Button>
         </div>

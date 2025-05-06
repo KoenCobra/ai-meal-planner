@@ -52,6 +52,8 @@ export const updateRecipeImage = mutation({
       throw new ConvexError("Not authorized");
     }
 
+    console.log("Updating recipe image:", args.storageId);
+
     // If there's an existing image, delete it
     if (recipe.storageId) {
       await ctx.storage.delete(recipe.storageId);
@@ -123,6 +125,11 @@ export const generateRecipeImage = action({
   },
   handler: async (ctx: ActionCtx, args): Promise<Id<"_storage">> => {
     try {
+      console.log(
+        "Starting image generation for recipe:",
+        args.recipeId || "unsaved recipe",
+      );
+
       // Initialize OpenAI client
       const response = await openai.images.generate({
         model: "gpt-image-1",
@@ -170,19 +177,22 @@ export const generateRecipeImage = action({
       }
 
       const { storageId } = await result.json();
+      console.log("Image uploaded with storageId:", storageId);
 
       // If recipeId is provided, update the recipe with the new image
       if (args.recipeId) {
+        console.log("Updating recipe", args.recipeId, "with image", storageId);
         await ctx.runMutation(api.recipes.images.updateRecipeImage, {
           userId: args.userId,
           recipeId: args.recipeId,
           storageId,
         });
+        console.log("Recipe updated successfully");
       }
 
       return storageId;
     } catch (error: Error | unknown) {
-      console.error("Error generating/uploading image:", error);
+      console.error("Error in generateRecipeImage:", error);
       const errorMessage =
         error instanceof Error ? error.message : String(error);
       throw new Error(`Failed to generate or upload image: ${errorMessage}`);
