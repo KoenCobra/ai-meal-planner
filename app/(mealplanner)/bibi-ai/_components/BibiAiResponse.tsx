@@ -22,9 +22,10 @@ const AiResponse = ({ recipe }: BubuAiResponseProps) => {
 
   const createRecipe = useMutation(api.recipes.createRecipe);
   const generateImage = useAction(api.recipes.images.generateRecipeImage);
+  const updateRecipeImage = useMutation(api.recipes.images.updateRecipeImage);
   const getImageUrl = useQuery(
     api.recipes.images.getImageUrl,
-    savedRecipeId && recipeImageId ? { storageId: recipeImageId } : "skip",
+    recipeImageId ? { storageId: recipeImageId } : "skip",
   );
 
   useEffect(() => {
@@ -57,6 +58,15 @@ const AiResponse = ({ recipe }: BubuAiResponseProps) => {
         dishTypes: recipe.dishTypes || [],
       });
 
+      // If we already have a generated image, link it to the recipe
+      if (recipeImageId) {
+        await updateRecipeImage({
+          userId: user.id,
+          recipeId: newRecipeId,
+          storageId: recipeImageId,
+        });
+      }
+
       setSavedRecipeId(newRecipeId);
       toast.success("Recipe saved successfully!");
     } catch (error) {
@@ -66,21 +76,28 @@ const AiResponse = ({ recipe }: BubuAiResponseProps) => {
   };
 
   const handleGenerateImage = async () => {
-    if (!user || !savedRecipeId) {
-      toast.error("Please save the recipe first");
-      return;
-    }
+    if (!user) return;
 
     try {
       setIsGeneratingImage(true);
       const storageId = await generateImage({
         userId: user.id,
-        recipeId: savedRecipeId,
+        recipeId: savedRecipeId || undefined, // Make recipeId optional
         recipeTitle: recipe.title,
         recipeDescription: recipe.summary,
       });
 
       setRecipeImageId(storageId);
+
+      // If recipe is already saved, update it with the new image
+      if (savedRecipeId) {
+        await updateRecipeImage({
+          userId: user.id,
+          recipeId: savedRecipeId,
+          storageId: storageId,
+        });
+      }
+
       toast.success("Image generated successfully!");
     } catch (error) {
       toast.error("Failed to generate image");
@@ -97,6 +114,18 @@ const AiResponse = ({ recipe }: BubuAiResponseProps) => {
         <p className="text-muted-foreground mb-2 text-sm">
           ({recipe?.diets?.join(" • ")})
         </p>
+        {getImageUrl && (
+          <div className="mt-6 mb-6">
+            <div className="relative w-full max-w-2xl mx-auto aspect-[16/9]">
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img
+                src={getImageUrl}
+                alt={recipe.title}
+                className="rounded-lg shadow-lg object-cover w-full h-full"
+              />
+            </div>
+          </div>
+        )}
         <div className="flex gap-4 justify-center">
           <Button
             variant="outline"
@@ -111,21 +140,12 @@ const AiResponse = ({ recipe }: BubuAiResponseProps) => {
             variant="outline"
             className="mt-4 text-xl p-7"
             onClick={handleGenerateImage}
-            disabled={!savedRecipeId || isGeneratingImage}
+            disabled={isGeneratingImage}
           >
             {isGeneratingImage ? "Generating..." : "Generate Image"}
             <Image className="ml-2" size={14} />
           </Button>
         </div>
-        {getImageUrl && (
-          <div className="mt-6">
-            <img
-              src={getImageUrl}
-              alt={recipe.title}
-              className="mx-auto rounded-lg shadow-lg max-w-2xl"
-            />
-          </div>
-        )}
         <div className="border-b border-t border-border mt-6 py-3">
           <p className="text-muted-foreground max-w-xl mx-auto">
             {recipe?.summary}

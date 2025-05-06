@@ -117,31 +117,38 @@ export const uploadGeneratedImage = action({
 export const generateRecipeImage = action({
   args: {
     userId: v.string(),
-    recipeId: v.id("recipes"),
+    recipeId: v.optional(v.id("recipes")),
     recipeTitle: v.string(),
     recipeDescription: v.string(),
   },
   handler: async (ctx: ActionCtx, args): Promise<Id<"_storage">> => {
     try {
       // Initialize OpenAI client
-
-      // Generate image with OpenAI
       const response = await openai.images.generate({
         model: "gpt-image-1",
         prompt: `Professional food photography of ${args.recipeTitle}. ${args.recipeDescription}. Top-down view, beautiful plating, restaurant quality, soft natural lighting.`,
         n: 1,
         size: "1024x1024",
-        quality: "standard",
-        response_format: "b64_json",
+        quality: "low",
       });
 
-      const imageData = response.data?.[0]?.b64_json;
-      if (!imageData) {
-        throw new Error("No image generated");
+      // Check if we have a valid response
+      if (!response.data || response.data.length === 0) {
+        throw new Error("Empty response from OpenAI");
+      }
+
+      const imageData = response.data[0];
+      if (!imageData || typeof imageData !== "object") {
+        throw new Error("Invalid image data structure");
+      }
+
+      const b64Json = imageData.b64_json;
+      if (!b64Json) {
+        throw new Error("No base64 image data in response");
       }
 
       // Convert base64 to Uint8Array
-      const binaryData = base64ToUint8Array(imageData);
+      const binaryData = base64ToUint8Array(b64Json);
 
       // Generate upload URL
       const postUrl = await ctx.runMutation(
@@ -164,17 +171,21 @@ export const generateRecipeImage = action({
 
       const { storageId } = await result.json();
 
-      // Update the recipe with the new storage ID
-      await ctx.runMutation(api.recipes.images.updateRecipeImage, {
-        userId: args.userId,
-        recipeId: args.recipeId,
-        storageId,
-      });
+      // If recipeId is provided, update the recipe with the new image
+      if (args.recipeId) {
+        await ctx.runMutation(api.recipes.images.updateRecipeImage, {
+          userId: args.userId,
+          recipeId: args.recipeId,
+          storageId,
+        });
+      }
 
       return storageId;
-    } catch (error) {
-      console.error("Failed to generate or upload image:", error);
-      throw new Error("Failed to generate or upload image: " + error);
+    } catch (error: Error | unknown) {
+      console.error("Error generating/uploading image:", error);
+      const errorMessage =
+        error instanceof Error ? error.message : String(error);
+      throw new Error(`Failed to generate or upload image: ${errorMessage}`);
     }
   },
 });
