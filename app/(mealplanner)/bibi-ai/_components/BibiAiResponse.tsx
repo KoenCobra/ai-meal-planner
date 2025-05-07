@@ -4,7 +4,7 @@ import { Id } from "@/convex/_generated/dataModel";
 import { RecipeInput } from "@/lib/validation";
 import { useUser } from "@clerk/clerk-react";
 import { useMutation } from "convex/react";
-import { Loader2, Save } from "lucide-react";
+import { Loader2, Save, Trash2 } from "lucide-react";
 import Image from "next/image";
 import React, { useEffect, useState } from "react";
 import { toast } from "sonner";
@@ -12,9 +12,10 @@ import { toast } from "sonner";
 interface BubuAiResponseProps {
   recipe: RecipeInput;
   image: string;
+  onClear?: () => void;
 }
 
-const AiResponse = ({ recipe, image }: BubuAiResponseProps) => {
+const AiResponse = ({ recipe, image, onClear }: BubuAiResponseProps) => {
   const { user } = useUser();
   const [savedRecipeId, setSavedRecipeId] =
     React.useState<Id<"recipes"> | null>(null);
@@ -112,6 +113,13 @@ const AiResponse = ({ recipe, image }: BubuAiResponseProps) => {
     }
   };
 
+  const handleClear = () => {
+    if (onClear) {
+      onClear();
+      toast.success("Recipe cleared");
+    }
+  };
+
   return (
     <>
       <div className="text-center mt-16">
@@ -152,31 +160,44 @@ const AiResponse = ({ recipe, image }: BubuAiResponseProps) => {
           ({recipe?.diets?.join(" • ")})
         </p>
 
-        <Button
-          variant="outline"
-          className="mt-4 text-xl p-7"
-          onClick={handleSave}
-          disabled={!!savedRecipeId || isSaving || isImageGenerating}
-        >
-          {isSaving ? (
-            <>
-              <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-              Saving Recipe
-            </>
-          ) : isImageGenerating ? (
-            <>Waiting for image...</>
-          ) : savedRecipeId ? (
-            <>
-              Recipe Saved
-              <Save className="ml-2" size={14} />
-            </>
-          ) : (
-            <>
-              Save Recipe
-              <Save className="ml-2" size={14} />
-            </>
+        <div className="flex justify-center items-center gap-3">
+          <Button
+            variant="outline"
+            className="mt-4 text-xl p-7"
+            onClick={handleSave}
+            disabled={!!savedRecipeId || isSaving || isImageGenerating}
+          >
+            {isSaving ? (
+              <>
+                <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                Saving Recipe
+              </>
+            ) : isImageGenerating ? (
+              <>Waiting for image...</>
+            ) : savedRecipeId ? (
+              <>
+                Recipe Saved
+                <Save className="ml-2" size={14} />
+              </>
+            ) : (
+              <>
+                Save Recipe
+                <Save className="ml-2" size={14} />
+              </>
+            )}
+          </Button>
+
+          {onClear && (
+            <Button
+              variant="ghost"
+              className="mt-4"
+              onClick={handleClear}
+              title="Clear saved recipe"
+            >
+              <Trash2 size={18} />
+            </Button>
           )}
-        </Button>
+        </div>
 
         <div className="border-b border-t border-border mt-6 py-3">
           <p className="text-muted-foreground max-w-xl mx-auto">
