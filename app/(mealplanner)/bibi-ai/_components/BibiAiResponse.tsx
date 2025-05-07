@@ -3,38 +3,33 @@ import { api } from "@/convex/_generated/api";
 import { Id } from "@/convex/_generated/dataModel";
 import { RecipeInput } from "@/lib/validation";
 import { useUser } from "@clerk/clerk-react";
-import { useAction, useMutation, useQuery } from "convex/react";
-import { Image, Save } from "lucide-react";
-import React, { useEffect } from "react";
+import { useMutation } from "convex/react";
+import { Loader2, Save } from "lucide-react";
+import Image from "next/image";
+import React, { useEffect, useState } from "react";
 import { toast } from "sonner";
 
 interface BubuAiResponseProps {
   recipe: RecipeInput;
+  image: string;
 }
 
-const AiResponse = ({ recipe }: BubuAiResponseProps) => {
+const AiResponse = ({ recipe, image }: BubuAiResponseProps) => {
   const { user } = useUser();
   const [savedRecipeId, setSavedRecipeId] =
     React.useState<Id<"recipes"> | null>(null);
-  const [recipeImageId, setRecipeImageId] =
-    React.useState<Id<"_storage"> | null>(null);
-  const [isGeneratingImage, setIsGeneratingImage] = React.useState(false);
-  const [hasGeneratedImage, setHasGeneratedImage] = React.useState(false);
+  const [isSaving, setIsSaving] = useState(false);
+  const [isImageGenerating, setIsImageGenerating] = useState(true);
 
   const createRecipe = useMutation(api.recipes.createRecipe);
-  const generateImage = useAction(api.recipes.images.generateRecipeImage);
   const updateRecipeImage = useMutation(api.recipes.images.updateRecipeImage);
-  const getImageUrl = useQuery(
-    api.recipes.images.getImageUrl,
-    recipeImageId ? { storageId: recipeImageId } : "skip",
-  );
+  const generateUploadUrl = useMutation(api.recipes.images.generateUploadUrl);
 
+  // Reset state when recipe changes
   useEffect(() => {
-    // Reset states when a new recipe is received
     setSavedRecipeId(null);
-    setRecipeImageId(null);
-    setHasGeneratedImage(false);
-  }, [recipe]);
+    setIsImageGenerating(!image);
+  }, [recipe, image]);
 
   if (recipe?.error) {
     toast.error(recipe.error);
@@ -44,6 +39,44 @@ const AiResponse = ({ recipe }: BubuAiResponseProps) => {
     if (!user) return;
 
     try {
+      setIsSaving(true);
+
+      let storageId = null;
+
+      // Upload image first if available
+      if (image) {
+        try {
+          // Generate upload URL
+          const postUrl = await generateUploadUrl({
+            userId: user.id,
+          });
+
+          // Extract base64 data
+          const base64Data = image.split(",")[1] || image;
+          const binaryData = atob(base64Data);
+          const uint8Array = new Uint8Array(
+            binaryData.split("").map((char) => char.charCodeAt(0)),
+          );
+
+          // Upload the image
+          const result = await fetch(postUrl, {
+            method: "POST",
+            headers: { "Content-Type": "image/webp" },
+            body: uint8Array,
+          });
+
+          if (!result.ok) {
+            throw new Error("Failed to upload image");
+          }
+
+          const response = await result.json();
+          storageId = response.storageId;
+        } catch (error) {
+          console.error("Error uploading image:", error);
+          // Continue with recipe creation even if image upload fails
+        }
+      }
+
       // Create the recipe in the database
       const newRecipeId = await createRecipe({
         userId: user.id,
@@ -60,12 +93,12 @@ const AiResponse = ({ recipe }: BubuAiResponseProps) => {
         dishTypes: recipe.dishTypes || [],
       });
 
-      // If we already have a generated image, link it to the recipe
-      if (recipeImageId) {
+      // If we successfully uploaded an image, link it to the recipe
+      if (storageId) {
         await updateRecipeImage({
           userId: user.id,
           recipeId: newRecipeId,
-          storageId: recipeImageId,
+          storageId,
         });
       }
 
@@ -74,83 +107,77 @@ const AiResponse = ({ recipe }: BubuAiResponseProps) => {
     } catch (error) {
       toast.error("Failed to save recipe");
       console.error(error);
-    }
-  };
-
-  const handleGenerateImage = async () => {
-    if (!user) return;
-
-    try {
-      setIsGeneratingImage(true);
-      console.log(
-        "Generating image for recipe:",
-        savedRecipeId || "unsaved recipe",
-      );
-
-      const storageId = await generateImage({
-        userId: user.id,
-        recipeId: savedRecipeId || undefined,
-        recipeTitle: recipe.title,
-        recipeDescription: recipe.summary,
-      });
-
-      console.log("Image generated with storageId:", storageId);
-      setRecipeImageId(storageId);
-      setHasGeneratedImage(true);
-
-      // Remove the duplicate update since it's already handled in the generateRecipeImage action
-      toast.success("Image generated successfully!");
-    } catch (error) {
-      console.error("Failed to generate image:", error);
-      toast.error("Failed to generate image");
     } finally {
-      setIsGeneratingImage(false);
+      setIsSaving(false);
     }
   };
 
   return (
     <>
       <div className="text-center mt-16">
+        <div className="relative w-full max-w-2xl mx-auto aspect-[16/9] mb-6">
+          {image ? (
+            <Image
+              src={image}
+              alt={recipe.title}
+              className="rounded-lg shadow-lg object-cover w-full h-full"
+              width={1024}
+              height={1024}
+              onLoad={() => setIsImageGenerating(false)}
+            />
+          ) : (
+            <div className="flex flex-col items-center justify-center w-full h-full bg-muted rounded-lg">
+              <div className="relative w-16 h-16 mb-3">
+                <div className="absolute top-0 left-0 w-full h-full border-4 border-t-primary border-r-transparent border-b-transparent border-l-transparent rounded-full animate-spin"></div>
+                <div
+                  className="absolute top-0 left-0 w-full h-full border-4 border-t-transparent border-r-transparent border-b-primary border-l-transparent rounded-full animate-spin"
+                  style={{
+                    animationDirection: "reverse",
+                    animationDuration: "1.5s",
+                  }}
+                ></div>
+              </div>
+              <p className="text-muted-foreground font-medium">
+                Generating image...
+              </p>
+              <p className="text-xs text-muted-foreground mt-1">
+                This may take a moment
+              </p>
+            </div>
+          )}
+        </div>
+
         <h1 className="text-4xl font-bold">{recipe?.title?.toUpperCase()}</h1>
         <p className="text-muted-foreground mb-2 text-sm">
           ({recipe?.diets?.join(" • ")})
         </p>
-        {getImageUrl && (
-          <div className="mt-6 mb-6">
-            <div className="relative w-full max-w-2xl mx-auto aspect-[16/9]">
-              {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img
-                src={getImageUrl}
-                alt={recipe.title}
-                className="rounded-lg shadow-lg object-cover w-full h-full"
-              />
-            </div>
-          </div>
-        )}
-        <div className="flex gap-4 justify-center">
-          <Button
-            variant="outline"
-            className="mt-4 text-xl p-7"
-            onClick={handleSave}
-            disabled={!!savedRecipeId}
-          >
-            {savedRecipeId ? "Recipe Saved" : "Save Recipe"}
-            <Save className="ml-2" size={14} />
-          </Button>
-          <Button
-            variant="outline"
-            className="mt-4 text-xl p-7"
-            onClick={handleGenerateImage}
-            disabled={isGeneratingImage || hasGeneratedImage}
-          >
-            {isGeneratingImage
-              ? "Generating..."
-              : hasGeneratedImage
-                ? "Image Generated"
-                : "Generate Image"}
-            <Image className="ml-2" size={14} />
-          </Button>
-        </div>
+
+        <Button
+          variant="outline"
+          className="mt-4 text-xl p-7"
+          onClick={handleSave}
+          disabled={!!savedRecipeId || isSaving || isImageGenerating}
+        >
+          {isSaving ? (
+            <>
+              <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+              Saving Recipe
+            </>
+          ) : isImageGenerating ? (
+            <>Waiting for image...</>
+          ) : savedRecipeId ? (
+            <>
+              Recipe Saved
+              <Save className="ml-2" size={14} />
+            </>
+          ) : (
+            <>
+              Save Recipe
+              <Save className="ml-2" size={14} />
+            </>
+          )}
+        </Button>
+
         <div className="border-b border-t border-border mt-6 py-3">
           <p className="text-muted-foreground max-w-xl mx-auto">
             {recipe?.summary}

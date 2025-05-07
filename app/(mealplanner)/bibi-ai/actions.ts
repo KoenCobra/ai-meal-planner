@@ -7,6 +7,7 @@ import {
   Recipe,
 } from "@/lib/validation";
 import { zodResponseFormat } from "openai/helpers/zod";
+import sharp from "sharp";
 
 import { auth } from "@clerk/nextjs/server";
 
@@ -95,6 +96,22 @@ export async function generateRecipeImage(
     if (!b64Json) {
       throw new Error("No base64 image data in response");
     }
+
+    // Convert base64 to buffer
+    const buffer = Buffer.from(b64Json, "base64");
+
+    // Use Sharp to convert to WebP format with compression
+    const webpBuffer = await sharp(buffer)
+      .resize(800) // Resize to smaller dimensions
+      .webp({ quality: 80 }) // Convert to WebP with 80% quality
+      .toBuffer();
+
+    // Convert back to base64 for return
+    const webpBase64 = webpBuffer.toString("base64");
+
+    return {
+      imageBase64: `data:image/webp;base64,${webpBase64}`,
+    };
   } catch (error) {
     console.error("Error in generateRecipeImage:", error);
     throw new Error(`Failed to generate or upload image: ${error}`);

@@ -35,6 +35,7 @@ export const Recipe = z.object({
   ),
   dishTypes: z.array(z.string()),
   error: z.string().nullish(),
+  image: z.string().nullish(),
 });
 
 export type RecipeInput = z.infer<typeof Recipe>;

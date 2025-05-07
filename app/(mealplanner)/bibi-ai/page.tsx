@@ -1,12 +1,26 @@
 "use client";
 
-import React, { useState } from "react";
 import { RecipeInput } from "@/lib/validation";
+import { useState } from "react";
 import BibiAiForm from "./_components/BibiAiForm";
 import BibiAiResponse from "./_components/BibiAiResponse";
 
 const BibiAi = () => {
   const [recipeData, setRecipeData] = useState<RecipeInput | null>(null);
+  const [recipeImage, setRecipeImage] = useState<string>("");
+
+  const handleRecipeGenerated = (recipe: RecipeInput, image?: string) => {
+    setRecipeData(recipe);
+    if (image) {
+      setRecipeImage(image);
+    }
+  };
+
+  const handleGenerationStart = () => {
+    // Clear previous recipe and image when generation starts
+    setRecipeData(null);
+    setRecipeImage("");
+  };
 
   return (
     <>
@@ -16,9 +30,12 @@ const BibiAi = () => {
           Generate recipes with Bibi AI.
         </p>
       </div>
-      <BibiAiForm onRecipeGenerated={setRecipeData} />
+      <BibiAiForm
+        onRecipeGenerated={handleRecipeGenerated}
+        onGenerationStart={handleGenerationStart}
+      />
 
-      {recipeData && <BibiAiResponse recipe={recipeData} />}
+      {recipeData && <BibiAiResponse recipe={recipeData} image={recipeImage} />}
     </>
   );
 };
