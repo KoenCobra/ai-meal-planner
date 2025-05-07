@@ -1,5 +1,5 @@
+import { ConvexError, v } from "convex/values";
 import { mutation, query } from "./_generated/server";
-import { v, ConvexError } from "convex/values";
 
 export const createMenu = mutation({
   args: {
@@ -236,9 +236,11 @@ export const syncMenuIngredientsToGroceryList = mutation({
     for (const recipe of recipes) {
       if (recipe) {
         for (const ingredient of recipe.ingredients) {
+          const quantity = `${ingredient.measures.amount} ${ingredient.measures.unit}`;
           await ctx.db.insert("groceryItems", {
             userId: args.userId,
             name: ingredient.name,
+            quantity: quantity,
             checked: false,
           });
         }
