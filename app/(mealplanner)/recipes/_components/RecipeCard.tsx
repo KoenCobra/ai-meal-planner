@@ -1,8 +1,6 @@
 "use client";
 
-import { Id } from "@/convex/_generated/dataModel";
-import Link from "next/link";
-import { MoreVertical, ShoppingCart, Trash } from "lucide-react";
+import { Button } from "@/components/ui/button";
 import {
   Card,
   CardContent,
@@ -11,13 +9,16 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import { Id } from "@/convex/_generated/dataModel";
+import { MoreVertical, ShoppingCart, Trash } from "lucide-react";
+import Link from "next/link";
+import React from "react";
 import { RecipeImage } from "./RecipeImage";
 
 interface RecipeCardProps {
@@ -36,29 +37,42 @@ interface RecipeCardProps {
     title: string,
   ) => void;
   onSyncIngredients: (recipeId: Id<"recipes">) => void;
-  dropdownOpen: boolean;
-  onDropdownOpenChange: (open: boolean) => void;
 }
 
 export const RecipeCard = ({
   recipe,
   onDelete,
   onSyncIngredients,
-  dropdownOpen,
-  onDropdownOpenChange,
 }: RecipeCardProps) => {
+  const [dropdownOpen, setDropdownOpen] = React.useState(false);
+
+  const handleDropdownClick = (e: React.MouseEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+  };
+
   return (
     <Link href={`/recipes/${recipe._id}`} className="relative group">
-      <div className="absolute right-2 top-2 z-10">
-        <DropdownMenu open={dropdownOpen} onOpenChange={onDropdownOpenChange}>
+      <div
+        className="absolute right-2 top-2 z-10"
+        onClick={handleDropdownClick}
+      >
+        <DropdownMenu
+          modal={false}
+          open={dropdownOpen}
+          onOpenChange={setDropdownOpen}
+        >
           <DropdownMenuTrigger asChild>
             <Button size="icon" className="rounded-full bg-gray-300">
               <MoreVertical className="h-4 w-4" />
             </Button>
           </DropdownMenuTrigger>
-          <DropdownMenuContent>
+          <DropdownMenuContent onClick={handleDropdownClick}>
             <DropdownMenuItem
-              onClick={(e) => onDelete(e, recipe._id, recipe.title)}
+              onClick={(e) => {
+                e.stopPropagation();
+                onDelete(e, recipe._id, recipe.title);
+              }}
               className="text-destructive cursor-pointer"
             >
               <Trash className="h-4 w-4 mr-2" />
@@ -67,8 +81,9 @@ export const RecipeCard = ({
             <DropdownMenuItem
               onClick={(e) => {
                 e.preventDefault();
+                e.stopPropagation();
                 onSyncIngredients(recipe._id);
-                onDropdownOpenChange(false);
+                setDropdownOpen(false);
               }}
               className="cursor-pointer"
             >

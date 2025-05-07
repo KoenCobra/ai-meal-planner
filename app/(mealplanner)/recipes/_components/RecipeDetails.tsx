@@ -1,13 +1,12 @@
 "use client";
 
-import React, { useState } from "react";
-import { useQuery } from "convex/react";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { api } from "@/convex/_generated/api";
-import { useUser } from "@clerk/clerk-react";
 import { Id } from "@/convex/_generated/dataModel";
+import { useUser } from "@clerk/clerk-react";
+import { useQuery } from "convex/react";
 import DeleteRecipeDialog from "../../_components/DeleteRecipeDialog";
 import { useRecipeDelete } from "../_hooks/useRecipeDelete";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useSyncIngredients } from "../_hooks/useSyncIngredients";
 import { RecipeCard } from "./RecipeCard";
 
@@ -16,7 +15,6 @@ interface RecipeDetailsProps {
 }
 
 const RecipeDetails = ({ menuId }: RecipeDetailsProps) => {
-  const [open, setOpen] = useState(false);
   const { user } = useUser();
 
   const {
@@ -78,8 +76,6 @@ const RecipeDetails = ({ menuId }: RecipeDetailsProps) => {
             recipe={recipe}
             onDelete={handleDelete}
             onSyncIngredients={handleSyncIngredients}
-            dropdownOpen={open}
-            onDropdownOpenChange={setOpen}
           />
         ))}
       </div>
