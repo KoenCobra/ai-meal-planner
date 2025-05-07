@@ -61,3 +61,42 @@ export async function generateRecipe(input: GenerateRecipeInput) {
     error: aiResponse.error,
   };
 }
+
+export async function generateRecipeImage(
+  recipeTitle: string,
+  recipeDescription: string,
+) {
+  const { userId } = await auth();
+
+  if (!userId) {
+    throw new Error("Unauthorized");
+  }
+
+  try {
+    const response = await openai.images.generate({
+      model: "gpt-image-1",
+      prompt: `Professional food photography of ${recipeTitle}. ${recipeDescription}. Top-down view, beautiful plating, restaurant quality, soft natural lighting.`,
+      n: 1,
+      size: "1024x1024",
+      quality: "low",
+    });
+
+    // Check if we have a valid response
+    if (!response.data || response.data.length === 0) {
+      throw new Error("Empty response from OpenAI");
+    }
+
+    const imageData = response.data[0];
+    if (!imageData || typeof imageData !== "object") {
+      throw new Error("Invalid image data structure");
+    }
+
+    const b64Json = imageData.b64_json;
+    if (!b64Json) {
+      throw new Error("No base64 image data in response");
+    }
+  } catch (error) {
+    console.error("Error in generateRecipeImage:", error);
+    throw new Error(`Failed to generate or upload image: ${error}`);
+  }
+}
