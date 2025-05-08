@@ -1,5 +1,6 @@
 "use client";
 
+import { convertToWebp } from "@/app/(mealplanner)/bibi-ai/actions";
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -15,10 +16,15 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import { api } from "@/convex/_generated/api";
 import { Id } from "@/convex/_generated/dataModel";
-import { MoreVertical, Plus, ShoppingCart, Trash } from "lucide-react";
+import { MAX_FILE_SIZE } from "@/lib/image-utils";
+import { useUser } from "@clerk/clerk-react";
+import { useMutation } from "convex/react";
+import { MoreVertical, Plus, ShoppingCart, Trash, Upload } from "lucide-react";
 import Link from "next/link";
 import React from "react";
+import { toast } from "sonner";
 import AddToMenuDialog from "../../_components/AddToMenuDialog";
 import { useAddToMenuDialogStore } from "../../_stores/useAddToMenuDialogStore";
 import { RecipeImage } from "./RecipeImage";
@@ -33,11 +39,7 @@ interface RecipeCardProps {
     diets: string[];
     dishTypes: string[];
   };
-  onDelete: (
-    e: React.MouseEvent,
-    recipeId: Id<"recipes">,
-    title: string,
-  ) => void;
+  onDelete: (recipeId: Id<"recipes">, title: string) => void;
   onSyncIngredients: (recipeId: Id<"recipes">) => void;
 }
 
@@ -49,9 +51,69 @@ export const RecipeCard = ({
   const [dropdownOpen, setDropdownOpen] = React.useState(false);
   const { open, recipeId, openDialog, closeDialog } = useAddToMenuDialogStore();
 
-  const handleDropdownClick = (e: React.MouseEvent) => {
-    e.preventDefault();
-    e.stopPropagation();
+  const { user } = useUser();
+  const generateUploadUrl = useMutation(api.recipes.images.generateUploadUrl);
+  const updateRecipeImage = useMutation(api.recipes.images.updateRecipeImage);
+  const fileInputRef = React.useRef<HTMLInputElement>(null);
+
+  const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file || !user) return;
+
+    // Check file size
+    if (file.size > MAX_FILE_SIZE) {
+      toast.error("Image size must be less than 5MB");
+      return;
+    }
+
+    try {
+      // Convert file to base64
+      const base64 = await new Promise<string>((resolve, reject) => {
+        const reader = new FileReader();
+        reader.onload = () => resolve(reader.result as string);
+        reader.onerror = reject;
+        reader.readAsDataURL(file);
+      });
+
+      // Convert to WebP
+      const { imageBase64 } = await convertToWebp(base64);
+
+      // Get the upload URL
+      const postUrl = await generateUploadUrl({ userId: user.id });
+
+      // Convert base64 to blob
+      const response = await fetch(imageBase64);
+      const blob = await response.blob();
+
+      // Upload the file
+      const result = await fetch(postUrl, {
+        method: "POST",
+        headers: { "Content-Type": "image/webp" },
+        body: blob,
+      });
+
+      if (!result.ok) {
+        throw new Error("Failed to upload image");
+      }
+
+      const { storageId } = await result.json();
+
+      // Update the recipe with the new storage ID
+      await updateRecipeImage({
+        userId: user.id,
+        recipeId: recipe._id,
+        storageId,
+      });
+
+      toast.success("Image uploaded successfully");
+    } catch (error) {
+      console.error("Error uploading image:", error);
+      toast.error("Failed to upload image");
+    }
+  };
+
+  const triggerFileInput = () => {
+    fileInputRef.current?.click();
   };
 
   return (
@@ -59,7 +121,10 @@ export const RecipeCard = ({
       <Link href={`/recipes/${recipe._id}`} className="relative group">
         <div
           className="absolute right-2 top-2 z-1"
-          onClick={handleDropdownClick}
+          onClick={(e) => {
+            e.stopPropagation();
+            e.preventDefault();
+          }}
         >
           <DropdownMenu
             modal={false}
@@ -71,10 +136,9 @@ export const RecipeCard = ({
                 <MoreVertical className="h-4 w-4" />
               </Button>
             </DropdownMenuTrigger>
-            <DropdownMenuContent onClick={handleDropdownClick}>
+            <DropdownMenuContent>
               <DropdownMenuItem
-                onClick={(e) => {
-                  e.stopPropagation();
+                onClick={() => {
                   openDialog(recipe._id);
                   setDropdownOpen(false);
                 }}
@@ -84,9 +148,7 @@ export const RecipeCard = ({
                 Add to Menu
               </DropdownMenuItem>
               <DropdownMenuItem
-                onClick={(e) => {
-                  e.preventDefault();
-                  e.stopPropagation();
+                onClick={() => {
                   onSyncIngredients(recipe._id);
                   setDropdownOpen(false);
                 }}
@@ -96,9 +158,18 @@ export const RecipeCard = ({
                 Add to Grocery List
               </DropdownMenuItem>
               <DropdownMenuItem
-                onClick={(e) => {
-                  e.stopPropagation();
-                  onDelete(e, recipe._id, recipe.title);
+                onClick={() => {
+                  triggerFileInput();
+                  setDropdownOpen(false);
+                }}
+                className="cursor-pointer"
+              >
+                <Upload className="h-4 w-4 mr-2" />
+                Upload Image
+              </DropdownMenuItem>
+              <DropdownMenuItem
+                onClick={() => {
+                  onDelete(recipe._id, recipe.title);
                 }}
                 className="text-destructive cursor-pointer"
               >
@@ -138,6 +209,14 @@ export const RecipeCard = ({
           </CardFooter>
         </Card>
       </Link>
+
+      <input
+        type="file"
+        ref={fileInputRef}
+        className="hidden"
+        accept="image/*"
+        onChange={handleImageUpload}
+      />
 
       <AddToMenuDialog
         open={open}

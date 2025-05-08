@@ -1,9 +1,9 @@
-import { Id } from "@/convex/_generated/dataModel";
 import { api } from "@/convex/_generated/api";
+import { Id } from "@/convex/_generated/dataModel";
 import { useMutation } from "convex/react";
+import { ConvexError } from "convex/values";
 import { useState } from "react";
 import { toast } from "sonner";
-import { ConvexError } from "convex/values";
 
 interface UseRecipeDeleteProps {
   userId: string;
@@ -47,12 +47,7 @@ export const useRecipeDelete = ({ userId, menuId }: UseRecipeDeleteProps) => {
     }
   });
 
-  const handleDelete = (
-    e: React.MouseEvent,
-    recipeId: Id<"recipes">,
-    title: string,
-  ) => {
-    e.preventDefault(); // Prevent navigation
+  const handleDelete = (recipeId: Id<"recipes">, title: string) => {
     setRecipeToDelete({ id: recipeId, title });
   };
 
