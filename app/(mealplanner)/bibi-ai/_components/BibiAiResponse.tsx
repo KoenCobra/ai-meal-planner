@@ -123,12 +123,12 @@ const AiResponse = ({ recipe, image, onClear }: BubuAiResponseProps) => {
   return (
     <>
       <div className="text-center mt-16">
-        <div className="relative w-full max-w-2xl mx-auto aspect-[16/9] mb-6">
+        <div className="relative w-full max-w-2xl mx-auto aspect-square mb-6">
           {image ? (
             <Image
               src={image}
               alt={recipe.title}
-              className="rounded-lg shadow-lg object-cover w-full h-full"
+              className="rounded-lg  shadow-lg object-cover w-full h-full"
               width={1024}
               height={1024}
               onLoad={() => setIsImageGenerating(false)}
