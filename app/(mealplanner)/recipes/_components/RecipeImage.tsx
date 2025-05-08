@@ -1,13 +1,15 @@
 "use client";
 
-import { useUser } from "@clerk/clerk-react";
-import { useMutation, useQuery } from "convex/react";
+import { convertToWebp } from "@/app/(mealplanner)/bibi-ai/actions";
 import { api } from "@/convex/_generated/api";
 import { Id } from "@/convex/_generated/dataModel";
-import Image from "next/image";
-import { Camera } from "lucide-react";
-import { toast } from "sonner";
+import { MAX_FILE_SIZE } from "@/lib/image-utils";
 import { cn } from "@/lib/utils";
+import { useUser } from "@clerk/clerk-react";
+import { useMutation, useQuery } from "convex/react";
+import { Camera } from "lucide-react";
+import Image from "next/image";
+import { toast } from "sonner";
 
 interface RecipeImageProps {
   recipe: {
@@ -27,8 +29,6 @@ export const RecipeImage = ({ recipe, className }: RecipeImageProps) => {
     recipe.storageId ? { storageId: recipe.storageId } : "skip",
   );
 
-  const MAX_FILE_SIZE = 5 * 1024 * 1024; // 5MB in bytes
-
   const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     e.preventDefault();
     e.stopPropagation();
@@ -43,14 +43,29 @@ export const RecipeImage = ({ recipe, className }: RecipeImageProps) => {
     }
 
     try {
+      // Convert file to base64
+      const base64 = await new Promise<string>((resolve, reject) => {
+        const reader = new FileReader();
+        reader.onload = () => resolve(reader.result as string);
+        reader.onerror = reject;
+        reader.readAsDataURL(file);
+      });
+
+      // Convert to WebP
+      const { imageBase64 } = await convertToWebp(base64);
+
       // Get the upload URL
       const postUrl = await generateUploadUrl({ userId: user.id });
+
+      // Convert base64 to blob
+      const response = await fetch(imageBase64);
+      const blob = await response.blob();
 
       // Upload the file
       const result = await fetch(postUrl, {
         method: "POST",
-        headers: { "Content-Type": file.type },
-        body: file,
+        headers: { "Content-Type": "image/webp" },
+        body: blob,
       });
 
       if (!result.ok) {
