@@ -1,3 +1,5 @@
+"use server";
+
 import { paginationOptsValidator } from "convex/server";
 import { ConvexError, v } from "convex/values";
 import { mutation, query } from "./_generated/server";
@@ -175,11 +177,12 @@ export const searchByIngredients = query({
   },
 });
 
-export const getAllRecipes = query({
+export const getAllRecipes =  query({
   args: {
     userId: v.string(),
   },
   handler: async (ctx, args) => {
+    console.log("Getting all recipes for user:", args.userId);
     return await ctx.db
       .query("recipes")
       .withIndex("by_user", (q) => q.eq("userId", args.userId))
