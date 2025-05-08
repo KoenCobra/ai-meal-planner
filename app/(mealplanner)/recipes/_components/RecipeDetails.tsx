@@ -4,7 +4,8 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { api } from "@/convex/_generated/api";
 import { Id } from "@/convex/_generated/dataModel";
 import { useUser } from "@clerk/clerk-react";
-import { useQuery } from "convex/react";
+import { convexQuery } from "@convex-dev/react-query";
+import { useQuery } from "@tanstack/react-query";
 import DeleteRecipeDialog from "../../_components/DeleteRecipeDialog";
 import { useRecipeDelete } from "../_hooks/useRecipeDelete";
 import { useSyncIngredients } from "../_hooks/useSyncIngredients";
@@ -29,13 +30,21 @@ const RecipeDetails = ({ menuId }: RecipeDetailsProps) => {
 
   const { handleSyncIngredients } = useSyncIngredients(user?.id || "");
 
-  const menuRecipes = useQuery(
-    api.menus.getMenuRecipes,
-    menuId ? { userId: user?.id || "", menuId } : "skip",
-  );
+  const { data: menuRecipes } = useQuery({
+    ...convexQuery(
+      api.menus.getMenuRecipes,
+      menuId ? { userId: user?.id || "", menuId } : "skip",
+    ),
+    gcTime: 3600000, // Cache for 1 hour
+    staleTime: 3600000,
+  });
 
-  const allRecipes = useQuery(api.recipes.getAllRecipes, {
-    userId: user?.id || "",
+  const { data: allRecipes } = useQuery({
+    ...convexQuery(api.recipes.getAllRecipes, {
+      userId: user?.id || "",
+    }),
+    gcTime: 3600000, // Cache for 1 hour
+    staleTime: 3600000,
   });
 
   const recipes = menuId ? menuRecipes : allRecipes;
