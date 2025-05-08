@@ -1,6 +1,6 @@
+import ErrorBoundary from "@/components/ui/ErrorBoundary";
 import React from "react";
 import Navbar from "./_components/Navbar";
-import ErrorBoundary from "@/components/ui/ErrorBoundary";
 
 const layout = async ({ children }: { children: React.ReactNode }) => {
   return (
