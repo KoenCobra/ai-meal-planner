@@ -1,6 +1,5 @@
 "use client";
 
-import React from "react";
 import { Id } from "@/convex/_generated/dataModel";
 import { RecipeImage } from "./RecipeImage";
 
@@ -14,7 +13,7 @@ interface RecipeDetailHeaderProps {
 
 const RecipeDetailHeader = ({ recipe }: RecipeDetailHeaderProps) => {
   return (
-    <div className="w-full h-[600px] rounded-lg overflow-hidden shadow-lg">
+    <div className="w-full aspect-square rounded-lg overflow-hidden shadow-lg">
       <RecipeImage recipe={recipe} />
     </div>
   );

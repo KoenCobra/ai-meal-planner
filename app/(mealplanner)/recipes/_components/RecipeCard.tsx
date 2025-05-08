@@ -58,7 +58,7 @@ export const RecipeCard = ({
     <>
       <Link href={`/recipes/${recipe._id}`} className="relative group">
         <div
-          className="absolute right-2 top-2 z-10"
+          className="absolute right-2 top-2 z-1"
           onClick={handleDropdownClick}
         >
           <DropdownMenu
@@ -109,7 +109,7 @@ export const RecipeCard = ({
           </DropdownMenu>
         </div>
         <Card className="h-full hover:shadow-lg relative transition-shadow cursor-pointer pt-0">
-          <div className="h-48">
+          <div className="aspect-square">
             <RecipeImage recipe={recipe} />
           </div>
           <CardHeader>
