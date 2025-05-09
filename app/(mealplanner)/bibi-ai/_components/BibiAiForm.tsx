@@ -8,8 +8,10 @@ import {
   FormItem,
   FormMessage,
 } from "@/components/ui/form";
+import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { zodResolver } from "@hookform/resolvers/zod";
+import { ImageIcon, Loader2Icon, WandSparkles } from "lucide-react";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { toast } from "sonner";
@@ -19,8 +21,11 @@ import {
   generateRecipeSchema,
   RecipeInput,
 } from "@/lib/validation";
-import { Loader2Icon, WandSparkles } from "lucide-react";
-import { generateRecipe, generateRecipeImage } from "../actions";
+import {
+  analyzeImageForRecipe,
+  generateRecipe,
+  generateRecipeImage,
+} from "../actions";
 
 interface BibiAiFormProps {
   onRecipeGenerated: (recipe: RecipeInput, image?: string) => void;
@@ -33,6 +38,7 @@ const BibiAiForm = ({
 }: BibiAiFormProps) => {
   const [isGeneratingRecipe, setIsGeneratingRecipe] = useState(false);
   const [isGeneratingImage, setIsGeneratingImage] = useState(false);
+  const [selectedImage, setSelectedImage] = useState<File | null>(null);
 
   const form = useForm<GenerateRecipeInput>({
     resolver: zodResolver(generateRecipeSchema),
@@ -41,17 +47,36 @@ const BibiAiForm = ({
     },
   });
 
+  const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (e.target.files && e.target.files[0]) {
+      const file = e.target.files[0];
+      if (file.size > 5 * 1024 * 1024) {
+        // 5MB limit
+        toast.error("Image size should be less than 5MB");
+        return;
+      }
+      setSelectedImage(file);
+      // Clear the text description when an image is selected
+      form.setValue("description", "");
+    }
+  };
+
   const onSubmit = async (input: GenerateRecipeInput) => {
     try {
-      // Notify parent to clear previous recipe and image
       if (onGenerationStart) {
         onGenerationStart();
       }
 
       setIsGeneratingRecipe(true);
 
-      // First generate the recipe
-      const recipe = await generateRecipe(input);
+      let recipe;
+      if (selectedImage) {
+        // If an image is selected, use it to generate the recipe
+        recipe = await analyzeImageForRecipe(selectedImage);
+      } else {
+        // Otherwise use the text description
+        recipe = await generateRecipe(input);
+      }
 
       // Pass the recipe to the parent component immediately
       onRecipeGenerated(recipe);
@@ -69,6 +94,7 @@ const BibiAiForm = ({
       console.error("Error generating recipe:", error);
     } finally {
       setIsGeneratingRecipe(false);
+      setSelectedImage(null);
     }
   };
 
@@ -82,32 +108,69 @@ const BibiAiForm = ({
     <div className="md:w-1/2 mx-auto">
       <Form {...form}>
         <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-3">
-          <FormField
-            control={form.control}
-            name="description"
-            render={({ field }) => (
-              <FormItem>
-                <FormControl>
-                  <Textarea
-                    {...field}
-                    placeholder={`E.g. "I want a recipe for a healthy breakfast" (in any language you prefer)`}
-                    rows={4}
-                    autoFocus
-                    onKeyDown={(e) => {
-                      if (e.key === "Enter" && !e.shiftKey) {
-                        e.preventDefault();
-                        form.handleSubmit(onSubmit)();
-                      }
-                    }}
-                  />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
+          <div className="space-y-3">
+            <FormField
+              control={form.control}
+              name="description"
+              render={({ field }) => (
+                <FormItem>
+                  <FormControl>
+                    <Textarea
+                      {...field}
+                      placeholder={`E.g. "I want a recipe for a healthy breakfast" (in any language you prefer)`}
+                      rows={4}
+                      autoFocus
+                      disabled={!!selectedImage}
+                      onKeyDown={(e) => {
+                        if (e.key === "Enter" && !e.shiftKey) {
+                          e.preventDefault();
+                          form.handleSubmit(onSubmit)();
+                        }
+                      }}
+                    />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+
+            <div className="flex items-center gap-2">
+              <Input
+                type="file"
+                accept="image/*"
+                onChange={handleImageChange}
+                className="hidden"
+                id="image-upload"
+              />
+              <Button
+                type="button"
+                variant="outline"
+                onClick={() => document.getElementById("image-upload")?.click()}
+                className="w-full"
+              >
+                <ImageIcon className="mr-2 h-4 w-4" />
+                {selectedImage ? selectedImage.name : "Upload a food image"}
+              </Button>
+              {selectedImage && (
+                <Button
+                  type="button"
+                  variant="outline"
+                  onClick={() => setSelectedImage(null)}
+                  className="flex-shrink-0"
+                >
+                  Remove
+                </Button>
+              )}
+            </div>
+          </div>
+
           <div className="flex justify-center">
             <Button
-              disabled={isGeneratingRecipe || isGeneratingImage}
+              disabled={
+                isGeneratingRecipe ||
+                isGeneratingImage ||
+                (!selectedImage && !form.getValues("description"))
+              }
               type="submit"
               className="mt-2"
             >

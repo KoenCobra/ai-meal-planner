@@ -143,3 +143,67 @@ export async function convertToWebp(imageBase64: string) {
     throw new Error(`Failed to convert image to WebP: ${error}`);
   }
 }
+
+export async function analyzeImageForRecipe(image: File) {
+  const { userId } = await auth();
+
+  if (!userId) {
+    throw new Error("Unauthorized");
+  }
+
+  try {
+    // Convert the image file to base64
+    const bytes = await image.arrayBuffer();
+    const buffer = Buffer.from(bytes);
+    const base64Image = buffer.toString("base64");
+
+    const systemMessage = `
+    You are a recipe generator AI. Your task is to analyze the food image and generate a recipe that could recreate this dish. 
+    Your response must adhere to the Recipe schema structure. The dishTypes can only have 1 of the following values: "breakfast", "lunch", "snacks" or "dinner".
+    Provide detailed instructions and ingredients list based on what you see in the image.
+    `;
+
+    const completion = await openai.chat.completions.create({
+      model: "gpt-4.1-mini",
+      messages: [
+        {
+          role: "system",
+          content: systemMessage,
+        },
+        {
+          role: "user",
+          content: [
+            {
+              type: "text",
+              text: "Please analyze this food image and generate a recipe for it.",
+            },
+            {
+              type: "image_url",
+              image_url: {
+                url: `data:image/jpeg;base64,${base64Image}`,
+              },
+            },
+          ],
+        },
+      ],
+      max_tokens: 4096,
+    });
+
+    const response = completion.choices[0].message.content;
+    if (!response) {
+      throw new Error("Failed to generate recipe from image");
+    }
+
+    // Parse the response into our Recipe format
+    try {
+      const parsedRecipe = Recipe.parse(JSON.parse(response));
+      return parsedRecipe;
+    } catch (error) {
+      console.error("Error parsing recipe:", error);
+      throw new Error("Failed to parse recipe from AI response");
+    }
+  } catch (error) {
+    console.error("Error analyzing image:", error);
+    throw new Error(`Failed to analyze image: ${error}`);
+  }
+}
