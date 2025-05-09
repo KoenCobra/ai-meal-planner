@@ -1,22 +1,26 @@
 "use client";
 
-import { useState } from "react";
-import { useQuery, useMutation } from "convex/react";
-import { api } from "@/convex/_generated/api";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
 import { Checkbox } from "@/components/ui/checkbox";
-import { Plus, X } from "lucide-react";
-import { Id, Doc } from "@/convex/_generated/dataModel";
+import { Input } from "@/components/ui/input";
+import { api } from "@/convex/_generated/api";
+import { Doc, Id } from "@/convex/_generated/dataModel";
 import { useUser } from "@clerk/clerk-react";
+import { convexQuery } from "@convex-dev/react-query";
+import { useQuery } from "@tanstack/react-query";
+import { useMutation } from "convex/react";
+import { Plus, X } from "lucide-react";
+import { useState } from "react";
 
 export function GroceryList() {
   const { user } = useUser();
   const [newItemName, setNewItemName] = useState("");
   const [newItemQuantity, setNewItemQuantity] = useState("");
 
-  const items = useQuery(api.groceryList.listItems, {
-    userId: user?.id ?? "",
+  const { data: items } = useQuery({
+    ...convexQuery(api.groceryList.listItems, {
+      userId: user?.id ?? "",
+    }),
   });
 
   const addItem = useMutation(api.groceryList.addItem).withOptimisticUpdate(
@@ -200,57 +204,60 @@ export function GroceryList() {
               ))}
           </div>
 
-          {/* Completed Items Section */}
+          {/* Checked Items Section */}
           {items.some((item) => item.checked) && (
-            <div className="space-y-2 mt-6">
-              <div className="flex items-center justify-between">
-                <h3 className="text-lg font-semibold text-muted-foreground">
-                  Completed Items
+            <div className="mt-6">
+              <div className="flex justify-between items-center mb-2">
+                <h3 className="text-lg font-semibold text-foreground">
+                  Checked Items
                 </h3>
                 <Button
-                  variant="ghost"
+                  variant="outline"
+                  size="sm"
                   onClick={handleClearChecked}
-                  className="text-sm h-8"
+                  className="text-sm"
                 >
-                  Clear All
+                  Clear Checked
                 </Button>
               </div>
-              {items
-                .filter((item) => item.checked)
-                .map((item) => (
-                  <div
-                    key={item._id}
-                    className="flex items-center gap-2 bg-muted/50 rounded-lg border border-muted"
-                  >
-                    <Checkbox
-                      checked={item.checked}
-                      onCheckedChange={() => handleToggleItem(item._id)}
-                      className="ml-2"
-                    />
+              <div className="flex flex-col gap-2">
+                {items
+                  .filter((item) => item.checked)
+                  .map((item) => (
                     <div
-                      className="flex-1 p-2"
-                      onClick={() => handleToggleItem(item._id)}
-                      style={{ cursor: "pointer" }}
+                      key={item._id}
+                      className="flex items-center gap-2 bg-muted rounded-lg border m-0"
                     >
-                      <span className="line-through text-muted-foreground">
-                        {item.name}
-                      </span>
-                      {item.quantity && (
-                        <span className="text-sm text-muted-foreground ml-2">
-                          ({item.quantity})
+                      <Checkbox
+                        checked={item.checked}
+                        onCheckedChange={() => handleToggleItem(item._id)}
+                        className="ml-2"
+                      />
+                      <div
+                        className="flex-1 p-2"
+                        onClick={() => handleToggleItem(item._id)}
+                        style={{ cursor: "pointer" }}
+                      >
+                        <span className="line-through text-muted-foreground">
+                          {item.name}
                         </span>
-                      )}
+                        {item.quantity && (
+                          <span className="text-sm text-muted-foreground ml-2 line-through">
+                            ({item.quantity})
+                          </span>
+                        )}
+                      </div>
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        onClick={() => handleDeleteItem(item._id)}
+                        className="mr-2"
+                      >
+                        <X className="h-4 w-4" />
+                      </Button>
                     </div>
-                    <Button
-                      variant="ghost"
-                      size="sm"
-                      onClick={() => handleDeleteItem(item._id)}
-                      className="mr-2"
-                    >
-                      <X className="h-4 w-4" />
-                    </Button>
-                  </div>
-                ))}
+                  ))}
+              </div>
             </div>
           )}
         </div>

@@ -1,7 +1,9 @@
-import { useState, useEffect } from "react";
-import { useQuery, useMutation } from "convex/react";
 import { api } from "@/convex/_generated/api";
 import { Id } from "@/convex/_generated/dataModel";
+import { convexQuery } from "@convex-dev/react-query";
+import { useQuery } from "@tanstack/react-query";
+import { useMutation } from "convex/react";
+import { useEffect, useState } from "react";
 import { toast } from "sonner";
 
 interface UseMenuAssociationsProps {
@@ -18,13 +20,17 @@ export const useMenuAssociations = ({
   const [error, setError] = useState<string | null>(null);
 
   // Get all available menus
-  const menus = useQuery(api.menus.getMenus, { userId });
+  const { data: menus } = useQuery({
+    ...convexQuery(api.menus.getMenus, { userId }),
+  });
 
   // Get menus that contain this recipe
-  const menuRecipes = useQuery(
-    api.menus.getMenusContainingRecipe,
-    userId && recipeId ? { userId, recipeId } : "skip",
-  );
+  const { data: menuRecipes } = useQuery({
+    ...convexQuery(
+      api.menus.getMenusContainingRecipe,
+      userId && recipeId ? { userId, recipeId } : "skip",
+    ),
+  });
 
   // Mutations
   const addRecipeToMenu = useMutation(

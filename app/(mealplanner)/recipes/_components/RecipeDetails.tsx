@@ -35,16 +35,12 @@ const RecipeDetails = ({ menuId }: RecipeDetailsProps) => {
       api.menus.getMenuRecipes,
       menuId ? { userId: user?.id || "", menuId } : "skip",
     ),
-    gcTime: 3600000, // Cache for 1 hour
-    staleTime: 3600000,
   });
 
   const { data: allRecipes } = useQuery({
     ...convexQuery(api.recipes.getAllRecipes, {
       userId: user?.id || "",
     }),
-    gcTime: 3600000, // Cache for 1 hour
-    staleTime: 3600000,
   });
 
   const recipes = menuId ? menuRecipes : allRecipes;

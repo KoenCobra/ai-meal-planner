@@ -1,20 +1,20 @@
 "use client";
 
-import { useParams } from "next/navigation";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Button } from "@/components/ui/button";
-import Image from "next/image";
-import { Printer } from "lucide-react";
-import { useQuery } from "convex/react";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { api } from "@/convex/_generated/api";
-import { useUser } from "@clerk/clerk-react";
 import { Id } from "@/convex/_generated/dataModel";
+import { useUser } from "@clerk/clerk-react";
+import { convexQuery } from "@convex-dev/react-query";
+import { useQuery } from "@tanstack/react-query";
+import { Printer, ShoppingCart } from "lucide-react";
+import Image from "next/image";
+import { useParams } from "next/navigation";
 import AddToMenuDialog from "../../_components/AddToMenuDialog";
 import { useAddToMenuDialogStore } from "../../_stores/useAddToMenuDialogStore";
 import RecipeDetailHeader from "../_components/RecipeDetailHeader";
 import RecipeDetailInstructions from "../_components/RecipeDetailInstructions";
 import { useSyncIngredients } from "../_hooks/useSyncIngredients";
-import { ShoppingCart } from "lucide-react";
 
 const RecipeDetails = () => {
   const params = useParams();
@@ -22,9 +22,11 @@ const RecipeDetails = () => {
   const { open, recipeId, openDialog, closeDialog } = useAddToMenuDialogStore();
   const { handleSyncIngredients } = useSyncIngredients(user?.id || "");
 
-  const recipe = useQuery(api.recipes.getRecipe, {
-    userId: user?.id || "",
-    id: params.id as Id<"recipes">,
+  const { data: recipe } = useQuery({
+    ...convexQuery(api.recipes.getRecipe, {
+      userId: user?.id || "",
+      id: params.id as Id<"recipes">,
+    }),
   });
 
   if (!user) return null;

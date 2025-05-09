@@ -1,17 +1,19 @@
 "use client";
 
-import React from "react";
-import EmptyMenus from "./EmptyMenus";
-import MenuList from "./MenuList";
-import CreateMenuDialog from "./CreateMenuDialog";
-import { useQuery } from "convex/react";
 import { api } from "@/convex/_generated/api";
 import { useUser } from "@clerk/clerk-react";
+import { convexQuery } from "@convex-dev/react-query";
+import { useQuery } from "@tanstack/react-query";
+import CreateMenuDialog from "./CreateMenuDialog";
+import EmptyMenus from "./EmptyMenus";
+import MenuList from "./MenuList";
 
 const MenusOverview = () => {
   const { user } = useUser();
 
-  const menus = useQuery(api.menus.getMenus, { userId: user?.id ?? "" });
+  const { data: menus } = useQuery({
+    ...convexQuery(api.menus.getMenus, { userId: user?.id ?? "" }),
+  });
 
   if (!user) return null;
 

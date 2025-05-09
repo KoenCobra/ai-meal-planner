@@ -1,24 +1,26 @@
 "use client";
 
-import React from "react";
-import { useQuery } from "convex/react";
-import { api } from "@/convex/_generated/api";
-import { useUser } from "@clerk/clerk-react";
-import { useParams } from "next/navigation";
-import { Id } from "@/convex/_generated/dataModel";
 import { Button } from "@/components/ui/button";
+import { api } from "@/convex/_generated/api";
+import { Id } from "@/convex/_generated/dataModel";
+import { useUser } from "@clerk/clerk-react";
+import { convexQuery } from "@convex-dev/react-query";
+import { useQuery } from "@tanstack/react-query";
 import { ShoppingCart } from "lucide-react";
-import { useSyncMenuIngredients } from "../_hooks/useSyncMenuIngredients";
+import { useParams } from "next/navigation";
 import RecipeDetails from "../../recipes/_components/RecipeDetails";
+import { useSyncMenuIngredients } from "../_hooks/useSyncMenuIngredients";
 
 const MenuPage = () => {
   const params = useParams();
   const { user } = useUser();
   const { handleSyncMenuIngredients } = useSyncMenuIngredients(user?.id || "");
 
-  const menu = useQuery(api.menus.getMenu, {
-    userId: user?.id || "",
-    id: params.id as Id<"menus">,
+  const { data: menu } = useQuery({
+    ...convexQuery(api.menus.getMenu, {
+      userId: user?.id || "",
+      id: params.id as Id<"menus">,
+    }),
   });
 
   if (!user) return null;
