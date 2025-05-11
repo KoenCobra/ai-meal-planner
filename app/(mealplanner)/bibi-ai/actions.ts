@@ -163,7 +163,7 @@ export async function analyzeImageForRecipe(image: File) {
     Provide detailed instructions and ingredients list based on what you see in the image.
     `;
 
-    const completion = await await openai.beta.chat.completions.parse({
+    const completion = await openai.beta.chat.completions.parse({
       model: "gpt-4.1-mini",
       messages: [
         {
