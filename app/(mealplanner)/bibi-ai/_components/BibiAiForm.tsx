@@ -181,11 +181,7 @@ const BibiAiForm = ({
 
           <div className="flex justify-center">
             <Button
-              disabled={
-                isGeneratingRecipe ||
-                isGeneratingImage ||
-                !form.getValues("description")
-              }
+              disabled={isGeneratingRecipe || isGeneratingImage}
               type="submit"
               className="mt-2"
             >
