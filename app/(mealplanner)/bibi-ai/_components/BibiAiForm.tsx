@@ -149,7 +149,7 @@ const BibiAiForm = ({
             <div className="flex items-center gap-2">
               <Input
                 type="file"
-                accept="image/*"
+                accept=".png,.jpg,.jpeg,.webp"
                 onChange={handleImageChange}
                 className="hidden"
                 id="image-upload"
