@@ -47,7 +47,7 @@ const BibiAiForm = ({
     },
   });
 
-  const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleImageChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files && e.target.files[0]) {
       const file = e.target.files[0];
       if (file.size > 5 * 1024 * 1024) {
@@ -56,8 +56,35 @@ const BibiAiForm = ({
         return;
       }
       setSelectedImage(file);
-      // Clear the text description when an image is selected
-      form.setValue("description", "");
+
+      try {
+        if (onGenerationStart) {
+          onGenerationStart();
+        }
+
+        setIsGeneratingRecipe(true);
+        const recipe = await analyzeImageForRecipe(file);
+
+        // Pass the recipe to the parent component immediately
+        onRecipeGenerated(recipe);
+
+        // Then start generating the image
+        setIsGeneratingImage(true);
+        const image = await generateRecipeImage(recipe.title, recipe.summary);
+        // Update with the image when it's ready
+        if (image && image.imageBase64) {
+          onRecipeGenerated(recipe, image.imageBase64);
+        }
+      } catch (error) {
+        toast.error(
+          "Something went wrong analyzing the image. Please try again.",
+        );
+        console.error("Error analyzing image:", error);
+      } finally {
+        setIsGeneratingRecipe(false);
+        setIsGeneratingImage(false);
+        setSelectedImage(null);
+      }
     }
   };
 
@@ -68,15 +95,7 @@ const BibiAiForm = ({
       }
 
       setIsGeneratingRecipe(true);
-
-      let recipe;
-      if (selectedImage) {
-        // If an image is selected, use it to generate the recipe
-        recipe = await analyzeImageForRecipe(selectedImage);
-      } else {
-        // Otherwise use the text description
-        recipe = await generateRecipe(input);
-      }
+      const recipe = await generateRecipe(input);
 
       // Pass the recipe to the parent component immediately
       onRecipeGenerated(recipe);
@@ -88,21 +107,14 @@ const BibiAiForm = ({
       if (image && image.imageBase64) {
         onRecipeGenerated(recipe, image.imageBase64);
       }
-      setIsGeneratingImage(false);
     } catch (error) {
       toast.error("Something went wrong. Please try again.");
       console.error("Error generating recipe:", error);
     } finally {
       setIsGeneratingRecipe(false);
-      setSelectedImage(null);
+      setIsGeneratingImage(false);
     }
   };
-
-  const buttonText = isGeneratingRecipe
-    ? "Generating Recipe"
-    : isGeneratingImage
-      ? "Generating Image"
-      : "Generate Recipe";
 
   return (
     <div className="md:w-1/2 mx-auto">
@@ -168,12 +180,16 @@ const BibiAiForm = ({
               disabled={
                 isGeneratingRecipe ||
                 isGeneratingImage ||
-                (!selectedImage && !form.getValues("description"))
+                !form.getValues("description")
               }
               type="submit"
               className="mt-2"
             >
-              {buttonText}
+              {isGeneratingRecipe
+                ? "Generating Recipe"
+                : isGeneratingImage
+                  ? "Generating Image"
+                  : "Generate Recipe from Text"}
               {isGeneratingRecipe || isGeneratingImage ? (
                 <Loader2Icon className="ml-2 animate-spin" />
               ) : (
