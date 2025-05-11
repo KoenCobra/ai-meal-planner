@@ -218,7 +218,9 @@ const AiResponse = ({ recipe, image, onClear }: BubuAiResponseProps) => {
                   ingredient.name?.slice(1)}
               </p>
               <p className="text-muted-foreground">
-                {ingredient.measures?.amount} {ingredient.measures?.unit}
+                {ingredient.measures?.amount === 0
+                  ? "to taste"
+                  : `${ingredient.measures?.amount} ${ingredient.measures?.unit || ""}`}
               </p>
             </div>
           ))}
