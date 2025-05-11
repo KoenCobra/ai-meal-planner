@@ -132,6 +132,7 @@ const BibiAiForm = ({
                       placeholder={`E.g. "I want a recipe for a healthy breakfast" (in any language you prefer)`}
                       rows={4}
                       autoFocus
+                      disabled={isGeneratingRecipe || isGeneratingImage}
                       onKeyDown={(e) => {
                         if (e.key === "Enter" && !e.shiftKey) {
                           e.preventDefault();
@@ -152,12 +153,14 @@ const BibiAiForm = ({
                 onChange={handleImageChange}
                 className="hidden"
                 id="image-upload"
+                disabled={isGeneratingRecipe || isGeneratingImage}
               />
               <Button
                 type="button"
                 variant="outline"
                 onClick={() => document.getElementById("image-upload")?.click()}
                 className="w-full"
+                disabled={isGeneratingRecipe || isGeneratingImage}
               >
                 <ImageIcon className="mr-2 h-4 w-4" />
                 {selectedImage ? selectedImage.name : "Upload a food image"}
@@ -168,6 +171,7 @@ const BibiAiForm = ({
                   variant="outline"
                   onClick={() => setSelectedImage(null)}
                   className="flex-shrink-0"
+                  disabled={isGeneratingRecipe || isGeneratingImage}
                 >
                   Remove
                 </Button>
