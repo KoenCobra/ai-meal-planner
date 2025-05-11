@@ -3,7 +3,7 @@ import { z } from "zod";
 export const generateRecipeSchema = z.object({
   description: z
     .string()
-    .min(10, "Description must be at least 10 characters")
+    .min(15, "Description must be at least 10 characters")
     .max(500, "Description must be at most 500 characters"),
 });
 

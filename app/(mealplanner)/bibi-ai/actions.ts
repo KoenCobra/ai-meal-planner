@@ -163,7 +163,7 @@ export async function analyzeImageForRecipe(image: File) {
     Provide detailed instructions and ingredients list based on what you see in the image.
     `;
 
-    const completion = await openai.chat.completions.create({
+    const completion = await await openai.beta.chat.completions.parse({
       model: "gpt-4.1-mini",
       messages: [
         {
@@ -182,26 +182,31 @@ export async function analyzeImageForRecipe(image: File) {
               image_url: {
                 url: `data:image/jpeg;base64,${base64Image}`,
               },
+              detail: "low",
             },
           ],
         },
       ],
       max_tokens: 4096,
+      response_format: zodResponseFormat(Recipe, "generate_recipe"),
     });
 
-    const response = completion.choices[0].message.content;
-    if (!response) {
-      throw new Error("Failed to generate recipe from image");
+    const aiResponse = completion.choices[0].message.parsed;
+    if (!aiResponse) {
+      throw new Error("Failed to generate AI response");
     }
 
-    // Parse the response into our Recipe format
-    try {
-      const parsedRecipe = Recipe.parse(JSON.parse(response));
-      return parsedRecipe;
-    } catch (error) {
-      console.error("Error parsing recipe:", error);
-      throw new Error("Failed to parse recipe from AI response");
-    }
+    return {
+      title: aiResponse.title,
+      summary: aiResponse.summary,
+      servings: aiResponse.servings,
+      readyInMinutes: aiResponse.readyInMinutes,
+      diets: aiResponse.diets,
+      instructions: aiResponse.instructions,
+      ingredients: aiResponse.ingredients,
+      dishTypes: aiResponse.dishTypes,
+      error: aiResponse.error,
+    };
   } catch (error) {
     console.error("Error analyzing image:", error);
     throw new Error(`Failed to analyze image: ${error}`);
