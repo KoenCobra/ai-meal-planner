@@ -181,13 +181,12 @@ export async function analyzeImageForRecipe(image: File) {
               type: "image_url",
               image_url: {
                 url: `data:image/jpeg;base64,${base64Image}`,
+                detail: "low",
               },
-              detail: "low",
             },
           ],
         },
       ],
-      max_tokens: 4096,
       response_format: zodResponseFormat(Recipe, "generate_recipe"),
     });
 
