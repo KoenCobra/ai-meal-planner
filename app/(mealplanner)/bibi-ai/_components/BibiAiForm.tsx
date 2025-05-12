@@ -47,7 +47,10 @@ const BibiAiForm = ({
     },
   });
 
-  const handleImageChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
+  // Watch the description field for changes
+  const description = form.watch("description");
+
+  const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files && e.target.files[0]) {
       const file = e.target.files[0];
       if (file.size > 5 * 1024 * 1024) {
@@ -56,35 +59,6 @@ const BibiAiForm = ({
         return;
       }
       setSelectedImage(file);
-
-      try {
-        if (onGenerationStart) {
-          onGenerationStart();
-        }
-
-        setIsGeneratingRecipe(true);
-        const recipe = await analyzeImageForRecipe(file);
-
-        // Pass the recipe to the parent component immediately
-        onRecipeGenerated(recipe);
-
-        // Then start generating the image
-        setIsGeneratingImage(true);
-        const image = await generateRecipeImage(recipe.title, recipe.summary);
-        // Update with the image when it's ready
-        if (image && image.imageBase64) {
-          onRecipeGenerated(recipe, image.imageBase64);
-        }
-      } catch (error) {
-        toast.error(
-          "Something went wrong analyzing the image. Please try again.",
-        );
-        console.error("Error analyzing image:", error);
-      } finally {
-        setIsGeneratingRecipe(false);
-        setIsGeneratingImage(false);
-        setSelectedImage(null);
-      }
     }
   };
 
@@ -95,7 +69,19 @@ const BibiAiForm = ({
       }
 
       setIsGeneratingRecipe(true);
-      const recipe = await generateRecipe(input);
+
+      let recipe: RecipeInput;
+
+      if (selectedImage) {
+        // If there's an image, use it along with any text instructions
+        recipe = await analyzeImageForRecipe(
+          selectedImage,
+          input.description.trim() || undefined,
+        );
+      } else {
+        // Text-only generation
+        recipe = await generateRecipe(input);
+      }
 
       // Pass the recipe to the parent component immediately
       onRecipeGenerated(recipe);
@@ -129,7 +115,11 @@ const BibiAiForm = ({
                   <FormControl>
                     <Textarea
                       {...field}
-                      placeholder={`E.g. "I want a recipe for a healthy breakfast" (in any language you prefer)`}
+                      placeholder={
+                        selectedImage
+                          ? "Add any specific instructions for your food image (optional)"
+                          : 'E.g. "I want a recipe for a healthy breakfast" (in any language you prefer)'
+                      }
                       rows={4}
                       autoFocus
                       disabled={isGeneratingRecipe || isGeneratingImage}
@@ -181,7 +171,11 @@ const BibiAiForm = ({
 
           <div className="flex justify-center">
             <Button
-              disabled={isGeneratingRecipe || isGeneratingImage}
+              disabled={
+                isGeneratingRecipe ||
+                isGeneratingImage ||
+                (!description.trim() && !selectedImage)
+              }
               type="submit"
               className="mt-2"
             >
@@ -189,7 +183,9 @@ const BibiAiForm = ({
                 ? "Generating Recipe"
                 : isGeneratingImage
                   ? "Generating Image"
-                  : "Generate Recipe from Text"}
+                  : selectedImage
+                    ? "Generate Recipe from Image"
+                    : "Generate Recipe from Text"}
               {isGeneratingRecipe || isGeneratingImage ? (
                 <Loader2Icon className="ml-2 animate-spin" />
               ) : (

@@ -150,7 +150,10 @@ export async function convertToWebp(imageBase64: string) {
   }
 }
 
-export async function analyzeImageForRecipe(image: File) {
+export async function analyzeImageForRecipe(
+  image: File,
+  additionalInstructions?: string,
+) {
   const { userId } = await auth();
 
   if (!userId) {
@@ -168,6 +171,7 @@ export async function analyzeImageForRecipe(image: File) {
     Your response must adhere to the Recipe schema structure. The dishTypes can only have 1 of the following values: "breakfast", "lunch", "snacks" or "dinner".
     Provide detailed instructions and ingredients list based on what you see in the image. Make sure to generate the recipe in the language that is used in the image.
     If for example the image is in spanish, the recipe should be in spanish.
+    ${additionalInstructions ? `Additionally, consider these instructions from the user: ${additionalInstructions}` : ""}
     `;
 
     const completion = await openai.beta.chat.completions.parse({
@@ -182,7 +186,7 @@ export async function analyzeImageForRecipe(image: File) {
           content: [
             {
               type: "text",
-              text: "Please analyze this food image and generate a recipe for it.",
+              text: `Please analyze this food image and generate a recipe for it.${additionalInstructions ? ` ${additionalInstructions}` : ""}`,
             },
             {
               type: "image_url",
