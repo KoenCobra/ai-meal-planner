@@ -1,5 +1,19 @@
-import { mutation, query } from "./_generated/server";
-import { v, ConvexError } from "convex/values";
+import { ConvexError, v } from "convex/values";
+import { mutation, MutationCtx, query } from "./_generated/server";
+
+// Helper function to parse quantity string into amount and unit
+export const parseQuantity = (
+  quantityStr: string,
+): { amount: number; unit: string } | null => {
+  const match = quantityStr.trim().match(/^([\d.]+)\s*(.*)$/);
+  if (!match) return null;
+
+  const amount = parseFloat(match[1]);
+  const unit = match[2].trim();
+
+  if (isNaN(amount)) return null;
+  return { amount, unit };
+};
 
 // Add a new item to the grocery list
 export const addItem = mutation({
@@ -9,6 +23,37 @@ export const addItem = mutation({
     quantity: v.optional(v.string()),
   },
   handler: async (ctx, args) => {
+    // Check if item with same name already exists
+    const existingItem = await ctx.db
+      .query("groceryItems")
+      .withIndex("by_user", (q) => q.eq("userId", args.userId))
+      .filter((q) => q.eq(q.field("name"), args.name))
+      .first();
+
+    if (existingItem && args.quantity && existingItem.quantity) {
+      // Parse quantities
+      const newQuantity = parseQuantity(args.quantity);
+      const existingQuantity = parseQuantity(existingItem.quantity);
+
+      // If both quantities have the same unit, combine them
+      if (
+        newQuantity &&
+        existingQuantity &&
+        newQuantity.unit === existingQuantity.unit
+      ) {
+        const totalAmount = newQuantity.amount + existingQuantity.amount;
+        const updatedQuantity = `${totalAmount} ${newQuantity.unit}`;
+
+        // Update the existing item
+        await ctx.db.patch(existingItem._id, {
+          quantity: updatedQuantity,
+        });
+
+        return existingItem._id;
+      }
+    }
+
+    // If no existing item or units don't match, create a new item
     return await ctx.db.insert("groceryItems", {
       userId: args.userId,
       name: args.name,
@@ -17,6 +62,52 @@ export const addItem = mutation({
     });
   },
 });
+
+// Helper function to add or update grocery items
+export const addOrUpdateGroceryItem = async (
+  ctx: MutationCtx,
+  userId: string,
+  name: string,
+  quantity: string,
+) => {
+  // Check if item with same name already exists
+  const existingItem = await ctx.db
+    .query("groceryItems")
+    .withIndex("by_user", (q) => q.eq("userId", userId))
+    .filter((q) => q.eq(q.field("name"), name))
+    .first();
+
+  if (existingItem && existingItem.quantity) {
+    // Parse quantities
+    const newQuantity = parseQuantity(quantity);
+    const existingQuantity = parseQuantity(existingItem.quantity);
+
+    // If both quantities have the same unit, combine them
+    if (
+      newQuantity &&
+      existingQuantity &&
+      newQuantity.unit === existingQuantity.unit
+    ) {
+      const totalAmount = newQuantity.amount + existingQuantity.amount;
+      const updatedQuantity = `${totalAmount} ${newQuantity.unit}`;
+
+      // Update the existing item
+      await ctx.db.patch(existingItem._id, {
+        quantity: updatedQuantity,
+      });
+
+      return existingItem._id;
+    }
+  }
+
+  // If no existing item or units don't match, create a new item
+  return await ctx.db.insert("groceryItems", {
+    userId,
+    name,
+    quantity,
+    checked: false,
+  });
+};
 
 // Delete an item from the grocery list
 export const deleteItem = mutation({

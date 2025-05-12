@@ -3,6 +3,7 @@
 import { paginationOptsValidator } from "convex/server";
 import { ConvexError, v } from "convex/values";
 import { mutation, query } from "./_generated/server";
+import { addOrUpdateGroceryItem } from "./groceryList";
 
 export const createRecipe = mutation({
   args: {
@@ -177,7 +178,7 @@ export const searchByIngredients = query({
   },
 });
 
-export const getAllRecipes =  query({
+export const getAllRecipes = query({
   args: {
     userId: v.string(),
   },
@@ -202,15 +203,10 @@ export const syncIngredientsToGroceryList = mutation({
     if (!recipe) throw new ConvexError("Recipe not found");
     if (recipe.userId !== args.userId) throw new ConvexError("Not authorized");
 
-    // Add each ingredient to the grocery list
+    // Add each ingredient to the grocery list using the helper function
     for (const ingredient of recipe.ingredients) {
       const quantity = `${ingredient.measures.amount} ${ingredient.measures.unit}`;
-      await ctx.db.insert("groceryItems", {
-        userId: args.userId,
-        name: ingredient.name,
-        quantity: quantity,
-        checked: false,
-      });
+      await addOrUpdateGroceryItem(ctx, args.userId, ingredient.name, quantity);
     }
 
     return null;
