@@ -6,10 +6,10 @@ import {
   generateRecipeSchema,
   Recipe,
 } from "@/lib/validation";
-import { zodResponseFormat } from "openai/helpers/zod";
 import sharp from "sharp";
 
 import { auth } from "@clerk/nextjs/server";
+import { OpenAI } from "openai";
 
 export async function generateRecipe(input: GenerateRecipeInput) {
   const { userId } = await auth();
@@ -25,9 +25,32 @@ export async function generateRecipe(input: GenerateRecipeInput) {
   You will only answer questions that are related to generating a recipe, otherwise you will refuse to generate a recipe and explain why you can't generate a recipe in the error property from the structure.
   You will always answer in the language that the user is using.
   The units of measurement will be based on the user's locale.
-  Your response must adhere to the given structure.
   The dishTypes can only have 1 of the following values: "breakfast", "lunch", snacks  or "dinner".
-  You can only assign 1 of these values to a recipe.
+  always respond with valid JSON objects that match this structure:
+{
+  "title": "string",
+  "summary": "string", 
+  "servings": "number",
+  "readyInMinutes": "number",
+  "diets": ["string"],
+  "instructions": {
+    "name": "string",
+    "steps": [{
+      "number": "number",
+      "step": "string"
+    }]
+  },
+  "ingredients": [{
+    "name": "string",
+    "measures": {
+      "amount": "number",
+      "unit": "string"
+    }
+  }],
+  "dishTypes": ["string"],
+  "error": "string | null"
+}
+  You can only assign 1 of these values to a recipe. Your response should ONLY contain the JSON object and nothing else.
   `;
 
   const userMessage = `
@@ -35,37 +58,34 @@ export async function generateRecipe(input: GenerateRecipeInput) {
   ${description}
   `;
 
-  const completion = await openai.beta.chat.completions.parse({
-    model: "gpt-4o-mini",
+  const completion = await openai.chat.completions.create({
+    model: "llama-3.3-70b-versatile",
+    response_format: { type: "json_object" },
     messages: [
-      {
-        role: "system",
-        content: systemMessage,
-      },
-      {
-        role: "user",
-        content: userMessage,
-      },
+      { role: "system", content: systemMessage },
+      { role: "user", content: userMessage },
     ],
-    response_format: zodResponseFormat(Recipe, "generate_recipe"),
   });
 
-  const aiResponse = completion.choices[0].message.parsed;
+  const responseContent = completion.choices[0].message.content;
 
-  if (!aiResponse) {
+  if (!responseContent) {
     throw new Error("Failed to generate AI response");
   }
 
+  const jsonData = JSON.parse(responseContent || "");
+  const validatedData = Recipe.parse(jsonData);
+
   return {
-    title: aiResponse.title,
-    summary: aiResponse.summary,
-    servings: aiResponse.servings,
-    readyInMinutes: aiResponse.readyInMinutes,
-    diets: aiResponse.diets,
-    instructions: aiResponse.instructions,
-    ingredients: aiResponse.ingredients,
-    dishTypes: aiResponse.dishTypes,
-    error: aiResponse.error,
+    title: validatedData.title,
+    summary: validatedData.summary,
+    servings: validatedData.servings,
+    readyInMinutes: validatedData.readyInMinutes,
+    diets: validatedData.diets,
+    instructions: validatedData.instructions,
+    ingredients: validatedData.ingredients,
+    dishTypes: validatedData.dishTypes,
+    error: validatedData.error,
   };
 }
 
@@ -78,6 +98,10 @@ export async function generateRecipeImage(
   if (!userId) {
     throw new Error("Unauthorized");
   }
+
+  const openai = new OpenAI({
+    apiKey: process.env.OPENAI_API_KEY,
+  });
 
   try {
     const response = await openai.images.generate({
@@ -172,10 +196,61 @@ export async function analyzeImageForRecipe(
     Provide detailed instructions and ingredients list based on what you see in the image. Make sure to generate the recipe in the language that is used in the image.
     If for example the image is in spanish, the recipe should be in spanish.
     ${additionalInstructions ? `Additionally, consider these instructions from the user: ${additionalInstructions}` : ""}
+      always respond with valid JSON objects that match this structure:
+{
+  "title": "string",
+  "summary": "string", 
+  "servings": "number",
+  "readyInMinutes": "number",
+  "diets": ["string"],
+  "instructions": {
+    "name": "string",
+    "steps": [{
+      "number": "number",
+      "step": "string"
+    }]
+  },
+  "ingredients": [{
+    "name": "string",
+    "measures": {
+      "amount": "number",
+      "unit": "string"
+    }
+  }],
+  "dishTypes": ["string"],
+  "error": "string | null",
+}
+  You can only assign 1 of these values to a recipe. Your response should ONLY contain the JSON object and nothing else.
     `;
 
-    const completion = await openai.beta.chat.completions.parse({
-      model: "gpt-4.1-mini",
+    // const completion = await openai.beta.chat.completions.parse({
+    //   model: "gpt-4.1-mini",
+    //   messages: [
+    //     {
+    //       role: "system",
+    //       content: systemMessage,
+    //     },
+    //     {
+    //       role: "user",
+    //       content: [
+    //         {
+    //           type: "text",
+    //           text: `Please analyze this food image and generate a recipe for it.${additionalInstructions ? ` ${additionalInstructions}` : ""}`,
+    //         },
+    //         {
+    //           type: "image_url",
+    //           image_url: {
+    //             url: `data:image/jpeg;base64,${base64Image}`,
+    //             detail: "high",
+    //           },
+    //         },
+    //       ],
+    //     },
+    //   ],
+    //   response_format: zodResponseFormat(Recipe, "generate_recipe"),
+    // });
+
+    const completion = await openai.chat.completions.create({
       messages: [
         {
           role: "system",
@@ -198,24 +273,34 @@ export async function analyzeImageForRecipe(
           ],
         },
       ],
-      response_format: zodResponseFormat(Recipe, "generate_recipe"),
+      model: "meta-llama/llama-4-scout-17b-16e-instruct",
+      temperature: 1,
+      max_completion_tokens: 1024,
+      response_format: { type: "json_object" },
+      top_p: 1,
+      stream: false,
+      stop: null,
     });
 
-    const aiResponse = completion.choices[0].message.parsed;
-    if (!aiResponse) {
+    const responseContent = completion.choices[0].message.content;
+
+    if (!responseContent) {
       throw new Error("Failed to generate AI response");
     }
 
+    const jsonData = JSON.parse(responseContent || "");
+    const validatedData = Recipe.parse(jsonData);
+
     return {
-      title: aiResponse.title,
-      summary: aiResponse.summary,
-      servings: aiResponse.servings,
-      readyInMinutes: aiResponse.readyInMinutes,
-      diets: aiResponse.diets,
-      instructions: aiResponse.instructions,
-      ingredients: aiResponse.ingredients,
-      dishTypes: aiResponse.dishTypes,
-      error: aiResponse.error,
+      title: validatedData.title,
+      summary: validatedData.summary,
+      servings: validatedData.servings,
+      readyInMinutes: validatedData.readyInMinutes,
+      diets: validatedData.diets,
+      instructions: validatedData.instructions,
+      ingredients: validatedData.ingredients,
+      dishTypes: validatedData.dishTypes,
+      error: validatedData.error,
     };
   } catch (error) {
     console.error("Error analyzing image:", error);
