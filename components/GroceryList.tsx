@@ -15,7 +15,6 @@ import { useState } from "react";
 export function GroceryList() {
   const { user } = useUser();
   const [newItemName, setNewItemName] = useState("");
-  const [newItemQuantity, setNewItemQuantity] = useState("");
 
   const { data: items } = useQuery({
     ...convexQuery(api.groceryList.listItems, {
@@ -107,11 +106,9 @@ export function GroceryList() {
     await addItem({
       userId: user?.id ?? "",
       name: newItemName.trim(),
-      quantity: newItemQuantity.trim() || undefined,
     });
 
     setNewItemName("");
-    setNewItemQuantity("");
   };
 
   const handleToggleItem = async (itemId: Id<"groceryItems">) => {
@@ -139,34 +136,29 @@ export function GroceryList() {
             onChange={(e) => setNewItemName(e.target.value)}
             className="flex-1"
           />
-          <Input
-            type="text"
-            placeholder="Quantity (optional)"
-            value={newItemQuantity}
-            onChange={(e) => setNewItemQuantity(e.target.value)}
-            className="w-32"
-          />
           <Button type="submit">
             <Plus className="h-4 w-4" />
           </Button>
         </form>
-        {items && items.length > 0 && (
-          <Button
-            variant="destructive"
-            onClick={() => clearAllItems({ userId: user?.id ?? "" })}
-            className="ml-4"
-          >
-            Clear All Items
-          </Button>
-        )}
       </div>
 
       {items && items.length > 0 && (
         <div>
           {/* Active Items Section */}
-          <h3 className="text-lg font-semibold text-foreground mb-2">
-            Active Items
-          </h3>
+          <div className="flex justify-between items-center mb-2 mt-8">
+            <h3 className="text-lg font-semibold text-foreground ">
+              Active Items
+            </h3>
+            {items && items.length > 0 && (
+              <Button
+                variant="destructive"
+                onClick={() => clearAllItems({ userId: user?.id ?? "" })}
+                className="ml-4"
+              >
+                Clear All Items
+              </Button>
+            )}
+          </div>
           <div className="flex flex-col gap-2">
             {items
               .filter((item) => !item.checked)

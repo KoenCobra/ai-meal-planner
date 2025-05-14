@@ -83,7 +83,7 @@ const RecipeDetails = () => {
               />
             </div>
           </div>
-          <div className="flex justify-center gap-4 mt-4 mb-6">
+          <div className="flex justify-center flex-wrap gap-4 mt-4 mb-6">
             <Button
               variant="outline"
               className="text-2xl p-7"
