@@ -44,7 +44,16 @@ export default function RootLayout({
               disableTransitionOnChange
             >
               <main>{children}</main>
-              <Toaster />
+              <Toaster
+                position="top-center"
+                duration={2000}
+                className="md:hidden"
+              />
+              <Toaster
+                position="bottom-right"
+                duration={2000}
+                className="hidden md:block"
+              />
             </ThemeProvider>
           </ConvexClientProvider>
         </ClerkProvider>

@@ -42,9 +42,8 @@ const Navbar = () => {
 
   return (
     <>
-      {/* Top navbar - visible on all devices but menu icon only on mobile */}
       <nav className="border-b-2 border-border shadow-xs sticky top-0 w-full bg-background z-10">
-        <div className="container py-5 flex items-center justify-between">
+        <div className="container py-3 flex items-center justify-between">
           <h1
             className="text-2xl font-bold"
             onClick={() => {
@@ -54,7 +53,7 @@ const Navbar = () => {
               });
             }}
           >
-            Bibi
+            Bubu
           </h1>
           <div className="hidden md:block">
             <ul className="flex gap-10 text-xl">
@@ -90,7 +89,6 @@ const Navbar = () => {
         </div>
       </nav>
 
-      {/* Bottom navbar - only visible on mobile */}
       <div className="md:hidden fixed bottom-0 left-0 right-0 bg-background border-t border-border z-10">
         <div className="flex justify-around items-center h-16">
           {navItems.map((item) => (
