@@ -10,6 +10,7 @@ import { useQuery } from "@tanstack/react-query";
 import { Printer, ShoppingCart } from "lucide-react";
 import Image from "next/image";
 import { useParams } from "next/navigation";
+
 import AddToMenuDialog from "../../_components/AddToMenuDialog";
 import { useAddToMenuDialogStore } from "../../_stores/useAddToMenuDialogStore";
 import RecipeDetailHeader from "../_components/RecipeDetailHeader";
@@ -18,6 +19,7 @@ import { useSyncIngredients } from "../_hooks/useSyncIngredients";
 
 const RecipeDetails = () => {
   const params = useParams();
+
   const { user } = useUser();
   const { open, recipeId, openDialog, closeDialog } = useAddToMenuDialogStore();
   const { handleSyncIngredients } = useSyncIngredients(user?.id || "");
@@ -83,7 +85,7 @@ const RecipeDetails = () => {
               />
             </div>
           </div>
-          <div className="flex justify-center flex-wrap gap-4 mt-4 mb-6">
+          <div className="flex flex-wrap justify-center gap-4 mt-4 mb-6">
             <Button
               variant="outline"
               className="text-2xl p-7"
