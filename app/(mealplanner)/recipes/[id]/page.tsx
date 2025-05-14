@@ -7,10 +7,9 @@ import { Id } from "@/convex/_generated/dataModel";
 import { useUser } from "@clerk/clerk-react";
 import { convexQuery } from "@convex-dev/react-query";
 import { useQuery } from "@tanstack/react-query";
-import { ArrowLeft, Printer, ShoppingCart } from "lucide-react";
+import { Printer, ShoppingCart } from "lucide-react";
 import Image from "next/image";
-import Link from "next/link";
-import { useParams, useSearchParams } from "next/navigation";
+import { useParams } from "next/navigation";
 import AddToMenuDialog from "../../_components/AddToMenuDialog";
 import { useAddToMenuDialogStore } from "../../_stores/useAddToMenuDialogStore";
 import RecipeDetailHeader from "../_components/RecipeDetailHeader";
@@ -19,8 +18,6 @@ import { useSyncIngredients } from "../_hooks/useSyncIngredients";
 
 const RecipeDetails = () => {
   const params = useParams();
-  const searchParams = useSearchParams();
-  const returnTab = searchParams.get("returnTab") || "breakfast";
   const { user } = useUser();
   const { open, recipeId, openDialog, closeDialog } = useAddToMenuDialogStore();
   const { handleSyncIngredients } = useSyncIngredients(user?.id || "");
@@ -45,14 +42,6 @@ const RecipeDetails = () => {
   return (
     <>
       <div className="container mx-auto py-8">
-        <div className="mb-6">
-          <Link href={`/recipes?tab=${returnTab}`}>
-            <Button variant="ghost" className="pl-0">
-              <ArrowLeft className="mr-2 h-4 w-4" />
-              Back to recipes
-            </Button>
-          </Link>
-        </div>
         <div className="text-center">
           <h1 className="text-4xl font-bold">{recipe.title.toUpperCase()}</h1>
           <p className="text-muted-foreground mb-2">
