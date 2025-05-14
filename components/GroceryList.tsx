@@ -1,5 +1,15 @@
 "use client";
 
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Input } from "@/components/ui/input";
@@ -15,6 +25,8 @@ import { useState } from "react";
 export function GroceryList() {
   const { user } = useUser();
   const [newItemName, setNewItemName] = useState("");
+  const [clearCheckedDialogOpen, setClearCheckedDialogOpen] = useState(false);
+  const [clearAllDialogOpen, setClearAllDialogOpen] = useState(false);
 
   const { data: items } = useQuery({
     ...convexQuery(api.groceryList.listItems, {
@@ -120,7 +132,13 @@ export function GroceryList() {
   };
 
   const handleClearChecked = async () => {
+    setClearCheckedDialogOpen(false);
     await clearCheckedItems({ userId: user?.id ?? "" });
+  };
+
+  const handleClearAll = async () => {
+    setClearAllDialogOpen(false);
+    await clearAllItems({ userId: user?.id ?? "" });
   };
 
   return (
@@ -152,7 +170,7 @@ export function GroceryList() {
             {items && items.length > 0 && (
               <Button
                 variant="destructive"
-                onClick={() => clearAllItems({ userId: user?.id ?? "" })}
+                onClick={() => setClearAllDialogOpen(true)}
                 className="ml-4"
               >
                 Clear All Items
@@ -206,7 +224,7 @@ export function GroceryList() {
                 <Button
                   variant="outline"
                   size="sm"
-                  onClick={handleClearChecked}
+                  onClick={() => setClearCheckedDialogOpen(true)}
                   className="text-sm"
                 >
                   Clear Checked
@@ -254,6 +272,49 @@ export function GroceryList() {
           )}
         </div>
       )}
+
+      {/* Clear Checked Items Confirmation Dialog */}
+      <AlertDialog
+        open={clearCheckedDialogOpen}
+        onOpenChange={setClearCheckedDialogOpen}
+      >
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Are you sure?</AlertDialogTitle>
+            <AlertDialogDescription>
+              This will remove all checked items from your grocery list.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>Cancel</AlertDialogCancel>
+            <AlertDialogAction onClick={handleClearChecked}>
+              Continue
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
+
+      {/* Clear All Items Confirmation Dialog */}
+      <AlertDialog
+        open={clearAllDialogOpen}
+        onOpenChange={setClearAllDialogOpen}
+      >
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Clear entire list?</AlertDialogTitle>
+            <AlertDialogDescription>
+              This will remove all items from your grocery list. This action
+              cannot be undone.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>Cancel</AlertDialogCancel>
+            <AlertDialogAction onClick={handleClearAll}>
+              Clear All
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </div>
   );
 }
