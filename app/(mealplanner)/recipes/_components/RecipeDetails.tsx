@@ -88,7 +88,7 @@ const RecipeDetails = ({ menuId }: RecipeDetailsProps) => {
   };
 
   return (
-    <div className="mx-auto py-8 px-2">
+    <div className="mx-auto py-8">
       <h1 className="text-4xl font-bold mb-12 text-center">
         {menuId ? "Menu Recipes" : "My Recipes"}
       </h1>

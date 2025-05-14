@@ -20,7 +20,7 @@ const layout = async ({ children }: { children: React.ReactNode }) => {
   return (
     <div>
       <Navbar />
-      <div className="px-2 lg:max-w-4xl mx-auto md:max-w-2xl py-5">
+      <div className="px-2 lg:max-w-4xl mx-auto md:max-w-2xl py-3 pb-16">
         <ErrorBoundary>{children}</ErrorBoundary>
       </div>
     </div>

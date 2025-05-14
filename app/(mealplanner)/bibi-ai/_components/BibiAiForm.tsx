@@ -136,7 +136,7 @@ const BibiAiForm = ({
               )}
             />
 
-            <div className="flex items-center gap-2">
+            <div className="flex items-center flex-wrap gap-2">
               <Input
                 type="file"
                 accept=".png,.jpg,.jpeg,.webp"
@@ -160,7 +160,7 @@ const BibiAiForm = ({
                   type="button"
                   variant="outline"
                   onClick={() => setSelectedImage(null)}
-                  className="flex-shrink-0"
+                  className="flex-shrink-0 mx-auto"
                   disabled={isGeneratingRecipe || isGeneratingImage}
                 >
                   Remove

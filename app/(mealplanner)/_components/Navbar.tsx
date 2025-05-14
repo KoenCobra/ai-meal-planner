@@ -42,7 +42,7 @@ const Navbar = () => {
 
   return (
     <>
-      <nav className="border-b-2 border-border shadow-xs sticky top-0 w-full bg-background z-10">
+      <nav className="border-b-2 border-border shadow-xs sticky top-0 w-full bg-background z-10 px-2">
         <div className="container py-3 flex items-center justify-between">
           <h1
             className="text-2xl font-bold"
