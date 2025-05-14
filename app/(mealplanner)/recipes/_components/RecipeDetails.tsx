@@ -6,6 +6,7 @@ import { Id } from "@/convex/_generated/dataModel";
 import { useUser } from "@clerk/clerk-react";
 import { convexQuery } from "@convex-dev/react-query";
 import { useQuery } from "@tanstack/react-query";
+import { useRouter, useSearchParams } from "next/navigation";
 import DeleteRecipeDialog from "../../_components/DeleteRecipeDialog";
 import { useRecipeDelete } from "../_hooks/useRecipeDelete";
 import { useSyncIngredients } from "../_hooks/useSyncIngredients";
@@ -17,6 +18,9 @@ interface RecipeDetailsProps {
 
 const RecipeDetails = ({ menuId }: RecipeDetailsProps) => {
   const { user } = useUser();
+  const router = useRouter();
+  const searchParams = useSearchParams();
+  const activeTab = searchParams.get("tab") || "breakfast";
 
   const {
     recipeToDelete,
@@ -87,13 +91,23 @@ const RecipeDetails = ({ menuId }: RecipeDetailsProps) => {
     );
   };
 
+  const handleTabChange = (value: string) => {
+    const params = new URLSearchParams(searchParams);
+    params.set("tab", value);
+    router.push(`?${params.toString()}`, { scroll: false });
+  };
+
   return (
     <div className="container mx-auto py-8">
       <h1 className="text-4xl font-bold mb-12 text-center">
         {menuId ? "Menu Recipes" : "My Recipes"}
       </h1>
 
-      <Tabs defaultValue="breakfast" className="w-full">
+      <Tabs
+        defaultValue={activeTab}
+        className="w-full"
+        onValueChange={handleTabChange}
+      >
         <TabsList className="grid w-full grid-cols-4">
           <TabsTrigger value="breakfast">Breakfast</TabsTrigger>
           <TabsTrigger value="lunch">Lunch</TabsTrigger>

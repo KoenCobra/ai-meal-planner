@@ -23,6 +23,7 @@ import { useUser } from "@clerk/clerk-react";
 import { useMutation } from "convex/react";
 import { MoreVertical, Plus, ShoppingCart, Trash, Upload } from "lucide-react";
 import Link from "next/link";
+import { useSearchParams } from "next/navigation";
 import React from "react";
 import { toast } from "sonner";
 import AddToMenuDialog from "../../_components/AddToMenuDialog";
@@ -50,6 +51,8 @@ export const RecipeCard = ({
 }: RecipeCardProps) => {
   const [dropdownOpen, setDropdownOpen] = React.useState(false);
   const { open, recipeId, openDialog, closeDialog } = useAddToMenuDialogStore();
+  const searchParams = useSearchParams();
+  const activeTab = searchParams.get("tab") || "breakfast";
 
   const { user } = useUser();
   const generateUploadUrl = useMutation(api.recipes.images.generateUploadUrl);
@@ -118,7 +121,10 @@ export const RecipeCard = ({
 
   return (
     <>
-      <Link href={`/recipes/${recipe._id}`} className="relative group">
+      <Link
+        href={`/recipes/${recipe._id}?returnTab=${activeTab}`}
+        className="relative group"
+      >
         <div
           className="absolute right-2 top-2 z-1"
           onClick={(e) => {

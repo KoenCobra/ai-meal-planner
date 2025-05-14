@@ -7,9 +7,10 @@ import { Id } from "@/convex/_generated/dataModel";
 import { useUser } from "@clerk/clerk-react";
 import { convexQuery } from "@convex-dev/react-query";
 import { useQuery } from "@tanstack/react-query";
-import { Printer, ShoppingCart } from "lucide-react";
+import { ArrowLeft, Printer, ShoppingCart } from "lucide-react";
 import Image from "next/image";
-import { useParams } from "next/navigation";
+import Link from "next/link";
+import { useParams, useSearchParams } from "next/navigation";
 import AddToMenuDialog from "../../_components/AddToMenuDialog";
 import { useAddToMenuDialogStore } from "../../_stores/useAddToMenuDialogStore";
 import RecipeDetailHeader from "../_components/RecipeDetailHeader";
@@ -18,6 +19,8 @@ import { useSyncIngredients } from "../_hooks/useSyncIngredients";
 
 const RecipeDetails = () => {
   const params = useParams();
+  const searchParams = useSearchParams();
+  const returnTab = searchParams.get("returnTab") || "breakfast";
   const { user } = useUser();
   const { open, recipeId, openDialog, closeDialog } = useAddToMenuDialogStore();
   const { handleSyncIngredients } = useSyncIngredients(user?.id || "");
@@ -41,87 +44,97 @@ const RecipeDetails = () => {
 
   return (
     <>
-      <div className="text-center">
-        <h1 className="text-4xl font-bold">{recipe.title.toUpperCase()}</h1>
-        <p className="text-muted-foreground mb-2">
-          {recipe.diets?.join(" • ")}
-        </p>
-        <div className="text-center border-t border-border">
-          <h2 className="text-xl text-muted-foreground mt-5">
-            Print or share this recipe
-          </h2>
-          <div className="flex justify-center gap-6 color-muted-foreground py-5">
-            <Printer className="size-5 cursor-pointer text-muted-foreground " />
-            <Image
-              className="cursor-pointer"
-              src="/facebook.svg"
-              alt="facebook"
-              width={18}
-              height={18}
-            />
-            <Image
-              className="cursor-pointer"
-              src="/instagram.svg"
-              alt="instagram"
-              width={18}
-              height={18}
-            />
-            <Image
-              className="cursor-pointer"
-              src="/x.svg"
-              alt="x"
-              width={18}
-              height={18}
-            />
-            <Image
-              className="cursor-pointer"
-              src="/pinterest.svg"
-              alt="pinterest"
-              width={18}
-              height={18}
-            />
+      <div className="container mx-auto py-8">
+        <div className="mb-6">
+          <Link href={`/recipes?tab=${returnTab}`}>
+            <Button variant="ghost" className="pl-0">
+              <ArrowLeft className="mr-2 h-4 w-4" />
+              Back to recipes
+            </Button>
+          </Link>
+        </div>
+        <div className="text-center">
+          <h1 className="text-4xl font-bold">{recipe.title.toUpperCase()}</h1>
+          <p className="text-muted-foreground mb-2">
+            {recipe.diets?.join(" • ")}
+          </p>
+          <div className="text-center border-t border-border">
+            <h2 className="text-xl text-muted-foreground mt-5">
+              Print or share this recipe
+            </h2>
+            <div className="flex justify-center gap-6 color-muted-foreground py-5">
+              <Printer className="size-5 cursor-pointer text-muted-foreground " />
+              <Image
+                className="cursor-pointer"
+                src="/facebook.svg"
+                alt="facebook"
+                width={18}
+                height={18}
+              />
+              <Image
+                className="cursor-pointer"
+                src="/instagram.svg"
+                alt="instagram"
+                width={18}
+                height={18}
+              />
+              <Image
+                className="cursor-pointer"
+                src="/x.svg"
+                alt="x"
+                width={18}
+                height={18}
+              />
+              <Image
+                className="cursor-pointer"
+                src="/pinterest.svg"
+                alt="pinterest"
+                width={18}
+                height={18}
+              />
+            </div>
+          </div>
+          <div className="flex justify-center gap-4 mt-4 mb-6">
+            <Button
+              variant="outline"
+              className="text-2xl p-7"
+              onClick={() => openDialog(params.id as Id<"recipes">)}
+            >
+              ADD +
+            </Button>
+            <Button
+              variant="outline"
+              className="text-2xl p-7"
+              onClick={() => handleSyncIngredients(params.id as Id<"recipes">)}
+            >
+              <ShoppingCart className="mr-2 h-6 w-6" />
+              Add to Grocery List
+            </Button>
           </div>
         </div>
-        <div className="flex justify-center gap-4 mt-4 mb-6">
-          <Button
-            variant="outline"
-            className="text-2xl p-7"
-            onClick={() => openDialog(params.id as Id<"recipes">)}
-          >
-            ADD +
-          </Button>
-          <Button
-            variant="outline"
-            className="text-2xl p-7"
-            onClick={() => handleSyncIngredients(params.id as Id<"recipes">)}
-          >
-            <ShoppingCart className="mr-2 h-6 w-6" />
-            Add to Grocery List
-          </Button>
-        </div>
-      </div>
-      <Tabs defaultValue="recipe">
-        <TabsList className="w-full grid grid-cols-2">
-          <TabsTrigger value="recipe">RECIPE</TabsTrigger>
-          <TabsTrigger value="nutrition">NUTRITION</TabsTrigger>
-        </TabsList>
-        <TabsContent value="recipe">
-          <RecipeDetailHeader recipe={recipe} />
+        <Tabs defaultValue="recipe">
+          <TabsList className="w-full grid grid-cols-2">
+            <TabsTrigger value="recipe">RECIPE</TabsTrigger>
+            <TabsTrigger value="nutrition">NUTRITION</TabsTrigger>
+          </TabsList>
+          <TabsContent value="recipe">
+            <RecipeDetailHeader recipe={recipe} />
 
-          <RecipeDetailInstructions
-            ingredients={recipe.ingredients.map(
-              (ingredient) =>
-                `${ingredient.name} - ${ingredient.measures.amount} ${ingredient.measures.unit}`,
-            )}
-            instructions={recipe.instructions.steps
-              .map((step) => `${step.number}. ${step.step}`)
-              .join("\n")}
-            servings={recipe.servings}
-            readyInMinutes={recipe.readyInMinutes}
-          />
-        </TabsContent>
-        <TabsContent value="nutrition"></TabsContent>
-      </Tabs>
+            <RecipeDetailInstructions
+              ingredients={recipe.ingredients.map(
+                (ingredient) =>
+                  `${ingredient.name} - ${ingredient.measures.amount} ${ingredient.measures.unit}`,
+              )}
+              instructions={recipe.instructions.steps
+                .map((step) => `${step.number}. ${step.step}`)
+                .join("\n")}
+              servings={recipe.servings}
+              readyInMinutes={recipe.readyInMinutes}
+            />
+          </TabsContent>
+          <TabsContent value="nutrition"></TabsContent>
+        </Tabs>
+      </div>
 
       <AddToMenuDialog
         open={open}
