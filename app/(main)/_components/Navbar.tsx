@@ -1,11 +1,11 @@
 "use client";
 
 import ThemeToggle from "@/components/ThemeToggle";
-import { SignedIn, SignedOut, UserButton } from "@clerk/nextjs";
-import React, { useState } from "react";
-import Link from "next/link";
 import { Button } from "@/components/ui/button";
+import { SignedIn, SignedOut, UserButton } from "@clerk/nextjs";
 import { Menu } from "lucide-react";
+import Link from "next/link";
+import { useState } from "react";
 import HomeSheet from "./HomeSheet";
 import LoginButton from "./LoginButton";
 
