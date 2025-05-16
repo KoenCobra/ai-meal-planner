@@ -1,6 +1,5 @@
 "use client";
 
-import React from "react";
 import { Button } from "@/components/ui/button";
 import {
   Dialog,
@@ -17,17 +16,17 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
-import { Loader2Icon } from "lucide-react";
+import { api } from "@/convex/_generated/api";
+import { Doc, Id } from "@/convex/_generated/dataModel";
+import { CreateMenuInput, createMenuSchema } from "@/lib/validation";
+import { useUser } from "@clerk/clerk-react";
 import { zodResolver } from "@hookform/resolvers/zod";
+import { useMutation } from "convex/react";
+import { ConvexError } from "convex/values";
+import { Loader2Icon } from "lucide-react";
 import { useForm } from "react-hook-form";
 import { toast } from "sonner";
 import { useCreateMenuDialog } from "../hooks";
-import { CreateMenuInput, createMenuSchema } from "@/lib/validation";
-import { useMutation } from "convex/react";
-import { api } from "@/convex/_generated/api";
-import { useUser } from "@clerk/clerk-react";
-import { Doc, Id } from "@/convex/_generated/dataModel";
-import { ConvexError } from "convex/values";
 
 const CreateMenuDialog = () => {
   const { isOpen, onClose } = useCreateMenuDialog();
@@ -54,10 +53,15 @@ const CreateMenuDialog = () => {
         userId: args.userId,
         name: args.name,
       };
-      localStore.setQuery(api.menus.getMenus, { userId: args.userId }, [
-        newMenu as Doc<"menus">,
-        ...menus,
-      ]);
+      localStore.setQuery(
+        api.menus.getMenus,
+        { userId: args.userId },
+        {
+          page: [newMenu as Doc<"menus">, ...menus.page],
+          isDone: menus.isDone,
+          continueCursor: menus.continueCursor,
+        },
+      );
     }
   });
 

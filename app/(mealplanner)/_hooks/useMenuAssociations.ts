@@ -52,7 +52,10 @@ export const useMenuAssociations = ({
         localStore.setQuery(
           api.menus.getMenusContainingRecipe,
           { userId: args.userId, recipeId: args.recipeId },
-          [...existingMenus, menuToAdd],
+          {
+            ...existingMenus,
+            page: [...existingMenus.page, menuToAdd],
+          },
         );
       }
     }
@@ -72,7 +75,10 @@ export const useMenuAssociations = ({
       localStore.setQuery(
         api.menus.getMenusContainingRecipe,
         { userId: args.userId, recipeId: args.recipeId },
-        existingMenus.filter((menu) => menu._id !== args.menuId),
+        {
+          ...existingMenus,
+          page: existingMenus.page.filter((menu) => menu._id !== args.menuId),
+        },
       );
     }
   });
@@ -80,7 +86,7 @@ export const useMenuAssociations = ({
   // Initialize selected menus when data is loaded or dialog opens
   useEffect(() => {
     if (menuRecipes) {
-      setSelectedMenus(menuRecipes.map((menu) => menu._id));
+      setSelectedMenus(menuRecipes.page.map((menu) => menu._id));
     }
   }, [menuRecipes]);
 
@@ -98,7 +104,7 @@ export const useMenuAssociations = ({
     setError(null);
 
     try {
-      const initialMenuIds = new Set(menuRecipes.map((menu) => menu._id));
+      const initialMenuIds = new Set(menuRecipes.page.map((menu) => menu._id));
 
       // Add recipe to newly selected menus
       const addPromises = selectedMenus
@@ -112,7 +118,7 @@ export const useMenuAssociations = ({
         );
 
       // Remove recipe from unselected menus
-      const removePromises = menuRecipes
+      const removePromises = menuRecipes.page
         .filter((menu) => !selectedMenus.includes(menu._id))
         .map((menu) =>
           removeRecipeFromMenu({

@@ -1,18 +1,18 @@
 "use client";
 
-import React from "react";
+import { Button } from "@/components/ui/button";
+import { Checkbox } from "@/components/ui/checkbox";
 import {
   Dialog,
   DialogContent,
+  DialogDescription,
+  DialogFooter,
   DialogHeader,
   DialogTitle,
-  DialogFooter,
-  DialogDescription,
 } from "@/components/ui/dialog";
-import { Button } from "@/components/ui/button";
-import { Checkbox } from "@/components/ui/checkbox";
-import { useUser } from "@clerk/clerk-react";
 import { Id } from "@/convex/_generated/dataModel";
+import { useUser } from "@clerk/clerk-react";
+import React from "react";
 import { useMenuAssociations } from "../_hooks/useMenuAssociations";
 
 interface AddToMenuDialogProps {
@@ -64,10 +64,10 @@ const AddToMenuDialog: React.FC<AddToMenuDialogProps> = ({
         <div className="max-h-64 overflow-y-auto space-y-2 my-4">
           {!menus ? (
             <div>Loading menus...</div>
-          ) : menus.length === 0 ? (
+          ) : menus.page?.length === 0 ? (
             <div className="text-muted-foreground">No menus found.</div>
           ) : (
-            menus.map((menu) => (
+            menus.page.map((menu) => (
               <label
                 key={menu._id}
                 className="flex items-center gap-2 cursor-pointer"

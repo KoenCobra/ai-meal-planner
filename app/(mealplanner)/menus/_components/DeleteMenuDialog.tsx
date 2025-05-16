@@ -1,4 +1,3 @@
-import React from "react";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -9,12 +8,12 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
-import { useMutation } from "convex/react";
-import { toast } from "sonner";
 import { api } from "@/convex/_generated/api";
 import { Id } from "@/convex/_generated/dataModel";
 import { useUser } from "@clerk/clerk-react";
+import { useMutation } from "convex/react";
 import { ConvexError } from "convex/values";
+import { toast } from "sonner";
 interface DeleteMenuDialogProps {
   openDeleteMenu: boolean;
   setOpenDeleteMenu: (open: boolean) => void;
@@ -36,7 +35,10 @@ const DeleteMenuDialog = ({
         localStore.setQuery(
           api.menus.getMenus,
           { userId: args.userId },
-          menus.filter((menu) => menu._id !== args.id),
+          {
+            ...menus,
+            page: menus.page.filter((menu) => menu._id !== args.id),
+          },
         );
       }
     },

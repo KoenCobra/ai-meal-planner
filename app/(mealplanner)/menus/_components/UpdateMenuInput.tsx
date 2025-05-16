@@ -1,23 +1,22 @@
 import { Button } from "@/components/ui/button";
 import {
+  Form,
+  FormControl,
   FormField,
   FormItem,
-  FormControl,
   FormMessage,
-  Form,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
-import { CreateMenuInput, createMenuSchema } from "@/lib/validation";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { Check, Loader2Icon } from "lucide-react";
-import React from "react";
-import { useForm } from "react-hook-form";
-import { toast } from "sonner";
-import { useMutation } from "convex/react";
 import { api } from "@/convex/_generated/api";
 import { Id } from "@/convex/_generated/dataModel";
+import { CreateMenuInput, createMenuSchema } from "@/lib/validation";
 import { useUser } from "@clerk/clerk-react";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { useMutation } from "convex/react";
 import { ConvexError } from "convex/values";
+import { Check, Loader2Icon } from "lucide-react";
+import { useForm } from "react-hook-form";
+import { toast } from "sonner";
 
 interface UpdateMenuInputProps {
   name: string;
@@ -47,9 +46,12 @@ const UpdateMenuInput = ({
         localStore.setQuery(
           api.menus.getMenus,
           { userId: args.userId },
-          menus.map((menu) =>
-            menu._id === args.id ? { ...menu, name: args.name } : menu,
-          ),
+          {
+            ...menus,
+            page: menus.page.map((menu) =>
+              menu._id === args.id ? { ...menu, name: args.name } : menu,
+            ),
+          },
         );
       }
     },

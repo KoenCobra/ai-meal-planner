@@ -26,7 +26,10 @@ export const useRecipeDelete = ({ userId, menuId }: UseRecipeDeleteProps) => {
       localStore.setQuery(
         api.recipes.getAllRecipes,
         { userId: args.userId },
-        recipes.filter((recipe) => recipe._id !== args.id),
+        {
+          ...recipes,
+          page: recipes.page.filter((recipe) => recipe._id !== args.id),
+        },
       );
     }
   });
@@ -42,7 +45,10 @@ export const useRecipeDelete = ({ userId, menuId }: UseRecipeDeleteProps) => {
       localStore.setQuery(
         api.menus.getMenuRecipes,
         { userId: args.userId, menuId: args.menuId },
-        recipes.filter((recipe) => recipe._id !== args.recipeId),
+        {
+          ...recipes,
+          page: recipes.page.filter((recipe) => recipe._id !== args.recipeId),
+        },
       );
     }
   });
