@@ -21,7 +21,11 @@ const MenusOverview = () => {
 
   return (
     <>
-      {menus?.length === 0 ? <EmptyMenus /> : <MenuList menus={menus} />}
+      {menus.page.length === 0 ? (
+        <EmptyMenus />
+      ) : (
+        <MenuList menus={menus.page} />
+      )}
       <CreateMenuDialog />
     </>
   );

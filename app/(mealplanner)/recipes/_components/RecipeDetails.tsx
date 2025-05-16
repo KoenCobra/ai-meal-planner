@@ -53,16 +53,16 @@ const RecipeDetails = ({ menuId }: RecipeDetailsProps) => {
 
   // Group recipes by dish type
   const recipesByType = {
-    breakfast: recipes.filter((recipe) =>
+    breakfast: recipes.page.filter((recipe) =>
       recipe.dishTypes?.some((type) => type.toLowerCase() === "breakfast"),
     ),
-    lunch: recipes.filter((recipe) =>
+    lunch: recipes.page.filter((recipe) =>
       recipe.dishTypes?.some((type) => type.toLowerCase() === "lunch"),
     ),
-    dinner: recipes.filter((recipe) =>
+    dinner: recipes.page.filter((recipe) =>
       recipe.dishTypes?.some((type) => type.toLowerCase() === "dinner"),
     ),
-    snacks: recipes.filter((recipe) =>
+    snacks: recipes.page.filter((recipe) =>
       recipe.dishTypes?.some(
         (type) =>
           type.toLowerCase() === "snack" || type.toLowerCase() === "snacks",
@@ -70,7 +70,7 @@ const RecipeDetails = ({ menuId }: RecipeDetailsProps) => {
     ),
   };
 
-  type Recipe = NonNullable<typeof recipes>[number];
+  type Recipe = NonNullable<typeof recipes>["page"][number];
 
   const RecipeGrid = ({ recipes }: { recipes: Recipe[] }) => {
     return (

@@ -5,10 +5,8 @@ import React from "react";
 import Navbar from "./_components/Navbar";
 
 const layout = async ({ children }: { children: React.ReactNode }) => {
-  // Use `auth()` helper to access the `has()` method
   const { has } = await auth();
 
-  // Use `has()` method to check if user has a Plan
   const hasMasterMealLordPlan = has({ plan: "master_meal_lord" });
   const hasSeriousSizzlerPlan = has({ plan: "serious_sizzler" });
   const hasCuriousCookPlan = has({ plan: "curious_cook" });

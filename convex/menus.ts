@@ -1,3 +1,4 @@
+import { paginationOptsValidator } from "convex/server";
 import { ConvexError, v } from "convex/values";
 import { mutation, query } from "./_generated/server";
 import { addOrUpdateGroceryItem } from "./groceryList";
@@ -136,17 +137,14 @@ export const getMenu = query({
 export const getMenus = query({
   args: {
     userId: v.string(),
+    paginationOpts: v.optional(paginationOptsValidator),
   },
   handler: async (ctx, args) => {
-    const menus = await ctx.db
+    return await ctx.db
       .query("menus")
       .withIndex("by_user", (q) => q.eq("userId", args.userId))
       .order("desc")
-      .collect();
-
-    if (!menus) throw new ConvexError("Menus not found");
-
-    return menus;
+      .paginate(args.paginationOpts || { numItems: 10, cursor: null });
   },
 });
 
@@ -154,6 +152,7 @@ export const getMenuRecipes = query({
   args: {
     userId: v.string(),
     menuId: v.id("menus"),
+    paginationOpts: v.optional(paginationOptsValidator),
   },
   handler: async (ctx, args) => {
     // Verify menu ownership
@@ -165,15 +164,21 @@ export const getMenuRecipes = query({
       .query("menusOnRecipes")
       .withIndex("by_menu", (q) => q.eq("menuId", args.menuId))
       .order("desc")
-      .collect();
+      .paginate(args.paginationOpts || { numItems: 10, cursor: null });
 
+    // We need to get the recipes for the associations in the current page
     const recipes = await Promise.all(
-      associations.map(async (assoc) => await ctx.db.get(assoc.recipeId)),
+      associations.page.map(async (assoc) => await ctx.db.get(assoc.recipeId)),
     );
 
-    return recipes.filter(
-      (recipe): recipe is NonNullable<typeof recipe> => recipe !== null,
-    );
+    // Return the paginated result with recipes instead of associations
+    return {
+      page: recipes.filter(
+        (recipe): recipe is NonNullable<typeof recipe> => recipe !== null,
+      ),
+      isDone: associations.isDone,
+      continueCursor: associations.continueCursor,
+    };
   },
 });
 
@@ -181,16 +186,17 @@ export const getMenusContainingRecipe = query({
   args: {
     userId: v.string(),
     recipeId: v.id("recipes"),
+    paginationOpts: v.optional(paginationOptsValidator),
   },
   handler: async (ctx, args) => {
-    // First get all menu-recipe associations for this recipe
+    // First get all menu-recipe associations for this recipe with pagination
     const associations = await ctx.db
       .query("menusOnRecipes")
       .withIndex("by_recipe", (q) => q.eq("recipeId", args.recipeId))
-      .collect();
+      .paginate(args.paginationOpts || { numItems: 10, cursor: null });
 
-    // Get all menu IDs from the associations
-    const menuIds = associations.map((assoc) => assoc.menuId);
+    // Get all menu IDs from the associations in the current page
+    const menuIds = associations.page.map((assoc) => assoc.menuId);
 
     // Get all menus that match these IDs and belong to the user
     const menus = await Promise.all(
@@ -203,10 +209,14 @@ export const getMenusContainingRecipe = query({
       }),
     );
 
-    // Filter out any null values and return the menus
-    return menus.filter(
-      (menu): menu is NonNullable<typeof menu> => menu !== null,
-    );
+    // Return the paginated result with menus instead of associations
+    return {
+      page: menus.filter(
+        (menu): menu is NonNullable<typeof menu> => menu !== null,
+      ),
+      isDone: associations.isDone,
+      continueCursor: associations.continueCursor,
+    };
   },
 });
 

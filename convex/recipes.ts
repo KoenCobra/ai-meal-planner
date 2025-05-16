@@ -181,13 +181,15 @@ export const searchByIngredients = query({
 export const getAllRecipes = query({
   args: {
     userId: v.string(),
+    paginationOpts: v.optional(paginationOptsValidator),
   },
   handler: async (ctx, args) => {
     console.log("Getting all recipes for user:", args.userId);
     return await ctx.db
       .query("recipes")
       .withIndex("by_user", (q) => q.eq("userId", args.userId))
-      .collect();
+      .order("desc")
+      .paginate(args.paginationOpts || { numItems: 10, cursor: null });
   },
 });
 
