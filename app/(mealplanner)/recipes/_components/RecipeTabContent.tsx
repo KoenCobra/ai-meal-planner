@@ -8,24 +8,18 @@ interface RecipeTabContentProps {
   recipes: Recipe[];
   mealType: string;
   onDelete: (recipeId: Id<"recipes">, title: string) => void;
-  onSyncIngredients: (recipeId: Id<"recipes">) => void;
 }
 
 export const RecipeTabContent = ({
   recipes,
   mealType,
   onDelete,
-  onSyncIngredients,
 }: RecipeTabContentProps) => (
   <TabsContent value={mealType.toLowerCase()} className="mt-6">
     {recipes.length === 0 ? (
       <EmptyState mealType={mealType} />
     ) : (
-      <RecipeGrid
-        recipes={recipes}
-        onDelete={onDelete}
-        onSyncIngredients={onSyncIngredients}
-      />
+      <RecipeGrid recipes={recipes} onDelete={onDelete} />
     )}
   </TabsContent>
 );

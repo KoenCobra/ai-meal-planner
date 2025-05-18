@@ -5,7 +5,6 @@ import { useUser } from "@clerk/clerk-react";
 import DeleteRecipeDialog from "../../_components/DeleteRecipeDialog";
 import { useRecipeDelete } from "../_hooks/useRecipeDelete";
 import { useRecipes } from "../_hooks/useRecipes";
-import { useSyncIngredients } from "../_hooks/useSyncIngredients";
 import { RecipeTabs } from "./RecipeTabs";
 
 interface RecipeDetailsProps {
@@ -14,7 +13,9 @@ interface RecipeDetailsProps {
 
 const RecipeDetails = ({ menuId }: RecipeDetailsProps) => {
   const { user } = useUser();
-  const userId = user?.id || "";
+  if (!user) throw new Error("User not found");
+
+  const userId = user.id;
 
   const {
     recipeToDelete,
@@ -26,10 +27,7 @@ const RecipeDetails = ({ menuId }: RecipeDetailsProps) => {
     menuId,
   });
 
-  const { handleSyncIngredients } = useSyncIngredients(userId);
   const { recipesByType, loading } = useRecipes(userId, menuId);
-
-  if (!user) return null;
 
   if (loading) {
     return <div className="text-center mt-8">Loading...</div>;
@@ -45,11 +43,7 @@ const RecipeDetails = ({ menuId }: RecipeDetailsProps) => {
         {menuId ? "Menu Recipes" : "My Recipes"}
       </h1>
 
-      <RecipeTabs
-        recipesByType={recipesByType}
-        onDelete={handleDelete}
-        onSyncIngredients={handleSyncIngredients}
-      />
+      <RecipeTabs recipesByType={recipesByType} onDelete={handleDelete} />
 
       <DeleteRecipeDialog
         open={!!recipeToDelete}

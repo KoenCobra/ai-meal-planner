@@ -6,14 +6,9 @@ import { RecipeTabContent } from "./RecipeTabContent";
 interface RecipeTabsProps {
   recipesByType: Record<string, Recipe[]>;
   onDelete: (recipeId: Id<"recipes">, title: string) => void;
-  onSyncIngredients: (recipeId: Id<"recipes">) => void;
 }
 
-export const RecipeTabs = ({
-  recipesByType,
-  onDelete,
-  onSyncIngredients,
-}: RecipeTabsProps) => (
+export const RecipeTabs = ({ recipesByType, onDelete }: RecipeTabsProps) => (
   <Tabs defaultValue="breakfast" className="w-full">
     <TabsList className="grid w-full grid-cols-4">
       <TabsTrigger value="breakfast">Breakfast</TabsTrigger>
@@ -26,25 +21,21 @@ export const RecipeTabs = ({
       recipes={recipesByType.breakfast}
       mealType="breakfast"
       onDelete={onDelete}
-      onSyncIngredients={onSyncIngredients}
     />
     <RecipeTabContent
       recipes={recipesByType.lunch}
       mealType="lunch"
       onDelete={onDelete}
-      onSyncIngredients={onSyncIngredients}
     />
     <RecipeTabContent
       recipes={recipesByType.dinner}
       mealType="dinner"
       onDelete={onDelete}
-      onSyncIngredients={onSyncIngredients}
     />
     <RecipeTabContent
       recipes={recipesByType.snacks}
       mealType="snacks"
       onDelete={onDelete}
-      onSyncIngredients={onSyncIngredients}
     />
   </Tabs>
 );

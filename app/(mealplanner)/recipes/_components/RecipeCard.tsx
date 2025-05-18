@@ -28,6 +28,7 @@ import React from "react";
 import { toast } from "sonner";
 import AddToMenuDialog from "../../_components/AddToMenuDialog";
 import { useAddToMenuDialogStore } from "../../_stores/useAddToMenuDialogStore";
+import { useSyncIngredients } from "../_hooks/useSyncIngredients";
 import { RecipeImage } from "./RecipeImage";
 
 interface RecipeCardProps {
@@ -41,18 +42,17 @@ interface RecipeCardProps {
     dishTypes: string[];
   };
   onDelete: (recipeId: Id<"recipes">, title: string) => void;
-  onSyncIngredients: (recipeId: Id<"recipes">) => void;
 }
 
-export const RecipeCard = ({
-  recipe,
-  onDelete,
-  onSyncIngredients,
-}: RecipeCardProps) => {
+export const RecipeCard = ({ recipe, onDelete }: RecipeCardProps) => {
+  const { user } = useUser();
+  if (!user) throw new Error("User not found");
+
   const [dropdownOpen, setDropdownOpen] = React.useState(false);
   const { open, recipeId, openDialog, closeDialog } = useAddToMenuDialogStore();
 
-  const { user } = useUser();
+  const { handleSyncIngredients } = useSyncIngredients(user.id);
+
   const generateUploadUrl = useMutation(api.recipes.images.generateUploadUrl);
   const updateRecipeImage = useMutation(api.recipes.images.updateRecipeImage);
   const fileInputRef = React.useRef<HTMLInputElement>(null);
@@ -150,7 +150,7 @@ export const RecipeCard = ({
               </DropdownMenuItem>
               <DropdownMenuItem
                 onClick={() => {
-                  onSyncIngredients(recipe._id);
+                  handleSyncIngredients(recipe._id);
                   setDropdownOpen(false);
                 }}
                 className="cursor-pointer"
