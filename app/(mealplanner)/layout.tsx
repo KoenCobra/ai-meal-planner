@@ -5,7 +5,11 @@ import React from "react";
 import Navbar from "./_components/Navbar";
 
 const layout = async ({ children }: { children: React.ReactNode }) => {
-  const { has } = await auth();
+  const { has, userId } = await auth();
+
+  if (!userId) {
+    throw new Error("User not found");
+  }
 
   const hasMasterMealLordPlan = has({ plan: "master_meal_lord" });
   const hasSeriousSizzlerPlan = has({ plan: "serious_sizzler" });

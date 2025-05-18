@@ -1,7 +1,6 @@
 "use client";
 
 import { Id } from "@/convex/_generated/dataModel";
-import { useUser } from "@clerk/clerk-react";
 import DeleteRecipeDialog from "../../_components/DeleteRecipeDialog";
 import { useRecipeDelete } from "../_hooks/useRecipeDelete";
 import { useRecipes } from "../_hooks/useRecipes";
@@ -12,22 +11,16 @@ interface RecipeDetailsProps {
 }
 
 const RecipeDetails = ({ menuId }: RecipeDetailsProps) => {
-  const { user } = useUser();
-  if (!user) throw new Error("User not found");
-
-  const userId = user.id;
-
   const {
     recipeToDelete,
     setRecipeToDelete,
     handleDelete,
     handleConfirmDelete,
   } = useRecipeDelete({
-    userId,
     menuId,
   });
 
-  const { recipesByType, loading } = useRecipes(userId, menuId);
+  const { recipesByType, loading } = useRecipes(menuId);
 
   if (loading) {
     return <div className="text-center mt-8">Loading...</div>;

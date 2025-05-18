@@ -1,9 +1,14 @@
 import { api } from "@/convex/_generated/api";
 import { Id } from "@/convex/_generated/dataModel";
+import { useUser } from "@clerk/clerk-react";
 import { convexQuery } from "@convex-dev/react-query";
 import { useQuery } from "@tanstack/react-query";
 
-export const useRecipes = (userId: string, menuId?: Id<"menus">) => {
+export const useRecipes = (menuId?: Id<"menus">) => {
+  const { user } = useUser();
+
+  const userId = user?.id || "";
+
   const { data: menuRecipes } = useQuery({
     ...convexQuery(
       api.menus.getMenuRecipes,

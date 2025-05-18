@@ -1,16 +1,20 @@
 import { api } from "@/convex/_generated/api";
 import { Id } from "@/convex/_generated/dataModel";
+import { useUser } from "@clerk/clerk-react";
 import { useMutation } from "convex/react";
 import { ConvexError } from "convex/values";
 import { useState } from "react";
 import { toast } from "sonner";
 
 interface UseRecipeDeleteProps {
-  userId: string;
   menuId?: Id<"menus">;
 }
 
-export const useRecipeDelete = ({ userId, menuId }: UseRecipeDeleteProps) => {
+export const useRecipeDelete = ({ menuId }: UseRecipeDeleteProps) => {
+  const { user } = useUser();
+
+  const userId = user?.id || "";
+
   const [recipeToDelete, setRecipeToDelete] = useState<{
     id: Id<"recipes">;
     title: string;
