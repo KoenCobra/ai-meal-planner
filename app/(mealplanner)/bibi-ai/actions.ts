@@ -26,6 +26,7 @@ export async function generateRecipe(input: GenerateRecipeInput) {
   You will always answer in the language that the user is using.
   The units of measurement will be based on the user's locale.
   Your response must adhere to the given structure.
+  Smoothies are by default snacks.
   The dishTypes can only have 1 of the following values: "breakfast", "lunch", snacks  or "dinner".
   You can only assign 1 of these values to a recipe.`;
 
