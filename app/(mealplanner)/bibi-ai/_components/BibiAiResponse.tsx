@@ -193,6 +193,7 @@ const AiResponse = ({ recipe, image, onClear }: BubuAiResponseProps) => {
               className="mt-4"
               onClick={handleClear}
               title="Clear saved recipe"
+              disabled={isImageGenerating || isSaving}
             >
               <Trash2 size={18} />
             </Button>
