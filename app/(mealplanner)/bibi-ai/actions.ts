@@ -175,8 +175,7 @@ export async function analyzeImageForRecipe(
     ${additionalInstructions ? `Additionally, consider these instructions from the user: ${additionalInstructions}` : ""}`;
 
     const completion = await openai.beta.chat.completions.parse({
-      model: "gpt-4.1-mini",
-
+      model: "gpt-4o-mini",
       messages: [
         {
           role: "system",
