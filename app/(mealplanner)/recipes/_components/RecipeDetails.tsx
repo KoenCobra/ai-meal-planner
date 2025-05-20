@@ -2,7 +2,7 @@
 
 import { Id } from "@/convex/_generated/dataModel";
 import { useSearchParams } from "next/navigation";
-import { useEffect } from "react";
+import { useCallback, useEffect } from "react";
 import DeleteRecipeDialog from "../../_components/DeleteRecipeDialog";
 import { useRecipeDelete } from "../_hooks/useRecipeDelete";
 import { useRecipes } from "../_hooks/useRecipes";
@@ -29,18 +29,21 @@ const RecipeDetails = ({ menuId }: RecipeDetailsProps) => {
   const currentTab = searchParams.get("type") || "breakfast";
 
   // Function to set the current tab via URL query parameter
-  const setCurrentTab = (tab: string) => {
-    const newSearchParams = new URLSearchParams(searchParams);
-    newSearchParams.set("type", tab);
-    window.history.replaceState(null, "", `?${newSearchParams.toString()}`);
-  };
+  const setCurrentTab = useCallback(
+    (tab: string) => {
+      const newSearchParams = new URLSearchParams(searchParams);
+      newSearchParams.set("type", tab);
+      window.history.replaceState(null, "", `?${newSearchParams.toString()}`);
+    },
+    [searchParams],
+  );
 
   // Update URL on initial load if no type parameter exists
   useEffect(() => {
     if (!searchParams.has("type")) {
       setCurrentTab("breakfast");
     }
-  }, [searchParams]);
+  }, [searchParams, setCurrentTab]);
 
   if (loading) {
     return <div className="text-center mt-8">Loading...</div>;
