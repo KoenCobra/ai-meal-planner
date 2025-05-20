@@ -7,14 +7,25 @@ import { useUser } from "@clerk/clerk-react";
 import { convexQuery } from "@convex-dev/react-query";
 import { useQuery } from "@tanstack/react-query";
 import { ShoppingCart } from "lucide-react";
-import { useParams } from "next/navigation";
+import { useParams, useSearchParams } from "next/navigation";
+import { useEffect } from "react";
 import RecipeDetails from "../../recipes/_components/RecipeDetails";
 import { useSyncMenuIngredients } from "../_hooks/useSyncMenuIngredients";
 
 const MenuPage = () => {
   const params = useParams();
+  const searchParams = useSearchParams();
   const { user } = useUser();
   const { handleSyncMenuIngredients } = useSyncMenuIngredients(user?.id || "");
+
+  // Set default tab if not specified
+  useEffect(() => {
+    if (!searchParams.has("type")) {
+      const newSearchParams = new URLSearchParams(searchParams);
+      newSearchParams.set("type", "breakfast");
+      window.history.replaceState(null, "", `?${newSearchParams.toString()}`);
+    }
+  }, [searchParams]);
 
   const { data: menu } = useQuery({
     ...convexQuery(api.menus.getMenu, {

@@ -19,6 +19,7 @@ import { Id } from "@/convex/_generated/dataModel";
 import { useUser } from "@clerk/clerk-react";
 import { MoreVertical, Plus, ShoppingCart, Trash, Upload } from "lucide-react";
 import Link from "next/link";
+import { useSearchParams } from "next/navigation";
 
 import React from "react";
 import AddToMenuDialog from "../../_components/AddToMenuDialog";
@@ -42,6 +43,9 @@ interface RecipeCardProps {
 
 export const RecipeCard = ({ recipe, onDelete }: RecipeCardProps) => {
   const { user } = useUser();
+  const searchParams = useSearchParams();
+  const currentTab = searchParams.get("type") || "breakfast";
+
   if (!user) throw new Error("User not found");
 
   const [dropdownOpen, setDropdownOpen] = React.useState(false);
@@ -55,7 +59,10 @@ export const RecipeCard = ({ recipe, onDelete }: RecipeCardProps) => {
 
   return (
     <>
-      <Link href={`/recipes/${recipe._id}`} className="relative group">
+      <Link
+        href={`/recipes/${recipe._id}?type=${currentTab}`}
+        className="relative group"
+      >
         <div
           className="absolute right-2 top-2 z-1"
           onClick={(e) => {

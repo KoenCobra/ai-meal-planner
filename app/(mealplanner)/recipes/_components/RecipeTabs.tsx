@@ -6,10 +6,17 @@ import { RecipeTabContent } from "./RecipeTabContent";
 interface RecipeTabsProps {
   recipesByType: Record<string, Recipe[]>;
   onDelete: (recipeId: Id<"recipes">, title: string) => void;
+  currentTab: string;
+  setCurrentTab: (tab: string) => void;
 }
 
-export const RecipeTabs = ({ recipesByType, onDelete }: RecipeTabsProps) => (
-  <Tabs defaultValue="breakfast" className="w-full">
+export const RecipeTabs = ({
+  recipesByType,
+  onDelete,
+  currentTab,
+  setCurrentTab,
+}: RecipeTabsProps) => (
+  <Tabs value={currentTab} onValueChange={setCurrentTab} className="w-full">
     <TabsList className="grid w-full grid-cols-4">
       <TabsTrigger value="breakfast">Breakfast</TabsTrigger>
       <TabsTrigger value="lunch">Lunch</TabsTrigger>
