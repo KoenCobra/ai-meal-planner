@@ -1,4 +1,5 @@
 import { ConvexError, v } from "convex/values";
+import { sanitizeStringServer } from "../../lib/utils";
 import { mutation, MutationCtx, query, QueryCtx } from "../_generated/server";
 
 export const generateUploadUrl = mutation({
@@ -28,11 +29,14 @@ export const updateRecipeImage = mutation({
     storageId: v.id("_storage"),
   },
   handler: async (ctx: MutationCtx, args) => {
+    // Sanitize any user-provided IDs (though these should already be validated by the validators)
+    const sanitizedUserId = sanitizeStringServer(args.userId);
+
     const recipe = await ctx.db.get(args.recipeId);
     if (!recipe) {
       throw new ConvexError("Recipe not found");
     }
-    if (recipe.userId !== args.userId) {
+    if (recipe.userId !== sanitizedUserId) {
       throw new ConvexError("Not authorized");
     }
 
