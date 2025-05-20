@@ -120,8 +120,6 @@ const BibiAiForm = ({
                           ? "Add any specific instructions for your food image (optional)"
                           : 'E.g. "I want a recipe for a healthy breakfast" (in any language you prefer)'
                       }
-                      rows={4}
-                      autoFocus
                       disabled={isGeneratingRecipe || isGeneratingImage}
                       onKeyDown={(e) => {
                         if (e.key === "Enter" && !e.shiftKey) {
@@ -129,6 +127,7 @@ const BibiAiForm = ({
                           form.handleSubmit(onSubmit)();
                         }
                       }}
+                      rows={12}
                     />
                   </FormControl>
                   <FormMessage />
