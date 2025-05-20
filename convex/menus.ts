@@ -1,5 +1,6 @@
 import { paginationOptsValidator } from "convex/server";
 import { ConvexError, v } from "convex/values";
+import { sanitizeStringServer } from "../lib/utils";
 import { mutation, query } from "./_generated/server";
 import { addOrUpdateGroceryItem } from "./groceryList";
 
@@ -9,9 +10,12 @@ export const createMenu = mutation({
     name: v.string(),
   },
   handler: async (ctx, args) => {
+    // Sanitize user input
+    const sanitizedName = sanitizeStringServer(args.name);
+
     return await ctx.db.insert("menus", {
       userId: args.userId,
-      name: args.name,
+      name: sanitizedName,
     });
   },
 });
@@ -27,7 +31,10 @@ export const updateMenu = mutation({
     if (!menu) throw new ConvexError("Menu not found");
     if (menu.userId !== args.userId) throw new ConvexError("Not authorized");
 
-    await ctx.db.patch(args.id, { name: args.name });
+    // Sanitize user input
+    const sanitizedName = sanitizeStringServer(args.name);
+
+    await ctx.db.patch(args.id, { name: sanitizedName });
     return args.id;
   },
 });

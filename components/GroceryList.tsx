@@ -15,6 +15,7 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { Input } from "@/components/ui/input";
 import { api } from "@/convex/_generated/api";
 import { Doc, Id } from "@/convex/_generated/dataModel";
+import { sanitizeInput } from "@/lib/utils";
 import { useUser } from "@clerk/clerk-react";
 import { convexQuery } from "@convex-dev/react-query";
 import { useQuery } from "@tanstack/react-query";
@@ -115,9 +116,11 @@ export function GroceryList() {
     e.preventDefault();
     if (!newItemName.trim()) return;
 
+    const sanitizedName = sanitizeInput(newItemName.trim());
+
     await addItem({
       userId: user?.id ?? "",
-      name: newItemName.trim(),
+      name: sanitizedName,
     });
 
     setNewItemName("");
@@ -273,14 +276,14 @@ export function GroceryList() {
         </div>
       )}
 
-      {/* Clear Checked Items Confirmation Dialog */}
+      {/* Alert Dialog for Clearing Checked Items */}
       <AlertDialog
         open={clearCheckedDialogOpen}
         onOpenChange={setClearCheckedDialogOpen}
       >
         <AlertDialogContent>
           <AlertDialogHeader>
-            <AlertDialogTitle>Are you sure?</AlertDialogTitle>
+            <AlertDialogTitle>Clear checked items?</AlertDialogTitle>
             <AlertDialogDescription>
               This will remove all checked items from your grocery list.
             </AlertDialogDescription>
@@ -294,14 +297,14 @@ export function GroceryList() {
         </AlertDialogContent>
       </AlertDialog>
 
-      {/* Clear All Items Confirmation Dialog */}
+      {/* Alert Dialog for Clearing All Items */}
       <AlertDialog
         open={clearAllDialogOpen}
         onOpenChange={setClearAllDialogOpen}
       >
         <AlertDialogContent>
           <AlertDialogHeader>
-            <AlertDialogTitle>Clear entire list?</AlertDialogTitle>
+            <AlertDialogTitle>Clear all items?</AlertDialogTitle>
             <AlertDialogDescription>
               This will remove all items from your grocery list. This action
               cannot be undone.
@@ -310,7 +313,7 @@ export function GroceryList() {
           <AlertDialogFooter>
             <AlertDialogCancel>Cancel</AlertDialogCancel>
             <AlertDialogAction onClick={handleClearAll}>
-              Clear All
+              Continue
             </AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>

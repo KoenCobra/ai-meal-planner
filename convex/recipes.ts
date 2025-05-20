@@ -2,8 +2,99 @@
 
 import { paginationOptsValidator } from "convex/server";
 import { ConvexError, v } from "convex/values";
+import { sanitizeStringServer } from "../lib/utils";
 import { mutation, query } from "./_generated/server";
 import { addOrUpdateGroceryItem } from "./groceryList";
+
+// Define types for recipe data
+type RecipeIngredient = {
+  name: string;
+  measures: {
+    amount: number;
+    unit: string;
+  };
+};
+
+type RecipeStep = {
+  number: number;
+  step: string;
+};
+
+type RecipeInstructions = {
+  name: string;
+  steps: RecipeStep[];
+};
+
+// Base type with all fields optional for updates
+type RecipeDataPartial = {
+  title?: string;
+  summary?: string;
+  servings?: number;
+  readyInMinutes?: number;
+  image?: string;
+  diets?: string[];
+  instructions?: RecipeInstructions;
+  ingredients?: RecipeIngredient[];
+  dishTypes?: string[];
+};
+
+// Full recipe data for creation with required fields
+type RecipeDataFull = {
+  title: string;
+  summary: string;
+  servings: number;
+  readyInMinutes: number;
+  image?: string;
+  diets: string[];
+  instructions: RecipeInstructions;
+  ingredients: RecipeIngredient[];
+  dishTypes: string[];
+};
+
+// Helper function to sanitize recipe data
+const sanitizeRecipeData = <T extends RecipeDataPartial>(recipeData: T): T => {
+  const sanitized = { ...recipeData };
+
+  // Sanitize strings
+  if (sanitized.title) sanitized.title = sanitizeStringServer(sanitized.title);
+  if (sanitized.summary)
+    sanitized.summary = sanitizeStringServer(sanitized.summary);
+
+  // Sanitize arrays of strings
+  if (sanitized.diets) {
+    sanitized.diets = sanitized.diets.map((diet) => sanitizeStringServer(diet));
+  }
+
+  if (sanitized.dishTypes) {
+    sanitized.dishTypes = sanitized.dishTypes.map((type) =>
+      sanitizeStringServer(type),
+    );
+  }
+
+  // Sanitize nested objects
+  if (sanitized.instructions) {
+    sanitized.instructions = {
+      name: sanitizeStringServer(sanitized.instructions.name),
+      steps: sanitized.instructions.steps.map((step) => ({
+        number: step.number,
+        step: sanitizeStringServer(step.step),
+      })),
+    };
+  }
+
+  // Sanitize ingredients
+  if (sanitized.ingredients) {
+    sanitized.ingredients = sanitized.ingredients.map((ingredient) => ({
+      name: sanitizeStringServer(ingredient.name),
+      measures: {
+        amount: ingredient.measures.amount,
+        unit: sanitizeStringServer(ingredient.measures.unit),
+      },
+    }));
+  }
+
+  return sanitized;
+};
 
 export const createRecipe = mutation({
   args: {
@@ -36,9 +127,13 @@ export const createRecipe = mutation({
   },
   handler: async (ctx, args) => {
     const { userId, ...recipeData } = args;
+
+    // Sanitize all string inputs in the recipe data
+    const sanitizedData = sanitizeRecipeData(recipeData as RecipeDataFull);
+
     return await ctx.db.insert("recipes", {
       userId,
-      ...recipeData,
+      ...sanitizedData,
     });
   },
 });
@@ -83,7 +178,10 @@ export const updateRecipe = mutation({
     if (!recipe) throw new Error("Recipe not found");
     if (recipe.userId !== userId) throw new Error("Not authorized");
 
-    await ctx.db.patch(id, updates);
+    // Sanitize all string inputs in the updates
+    const sanitizedUpdates = sanitizeRecipeData(updates);
+
+    await ctx.db.patch(id, sanitizedUpdates);
     return id;
   },
 });
@@ -153,10 +251,13 @@ export const searchRecipes = query({
     paginationOpts: paginationOptsValidator,
   },
   handler: async (ctx, args) => {
+    // Sanitize search query
+    const sanitizedQuery = sanitizeStringServer(args.query);
+
     return await ctx.db
       .query("recipes")
       .withSearchIndex("search_title", (q) =>
-        q.search("title", args.query).eq("userId", args.userId),
+        q.search("title", sanitizedQuery).eq("userId", args.userId),
       )
       .paginate(args.paginationOpts);
   },
@@ -169,10 +270,13 @@ export const searchByIngredients = query({
     paginationOpts: paginationOptsValidator,
   },
   handler: async (ctx, args) => {
+    // Sanitize search query
+    const sanitizedQuery = sanitizeStringServer(args.query);
+
     return await ctx.db
       .query("recipes")
       .withSearchIndex("search_ingredients", (q) =>
-        q.search("ingredients", args.query).eq("userId", args.userId),
+        q.search("ingredients", sanitizedQuery).eq("userId", args.userId),
       )
       .paginate(args.paginationOpts);
   },

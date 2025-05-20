@@ -10,6 +10,7 @@ import {
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
+import { sanitizeInput } from "@/lib/utils";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { ImageIcon, Loader2Icon, WandSparkles } from "lucide-react";
 import { useState } from "react";
@@ -70,26 +71,27 @@ const BibiAiForm = ({
 
       setIsGeneratingRecipe(true);
 
+      const sanitizedDescription = sanitizeInput(input.description);
+      const sanitizedInput = {
+        ...input,
+        description: sanitizedDescription,
+      };
+
       let recipe: RecipeInput;
 
       if (selectedImage) {
-        // If there's an image, use it along with any text instructions
         recipe = await analyzeImageForRecipe(
           selectedImage,
-          input.description.trim() || undefined,
+          sanitizedInput.description.trim() || undefined,
         );
       } else {
-        // Text-only generation
-        recipe = await generateRecipe(input);
+        recipe = await generateRecipe(sanitizedInput);
       }
 
-      // Pass the recipe to the parent component immediately
       onRecipeGenerated(recipe);
 
-      // Then start generating the image
       setIsGeneratingImage(true);
       const image = await generateRecipeImage(recipe.title, recipe.summary);
-      // Update with the image when it's ready
       if (image && image.imageBase64) {
         onRecipeGenerated(recipe, image.imageBase64);
       }

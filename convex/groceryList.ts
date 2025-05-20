@@ -1,4 +1,5 @@
 import { ConvexError, v } from "convex/values";
+import { sanitizeStringServer } from "../lib/utils";
 import { mutation, MutationCtx, query } from "./_generated/server";
 
 // Helper function to parse quantity string into amount and unit
@@ -12,7 +13,7 @@ export const parseQuantity = (
   const unit = match[2].trim();
 
   if (isNaN(amount)) return null;
-  return { amount, unit };
+  return { amount, unit: sanitizeStringServer(unit) };
 };
 
 // Add a new item to the grocery list
@@ -23,16 +24,22 @@ export const addItem = mutation({
     quantity: v.optional(v.string()),
   },
   handler: async (ctx, args) => {
+    // Sanitize inputs
+    const sanitizedName = sanitizeStringServer(args.name);
+    const sanitizedQuantity = args.quantity
+      ? sanitizeStringServer(args.quantity)
+      : undefined;
+
     // Check if item with same name already exists
     const existingItem = await ctx.db
       .query("groceryItems")
       .withIndex("by_user", (q) => q.eq("userId", args.userId))
-      .filter((q) => q.eq(q.field("name"), args.name))
+      .filter((q) => q.eq(q.field("name"), sanitizedName))
       .first();
 
-    if (existingItem && args.quantity && existingItem.quantity) {
+    if (existingItem && sanitizedQuantity && existingItem.quantity) {
       // Parse quantities
-      const newQuantity = parseQuantity(args.quantity);
+      const newQuantity = parseQuantity(sanitizedQuantity);
       const existingQuantity = parseQuantity(existingItem.quantity);
 
       // If both quantities have the same unit, combine them
@@ -56,8 +63,8 @@ export const addItem = mutation({
     // If no existing item or units don't match, create a new item
     return await ctx.db.insert("groceryItems", {
       userId: args.userId,
-      name: args.name,
-      quantity: args.quantity,
+      name: sanitizedName,
+      quantity: sanitizedQuantity,
       checked: false,
     });
   },
@@ -70,16 +77,20 @@ export const addOrUpdateGroceryItem = async (
   name: string,
   quantity: string,
 ) => {
+  // Sanitize inputs
+  const sanitizedName = sanitizeStringServer(name);
+  const sanitizedQuantity = sanitizeStringServer(quantity);
+
   // Check if item with same name already exists
   const existingItem = await ctx.db
     .query("groceryItems")
     .withIndex("by_user", (q) => q.eq("userId", userId))
-    .filter((q) => q.eq(q.field("name"), name))
+    .filter((q) => q.eq(q.field("name"), sanitizedName))
     .first();
 
   if (existingItem && existingItem.quantity) {
     // Parse quantities
-    const newQuantity = parseQuantity(quantity);
+    const newQuantity = parseQuantity(sanitizedQuantity);
     const existingQuantity = parseQuantity(existingItem.quantity);
 
     // If both quantities have the same unit, combine them
@@ -103,8 +114,8 @@ export const addOrUpdateGroceryItem = async (
   // If no existing item or units don't match, create a new item
   return await ctx.db.insert("groceryItems", {
     userId,
-    name,
-    quantity,
+    name: sanitizedName,
+    quantity: sanitizedQuantity,
     checked: false,
   });
 };
@@ -153,8 +164,9 @@ export const updateItem = mutation({
     if (item.userId !== args.userId) throw new ConvexError("Not authorized");
 
     const updates: { name?: string; quantity?: string } = {};
-    if (args.name !== undefined) updates.name = args.name;
-    if (args.quantity !== undefined) updates.quantity = args.quantity;
+    if (args.name !== undefined) updates.name = sanitizeStringServer(args.name);
+    if (args.quantity !== undefined)
+      updates.quantity = sanitizeStringServer(args.quantity);
 
     await ctx.db.patch(args.id, updates);
   },
@@ -181,10 +193,13 @@ export const searchItems = query({
     query: v.string(),
   },
   handler: async (ctx, args) => {
+    // Sanitize search query
+    const sanitizedQuery = sanitizeStringServer(args.query);
+
     return ctx.db
       .query("groceryItems")
       .withSearchIndex("search_name", (q) =>
-        q.search("name", args.query).eq("userId", args.userId),
+        q.search("name", sanitizedQuery).eq("userId", args.userId),
       );
   },
 });
