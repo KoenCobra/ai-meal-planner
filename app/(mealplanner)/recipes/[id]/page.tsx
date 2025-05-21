@@ -111,6 +111,12 @@ const RecipeDetails = () => {
           <TabsContent value="recipe">
             <RecipeDetailHeader recipe={recipe} />
 
+            <div className="border-b border-t border-border mt-6 py-3">
+              <p className="text-muted-foreground max-w-xl mx-auto">
+                {recipe?.summary}
+              </p>
+            </div>
+
             <RecipeDetailInstructions
               ingredients={recipe.ingredients.map(
                 (ingredient) =>
