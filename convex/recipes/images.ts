@@ -15,7 +15,6 @@ export const getImageUrl = query({
     storageId: v.id("_storage"),
   },
   handler: async (ctx: QueryCtx, args) => {
-    console.log("Getting image URL for storage ID:", args.storageId);
     return await ctx.storage.getUrl(args.storageId);
   },
 });
@@ -34,8 +33,6 @@ export const updateRecipeImage = mutation({
     if (recipe.userId !== args.userId) {
       throw new ConvexError("Not authorized");
     }
-
-    console.log("Updating recipe image:", args.storageId);
 
     if (recipe.storageId) {
       await ctx.storage.delete(recipe.storageId);

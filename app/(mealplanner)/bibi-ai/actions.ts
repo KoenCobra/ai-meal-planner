@@ -113,11 +113,7 @@ export async function generateRecipe(input: GenerateRecipeInput) {
       throw new Error("Empty response from Google AI");
     }
 
-    console.log(responseText);
-
     const aiResponse = JSON.parse(responseText);
-
-    console.log(aiResponse);
 
     if (!aiResponse) {
       throw new Error("Failed to generate AI response");
