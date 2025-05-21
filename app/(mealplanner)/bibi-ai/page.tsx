@@ -81,6 +81,7 @@ const BibiAi = () => {
       <BibiAiForm
         onRecipeGenerated={handleRecipeGenerated}
         onGenerationStart={handleGenerationStart}
+        onClear={handleClearRecipe}
       />
 
       {recipeData && (

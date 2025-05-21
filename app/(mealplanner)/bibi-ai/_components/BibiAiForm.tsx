@@ -31,11 +31,13 @@ import {
 interface BibiAiFormProps {
   onRecipeGenerated: (recipe: RecipeInput, image?: string) => void;
   onGenerationStart?: () => void;
+  onClear?: () => void;
 }
 
 const BibiAiForm = ({
   onRecipeGenerated,
   onGenerationStart,
+  onClear,
 }: BibiAiFormProps) => {
   const [isGeneratingRecipe, setIsGeneratingRecipe] = useState(false);
   const [isGeneratingImage, setIsGeneratingImage] = useState(false);
@@ -165,6 +167,23 @@ const BibiAiForm = ({
                   disabled={isGeneratingRecipe || isGeneratingImage}
                 >
                   Remove
+                </Button>
+              )}
+              {(isGeneratingRecipe || isGeneratingImage) && (
+                <Button
+                  type="button"
+                  variant="outline"
+                  className="flex-shrink-0 mx-auto"
+                  onClick={() => {
+                    form.reset();
+                    setSelectedImage(null);
+                    setIsGeneratingRecipe(false);
+                    setIsGeneratingImage(false);
+                    onClear?.();
+                    window.location.reload();
+                  }}
+                >
+                  STOP
                 </Button>
               )}
             </div>
