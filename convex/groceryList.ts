@@ -1,8 +1,7 @@
 import { ConvexError, v } from "convex/values";
-import { sanitizeStringServer } from "../lib/utils";
+
 import { mutation, MutationCtx, query } from "./_generated/server";
 
-// Helper function to parse quantity string into amount and unit
 export const parseQuantity = (
   quantityStr: string,
 ): { amount: number; unit: string } | null => {
@@ -13,10 +12,9 @@ export const parseQuantity = (
   const unit = match[2].trim();
 
   if (isNaN(amount)) return null;
-  return { amount, unit: sanitizeStringServer(unit) };
+  return { amount, unit };
 };
 
-// Add a new item to the grocery list
 export const addItem = mutation({
   args: {
     userId: v.string(),
@@ -24,25 +22,16 @@ export const addItem = mutation({
     quantity: v.optional(v.string()),
   },
   handler: async (ctx, args) => {
-    // Sanitize inputs
-    const sanitizedName = sanitizeStringServer(args.name);
-    const sanitizedQuantity = args.quantity
-      ? sanitizeStringServer(args.quantity)
-      : undefined;
-
-    // Check if item with same name already exists
     const existingItem = await ctx.db
       .query("groceryItems")
       .withIndex("by_user", (q) => q.eq("userId", args.userId))
-      .filter((q) => q.eq(q.field("name"), sanitizedName))
+      .filter((q) => q.eq(q.field("name"), args.name))
       .first();
 
-    if (existingItem && sanitizedQuantity && existingItem.quantity) {
-      // Parse quantities
-      const newQuantity = parseQuantity(sanitizedQuantity);
+    if (existingItem && args.quantity && existingItem.quantity) {
+      const newQuantity = parseQuantity(args.quantity);
       const existingQuantity = parseQuantity(existingItem.quantity);
 
-      // If both quantities have the same unit, combine them
       if (
         newQuantity &&
         existingQuantity &&
@@ -51,7 +40,6 @@ export const addItem = mutation({
         const totalAmount = newQuantity.amount + existingQuantity.amount;
         const updatedQuantity = `${totalAmount} ${newQuantity.unit}`;
 
-        // Update the existing item
         await ctx.db.patch(existingItem._id, {
           quantity: updatedQuantity,
         });
@@ -60,40 +48,31 @@ export const addItem = mutation({
       }
     }
 
-    // If no existing item or units don't match, create a new item
     return await ctx.db.insert("groceryItems", {
       userId: args.userId,
-      name: sanitizedName,
-      quantity: sanitizedQuantity,
+      name: args.name,
+      quantity: args.quantity,
       checked: false,
     });
   },
 });
 
-// Helper function to add or update grocery items
 export const addOrUpdateGroceryItem = async (
   ctx: MutationCtx,
   userId: string,
   name: string,
   quantity: string,
 ) => {
-  // Sanitize inputs
-  const sanitizedName = sanitizeStringServer(name);
-  const sanitizedQuantity = sanitizeStringServer(quantity);
-
-  // Check if item with same name already exists
   const existingItem = await ctx.db
     .query("groceryItems")
     .withIndex("by_user", (q) => q.eq("userId", userId))
-    .filter((q) => q.eq(q.field("name"), sanitizedName))
+    .filter((q) => q.eq(q.field("name"), name))
     .first();
 
   if (existingItem && existingItem.quantity) {
-    // Parse quantities
-    const newQuantity = parseQuantity(sanitizedQuantity);
+    const newQuantity = parseQuantity(quantity);
     const existingQuantity = parseQuantity(existingItem.quantity);
 
-    // If both quantities have the same unit, combine them
     if (
       newQuantity &&
       existingQuantity &&
@@ -102,7 +81,6 @@ export const addOrUpdateGroceryItem = async (
       const totalAmount = newQuantity.amount + existingQuantity.amount;
       const updatedQuantity = `${totalAmount} ${newQuantity.unit}`;
 
-      // Update the existing item
       await ctx.db.patch(existingItem._id, {
         quantity: updatedQuantity,
       });
@@ -111,16 +89,14 @@ export const addOrUpdateGroceryItem = async (
     }
   }
 
-  // If no existing item or units don't match, create a new item
   return await ctx.db.insert("groceryItems", {
     userId,
-    name: sanitizedName,
-    quantity: sanitizedQuantity,
+    name,
+    quantity,
     checked: false,
   });
 };
 
-// Delete an item from the grocery list
 export const deleteItem = mutation({
   args: {
     userId: v.string(),
@@ -135,7 +111,6 @@ export const deleteItem = mutation({
   },
 });
 
-// Toggle the checked status of an item
 export const toggleItem = mutation({
   args: {
     userId: v.string(),
@@ -150,7 +125,6 @@ export const toggleItem = mutation({
   },
 });
 
-// Update an item's details
 export const updateItem = mutation({
   args: {
     userId: v.string(),
@@ -164,15 +138,13 @@ export const updateItem = mutation({
     if (item.userId !== args.userId) throw new ConvexError("Not authorized");
 
     const updates: { name?: string; quantity?: string } = {};
-    if (args.name !== undefined) updates.name = sanitizeStringServer(args.name);
-    if (args.quantity !== undefined)
-      updates.quantity = sanitizeStringServer(args.quantity);
+    if (args.name !== undefined) updates.name = args.name;
+    if (args.quantity !== undefined) updates.quantity = args.quantity;
 
     await ctx.db.patch(args.id, updates);
   },
 });
 
-// Get all items in the grocery list
 export const listItems = query({
   args: {
     userId: v.string(),
@@ -186,25 +158,20 @@ export const listItems = query({
   },
 });
 
-// Search for items in the grocery list
 export const searchItems = query({
   args: {
     userId: v.string(),
     query: v.string(),
   },
   handler: async (ctx, args) => {
-    // Sanitize search query
-    const sanitizedQuery = sanitizeStringServer(args.query);
-
     return ctx.db
       .query("groceryItems")
       .withSearchIndex("search_name", (q) =>
-        q.search("name", sanitizedQuery).eq("userId", args.userId),
+        q.search("name", args.query).eq("userId", args.userId),
       );
   },
 });
 
-// Clear all checked items from the list
 export const clearCheckedItems = mutation({
   args: {
     userId: v.string(),
@@ -223,7 +190,6 @@ export const clearCheckedItems = mutation({
   },
 });
 
-// Clear all items from the list
 export const clearAllItems = mutation({
   args: {
     userId: v.string(),

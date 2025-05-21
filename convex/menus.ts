@@ -1,6 +1,6 @@
 import { paginationOptsValidator } from "convex/server";
 import { ConvexError, v } from "convex/values";
-import { sanitizeStringServer } from "../lib/utils";
+
 import { mutation, query } from "./_generated/server";
 import { addOrUpdateGroceryItem } from "./groceryList";
 
@@ -10,12 +10,9 @@ export const createMenu = mutation({
     name: v.string(),
   },
   handler: async (ctx, args) => {
-    // Sanitize user input
-    const sanitizedName = sanitizeStringServer(args.name);
-
     return await ctx.db.insert("menus", {
       userId: args.userId,
-      name: sanitizedName,
+      name: args.name,
     });
   },
 });
@@ -31,10 +28,8 @@ export const updateMenu = mutation({
     if (!menu) throw new ConvexError("Menu not found");
     if (menu.userId !== args.userId) throw new ConvexError("Not authorized");
 
-    // Sanitize user input
-    const sanitizedName = sanitizeStringServer(args.name);
+    await ctx.db.patch(args.id, { name: args.name });
 
-    await ctx.db.patch(args.id, { name: sanitizedName });
     return args.id;
   },
 });
@@ -49,7 +44,6 @@ export const deleteMenu = mutation({
     if (!menu) throw new ConvexError("Menu not found");
     if (menu.userId !== args.userId) throw new ConvexError("Not authorized");
 
-    // Delete all recipe associations first
     const recipeAssociations = await ctx.db
       .query("menusOnRecipes")
       .withIndex("by_menu", (q) => q.eq("menuId", args.id))
@@ -63,7 +57,6 @@ export const deleteMenu = mutation({
   },
 });
 
-// Menu-Recipe Association Mutations
 export const addRecipeToMenu = mutation({
   args: {
     userId: v.string(),
@@ -71,17 +64,14 @@ export const addRecipeToMenu = mutation({
     recipeId: v.id("recipes"),
   },
   handler: async (ctx, args) => {
-    // Verify menu ownership
     const menu = await ctx.db.get(args.menuId);
     if (!menu) throw new ConvexError("Menu not found");
     if (menu.userId !== args.userId) throw new ConvexError("Not authorized");
 
-    // Verify recipe ownership
     const recipe = await ctx.db.get(args.recipeId);
     if (!recipe) throw new ConvexError("Recipe not found");
     if (recipe.userId !== args.userId) throw new ConvexError("Not authorized");
 
-    // Check if recipe already exists in menu
     const existing = await ctx.db
       .query("menusOnRecipes")
       .withIndex("by_menu_and_recipe", (q) =>
@@ -91,7 +81,6 @@ export const addRecipeToMenu = mutation({
 
     if (existing) return existing._id;
 
-    // Add recipe to menu
     return await ctx.db.insert("menusOnRecipes", {
       menuId: args.menuId,
       recipeId: args.recipeId,
@@ -106,7 +95,6 @@ export const removeRecipeFromMenu = mutation({
     recipeId: v.id("recipes"),
   },
   handler: async (ctx, args) => {
-    // Verify menu ownership
     const menu = await ctx.db.get(args.menuId);
     if (!menu) throw new ConvexError("Menu not found");
     if (menu.userId !== args.userId) throw new ConvexError("Not authorized");
@@ -124,7 +112,6 @@ export const removeRecipeFromMenu = mutation({
   },
 });
 
-// Menu Queries
 export const getMenu = query({
   args: {
     userId: v.string(),
@@ -162,7 +149,6 @@ export const getMenuRecipes = query({
     paginationOpts: v.optional(paginationOptsValidator),
   },
   handler: async (ctx, args) => {
-    // Verify menu ownership
     const menu = await ctx.db.get(args.menuId);
     if (!menu) throw new ConvexError("Menu not found");
     if (menu.userId !== args.userId) throw new ConvexError("Not authorized");
@@ -173,12 +159,10 @@ export const getMenuRecipes = query({
       .order("desc")
       .paginate(args.paginationOpts || { numItems: 10, cursor: null });
 
-    // We need to get the recipes for the associations in the current page
     const recipes = await Promise.all(
       associations.page.map(async (assoc) => await ctx.db.get(assoc.recipeId)),
     );
 
-    // Return the paginated result with recipes instead of associations
     return {
       page: recipes.filter(
         (recipe): recipe is NonNullable<typeof recipe> => recipe !== null,
@@ -196,16 +180,13 @@ export const getMenusContainingRecipe = query({
     paginationOpts: v.optional(paginationOptsValidator),
   },
   handler: async (ctx, args) => {
-    // First get all menu-recipe associations for this recipe with pagination
     const associations = await ctx.db
       .query("menusOnRecipes")
       .withIndex("by_recipe", (q) => q.eq("recipeId", args.recipeId))
       .paginate(args.paginationOpts || { numItems: 10, cursor: null });
 
-    // Get all menu IDs from the associations in the current page
     const menuIds = associations.page.map((assoc) => assoc.menuId);
 
-    // Get all menus that match these IDs and belong to the user
     const menus = await Promise.all(
       menuIds.map(async (menuId) => {
         const menu = await ctx.db.get(menuId);
@@ -216,7 +197,6 @@ export const getMenusContainingRecipe = query({
       }),
     );
 
-    // Return the paginated result with menus instead of associations
     return {
       page: menus.filter(
         (menu): menu is NonNullable<typeof menu> => menu !== null,
@@ -234,23 +214,19 @@ export const syncMenuIngredientsToGroceryList = mutation({
   },
   returns: v.null(),
   handler: async (ctx, args) => {
-    // Verify menu ownership
     const menu = await ctx.db.get(args.menuId);
     if (!menu) throw new ConvexError("Menu not found");
     if (menu.userId !== args.userId) throw new ConvexError("Not authorized");
 
-    // Get all recipes in the menu
     const associations = await ctx.db
       .query("menusOnRecipes")
       .withIndex("by_menu", (q) => q.eq("menuId", args.menuId))
       .collect();
 
-    // Get all recipes and their ingredients
     const recipes = await Promise.all(
       associations.map(async (assoc) => await ctx.db.get(assoc.recipeId)),
     );
 
-    // Add all ingredients to the grocery list using the helper function
     for (const recipe of recipes) {
       if (recipe) {
         for (const ingredient of recipe.ingredients) {
