@@ -1,4 +1,4 @@
-import "server-only";
+"use server";
 
 import { paginationOptsValidator } from "convex/server";
 import { ConvexError, v } from "convex/values";
