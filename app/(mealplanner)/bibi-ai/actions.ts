@@ -172,8 +172,8 @@ export async function generateRecipeImage(
 
     // Use Sharp to convert to WebP format with compression
     const webpBuffer = await sharp(buffer)
-      .resize(600) // Resize to smaller dimensions
-      .webp({ quality: 60 }) // Convert to WebP with 80% quality
+      .resize(700) // Resize to smaller dimensions
+      .webp({ quality: 70 }) // Convert to WebP with 80% quality
       .toBuffer();
 
     // Convert back to base64 for return
