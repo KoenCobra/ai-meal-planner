@@ -21,11 +21,11 @@ export async function generateRecipe(input: GenerateRecipeInput) {
   You will only answer questions that are related to generating a recipe, otherwise you will refuse to generate a recipe and explain why you can't generate a recipe in the error property from the structure.
   You will always answer in the language that the user is using.
   The units of measurement will be based on the user's locale.
-  Your response must adhere to the given structure.
   Smoothies are by default snacks.
   The dishTypes can only have 1 of the following values: "breakfast", "lunch", snacks  or "dinner".
   You can only assign 1 of these values to a recipe.
-  IMPORTANT: You must return a complete recipe with all required fields: title, summary, servings, readyInMinutes, diets, instructions (with steps), ingredients, and dishTypes.`;
+  IMPORTANT: You must return a complete recipe with all required fields: title, summary, servings, readyInMinutes, diets, instructions (with steps), ingredients, and dishTypes.
+  Always provide diets that are relevant to the dish.`;
 
   const userMessage = `
   Please provide a recipe from this description:
@@ -236,6 +236,7 @@ export async function analyzeImageForRecipe(
     Make sure to generate all the output in the language that is used in the image. Provide detailed instructions and ingredients list based on what you see in the image.
     If for example the image is in spanish, the entire output should be in spanish.
     IMPORTANT: You must return a complete recipe with all required fields: title, summary, servings, readyInMinutes, diets, instructions (with steps), ingredients, and dishTypes.
+    Always provide diets that are relevant to the dish.
     ${additionalInstructions ? `Additionally, consider these instructions from the user: ${additionalInstructions}` : ""}`;
 
     const userMessage = `Please analyze this food image and generate a recipe for it.${additionalInstructions ? ` ${additionalInstructions}` : ""}`;
