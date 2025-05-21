@@ -9,6 +9,7 @@ import {
 import { Input } from "@/components/ui/input";
 import { api } from "@/convex/_generated/api";
 import { Id } from "@/convex/_generated/dataModel";
+import { sanitizeInput } from "@/lib/utils";
 import { CreateMenuInput, createMenuSchema } from "@/lib/validation";
 import { useUser } from "@clerk/clerk-react";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -60,11 +61,16 @@ const UpdateMenuInput = ({
   const onSubmit = async (input: CreateMenuInput) => {
     try {
       setOpenUpdateMenu(false);
+
+      // Sanitize the input name before sending to the server
+      const sanitizedName = sanitizeInput(input.name);
+
       await updateMenu({
         id: menuId,
         userId: user?.id ?? "",
-        name: input.name,
+        name: sanitizedName,
       });
+
       form.reset();
       toast.success("Menu updated successfully");
     } catch (error) {

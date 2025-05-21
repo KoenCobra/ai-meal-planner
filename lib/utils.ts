@@ -33,24 +33,3 @@ export function sanitizeInput(input: string): string {
     .replace(/"/g, "&quot;")
     .replace(/'/g, "&#039;");
 }
-
-/**
- * Server-side sanitization function for Convex
- * (Can be used in both client and server code)
- */
-export function sanitizeStringServer(input: string): string {
-  if (!input) return input;
-
-  // Trim whitespace
-  let sanitized = input.trim();
-
-  // Convert HTML special characters to entities to prevent XSS
-  sanitized = sanitized
-    .replace(/&/g, "&amp;")
-    .replace(/</g, "&lt;")
-    .replace(/>/g, "&gt;")
-    .replace(/"/g, "&quot;")
-    .replace(/'/g, "&#039;");
-
-  return sanitized;
-}

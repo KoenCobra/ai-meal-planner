@@ -18,6 +18,7 @@ import {
 import { Input } from "@/components/ui/input";
 import { api } from "@/convex/_generated/api";
 import { Doc, Id } from "@/convex/_generated/dataModel";
+import { sanitizeInput } from "@/lib/utils";
 import { CreateMenuInput, createMenuSchema } from "@/lib/validation";
 import { useUser } from "@clerk/clerk-react";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -68,7 +69,15 @@ const CreateMenuDialog = () => {
   const onSubmit = async (input: CreateMenuInput) => {
     try {
       onClose();
-      await createMenuMutation({ userId: user?.id ?? "", name: input.name });
+
+      // Sanitize the input name before sending to the server
+      const sanitizedName = sanitizeInput(input.name);
+
+      await createMenuMutation({
+        userId: user?.id ?? "",
+        name: sanitizedName,
+      });
+
       form.reset();
       toast.success("Menu created successfully");
     } catch (error) {
