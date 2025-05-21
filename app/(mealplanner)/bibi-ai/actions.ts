@@ -170,8 +170,8 @@ export async function analyzeImageForRecipe(
     const systemMessage = `
     You are a recipe generator AI. Your task is to analyze the food image and generate a recipe that could recreate this dish. 
     Your response must adhere to the Recipe schema structure. The dishTypes can only have 1 of the following values: "breakfast", "lunch", "snacks" or "dinner".
-    Provide detailed instructions and ingredients list based on what you see in the image. Make sure to generate the recipe in the language that is used in the image.
-    If for example the image is in spanish, the recipe should be in spanish.
+    Make sure to generate all the output in the language that is used in the image. Provide detailed instructions and ingredients list based on what you see in the image.
+    If for example the image is in spanish, the entire output should be in spanish.
     ${additionalInstructions ? `Additionally, consider these instructions from the user: ${additionalInstructions}` : ""}`;
 
     const completion = await openai.beta.chat.completions.parse({
