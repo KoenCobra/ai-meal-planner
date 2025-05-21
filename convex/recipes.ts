@@ -1,5 +1,3 @@
-import "server-only";
-
 import { paginationOptsValidator } from "convex/server";
 import { ConvexError, v } from "convex/values";
 
@@ -183,7 +181,6 @@ export const getAllRecipes = query({
     paginationOpts: v.optional(paginationOptsValidator),
   },
   handler: async (ctx, args) => {
-    console.log("Getting all recipes for user:", args.userId);
     return await ctx.db
       .query("recipes")
       .withIndex("by_user", (q) => q.eq("userId", args.userId))

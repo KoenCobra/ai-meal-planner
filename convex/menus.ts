@@ -1,5 +1,3 @@
-import "server-only";
-
 import { paginationOptsValidator } from "convex/server";
 import { ConvexError, v } from "convex/values";
 
