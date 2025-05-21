@@ -331,8 +331,6 @@ export async function analyzeImageForRecipe(
 
     const aiResponse = JSON.parse(responseText);
 
-    console.log(aiResponse);
-
     if (!aiResponse) {
       throw new Error("Failed to generate AI response");
     }
