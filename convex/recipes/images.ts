@@ -1,3 +1,5 @@
+import "server-only";
+
 import { ConvexError, v } from "convex/values";
 import { mutation, MutationCtx, query, QueryCtx } from "../_generated/server";
 
