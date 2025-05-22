@@ -37,7 +37,6 @@ interface BibiAiFormProps {
 const BibiAiForm = ({
   onRecipeGenerated,
   onGenerationStart,
-  onClear,
 }: BibiAiFormProps) => {
   const [isGeneratingRecipe, setIsGeneratingRecipe] = useState(false);
   const [isGeneratingImage, setIsGeneratingImage] = useState(false);
@@ -175,11 +174,6 @@ const BibiAiForm = ({
                   variant="outline"
                   className="flex-shrink-0 mx-auto"
                   onClick={() => {
-                    form.reset();
-                    setSelectedImage(null);
-                    setIsGeneratingRecipe(false);
-                    setIsGeneratingImage(false);
-                    onClear?.();
                     window.location.reload();
                   }}
                 >
