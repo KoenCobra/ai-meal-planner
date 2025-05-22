@@ -1,21 +1,35 @@
 "use server";
-
+import { api } from "@/convex/_generated/api";
 import openai from "@/lib/openai";
 import {
   GenerateRecipeInput,
   generateRecipeSchema,
   Recipe,
 } from "@/lib/validation";
+import { auth } from "@clerk/nextjs/server";
+import { ConvexHttpClient } from "convex/browser";
 import { zodResponseFormat } from "openai/helpers/zod";
 import sharp from "sharp";
 
-import { auth } from "@clerk/nextjs/server";
+const convex = new ConvexHttpClient(process.env.NEXT_PUBLIC_CONVEX_URL!);
 
 export async function generateRecipe(input: GenerateRecipeInput) {
   const { userId } = await auth();
 
   if (!userId) {
     throw new Error("Unauthorized");
+  }
+
+  // Check rate limits before making expensive OpenAI API call
+  const rateLimitCheck = await convex.mutation(
+    api.openaiRateLimit.checkRecipeGenerationLimit,
+    {
+      userId,
+    },
+  );
+
+  if (!rateLimitCheck.success) {
+    throw new Error(rateLimitCheck.message || "Rate limit exceeded");
   }
 
   const { description } = generateRecipeSchema.parse(input);
@@ -77,6 +91,18 @@ export async function generateRecipeImage(
 
   if (!userId) {
     throw new Error("Unauthorized");
+  }
+
+  // Check rate limits before making expensive OpenAI API call
+  const rateLimitCheck = await convex.mutation(
+    api.openaiRateLimit.checkImageGenerationLimit,
+    {
+      userId,
+    },
+  );
+
+  if (!rateLimitCheck.success) {
+    throw new Error(rateLimitCheck.message || "Rate limit exceeded");
   }
 
   try {
@@ -158,6 +184,18 @@ export async function analyzeImageForRecipe(
 
   if (!userId) {
     throw new Error("Unauthorized");
+  }
+
+  // Check rate limits before making expensive OpenAI API call
+  const rateLimitCheck = await convex.mutation(
+    api.openaiRateLimit.checkImageAnalysisLimit,
+    {
+      userId,
+    },
+  );
+
+  if (!rateLimitCheck.success) {
+    throw new Error(rateLimitCheck.message || "Rate limit exceeded");
   }
 
   try {

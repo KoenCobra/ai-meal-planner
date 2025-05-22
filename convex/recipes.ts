@@ -1,8 +1,8 @@
 import { paginationOptsValidator } from "convex/server";
 import { ConvexError, v } from "convex/values";
-
 import { mutation, query } from "./_generated/server";
 import { addOrUpdateGroceryItem } from "./groceryList";
+import { rateLimiter } from "./rateLimiter";
 
 export const createRecipe = mutation({
   args: {
@@ -35,6 +35,12 @@ export const createRecipe = mutation({
   },
   handler: async (ctx, args) => {
     const { userId, ...recipeData } = args;
+
+    // Rate limit recipe creation per user
+    await rateLimiter.limit(ctx, "createRecipe", { key: userId, throws: true });
+
+    // Also check global recipe creation limit
+    await rateLimiter.limit(ctx, "globalRecipeCreation", { throws: true });
 
     return await ctx.db.insert("recipes", {
       userId,
@@ -79,6 +85,10 @@ export const updateRecipe = mutation({
   },
   handler: async (ctx, args) => {
     const { id, userId, ...updates } = args;
+
+    // Rate limit recipe updates per user
+    await rateLimiter.limit(ctx, "updateRecipe", { key: userId, throws: true });
+
     const recipe = await ctx.db.get(id);
     if (!recipe) throw new Error("Recipe not found");
     if (recipe.userId !== userId) throw new Error("Not authorized");
@@ -95,6 +105,12 @@ export const deleteRecipe = mutation({
     id: v.id("recipes"),
   },
   handler: async (ctx, args) => {
+    // Rate limit recipe deletion per user
+    await rateLimiter.limit(ctx, "deleteRecipe", {
+      key: args.userId,
+      throws: true,
+    });
+
     const recipe = await ctx.db.get(args.id);
     if (!recipe) throw new ConvexError("Recipe not found");
     if (recipe.userId !== args.userId) throw new ConvexError("Not authorized");
@@ -196,6 +212,12 @@ export const syncIngredientsToGroceryList = mutation({
   },
   returns: v.null(),
   handler: async (ctx, args) => {
+    // Rate limit sync operations per user - these can be expensive
+    await rateLimiter.limit(ctx, "syncRecipeIngredients", {
+      key: args.userId,
+      throws: true,
+    });
+
     const recipe = await ctx.db.get(args.recipeId);
     if (!recipe) throw new ConvexError("Recipe not found");
     if (recipe.userId !== args.userId) throw new ConvexError("Not authorized");
