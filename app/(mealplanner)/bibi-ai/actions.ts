@@ -1,8 +1,12 @@
 "use server";
 
-import googleai from "@/lib/googleai";
-import { GenerateRecipeInput, generateRecipeSchema } from "@/lib/validation";
-import { Type } from "@google/genai";
+import openai from "@/lib/openai";
+import {
+  GenerateRecipeInput,
+  generateRecipeSchema,
+  Recipe,
+} from "@/lib/validation";
+import { zodResponseFormat } from "openai/helpers/zod";
 import sharp from "sharp";
 
 import { auth } from "@clerk/nextjs/server";
@@ -23,117 +27,46 @@ export async function generateRecipe(input: GenerateRecipeInput) {
   The units of measurement will be based on the user's locale.
   Smoothies are by default snacks.
   The dishTypes can only have 1 of the following values: "breakfast", "lunch", snacks  or "dinner".
-  You can only assign 1 of these values to a recipe.
-  IMPORTANT: You must return a complete recipe with all required fields: title, summary, servings, readyInMinutes, diets, instructions (with steps), ingredients, and dishTypes.
-  Always provide diets that are relevant to the dish.`;
+  You can only assign 1 of these values to a recipe.`;
 
   const userMessage = `
   Please provide a recipe from this description:
   ${description}
   `;
 
-  try {
-    const response = await googleai.models.generateContent({
-      model: "gemini-2.5-flash-preview-05-20",
-      contents: [
-        {
-          role: "user",
-          parts: [{ text: systemMessage }, { text: userMessage }],
-        },
-      ],
-      config: {
-        responseMimeType: "application/json",
-        responseSchema: {
-          type: Type.OBJECT,
-          properties: {
-            title: { type: Type.STRING },
-            summary: { type: Type.STRING },
-            servings: { type: Type.INTEGER },
-            readyInMinutes: { type: Type.INTEGER },
-            diets: {
-              type: Type.ARRAY,
-              items: { type: Type.STRING },
-            },
-            instructions: {
-              type: Type.OBJECT,
-              properties: {
-                name: { type: Type.STRING },
-                steps: {
-                  type: Type.ARRAY,
-                  items: {
-                    type: Type.OBJECT,
-                    properties: {
-                      number: { type: Type.INTEGER },
-                      step: { type: Type.STRING },
-                    },
-                  },
-                },
-              },
-            },
-            ingredients: {
-              type: Type.ARRAY,
-              items: {
-                type: Type.OBJECT,
-                properties: {
-                  name: { type: Type.STRING },
-                  measures: {
-                    type: Type.OBJECT,
-                    properties: {
-                      amount: { type: Type.NUMBER },
-                      unit: { type: Type.STRING },
-                    },
-                  },
-                },
-              },
-            },
-            dishTypes: {
-              type: Type.ARRAY,
-              items: { type: Type.STRING },
-            },
-            error: { type: Type.STRING, nullable: true },
-          },
-          propertyOrdering: [
-            "title",
-            "summary",
-            "servings",
-            "readyInMinutes",
-            "diets",
-            "instructions",
-            "ingredients",
-            "dishTypes",
-            "error",
-          ],
-        },
+  const completion = await openai.beta.chat.completions.parse({
+    model: "gpt-4.1-mini",
+
+    messages: [
+      {
+        role: "system",
+        content: systemMessage,
       },
-    });
+      {
+        role: "user",
+        content: userMessage,
+      },
+    ],
+    response_format: zodResponseFormat(Recipe, "generate_recipe"),
+  });
 
-    // Parse the JSON response
-    const responseText = response.text;
-    if (!responseText) {
-      throw new Error("Empty response from Google AI");
-    }
+  const aiResponse = completion.choices[0].message.parsed;
 
-    const aiResponse = JSON.parse(responseText);
-
-    if (!aiResponse) {
-      throw new Error("Failed to generate AI response");
-    }
-
-    return {
-      title: aiResponse.title,
-      summary: aiResponse.summary,
-      servings: aiResponse.servings,
-      readyInMinutes: aiResponse.readyInMinutes,
-      diets: aiResponse.diets,
-      instructions: aiResponse.instructions,
-      ingredients: aiResponse.ingredients,
-      dishTypes: aiResponse.dishTypes,
-      error: aiResponse.error,
-    };
-  } catch (error) {
-    console.error("Error generating recipe:", error);
-    throw new Error(`Failed to generate recipe: ${error}`);
+  if (!aiResponse) {
+    throw new Error("Failed to generate AI response");
   }
+
+  return {
+    title: aiResponse.title,
+    summary: aiResponse.summary,
+    servings: aiResponse.servings,
+    readyInMinutes: aiResponse.readyInMinutes,
+    diets: aiResponse.diets,
+    instructions: aiResponse.instructions,
+    ingredients: aiResponse.ingredients,
+    dishTypes: aiResponse.dishTypes,
+    error: aiResponse.error,
+  };
 }
 
 export async function generateRecipeImage(
@@ -147,33 +80,36 @@ export async function generateRecipeImage(
   }
 
   try {
-    const response = await googleai.models.generateImages({
-      model: "imagen-3.0-generate-002",
+    const response = await openai.images.generate({
+      model: "gpt-image-1",
       prompt: `Professional food photography of ${recipeTitle}. ${recipeDescription}. Top-down view, beautiful plating, restaurant quality, soft natural lighting.`,
-      config: {
-        numberOfImages: 1,
-      },
+      n: 1,
+      size: "1024x1024",
+      quality: "low",
     });
 
     // Check if we have a valid response
-    if (!response.generatedImages || response.generatedImages.length === 0) {
-      throw new Error("Empty response from Google AI");
+    if (!response.data || response.data.length === 0) {
+      throw new Error("Empty response from OpenAI");
     }
 
-    const imageData = response.generatedImages[0];
-    if (!imageData || !imageData.image || !imageData.image.imageBytes) {
+    const imageData = response.data[0];
+    if (!imageData || typeof imageData !== "object") {
       throw new Error("Invalid image data structure");
     }
 
-    const imageBytes = imageData.image.imageBytes;
+    const b64Json = imageData.b64_json;
+    if (!b64Json) {
+      throw new Error("No base64 image data in response");
+    }
 
     // Convert base64 to buffer
-    const buffer = Buffer.from(imageBytes, "base64");
+    const buffer = Buffer.from(b64Json, "base64");
 
     // Use Sharp to convert to WebP format with compression
     const webpBuffer = await sharp(buffer)
-      .resize(700) // Resize to smaller dimensions
-      .webp({ quality: 70 }) // Convert to WebP with 80% quality
+      .resize(800) // Resize to smaller dimensions
+      .webp({ quality: 80 }) // Convert to WebP with 80% quality
       .toBuffer();
 
     // Convert back to base64 for return
@@ -232,105 +168,40 @@ export async function analyzeImageForRecipe(
 
     const systemMessage = `
     You are a recipe generator AI. Your task is to analyze the food image and generate a recipe that could recreate this dish. 
-    The dishTypes can only have 1 of the following values: "breakfast", "lunch", "snacks" or "dinner".
+    Your response must adhere to the Recipe schema structure. The dishTypes can only have 1 of the following values: "breakfast", "lunch", "snacks" or "dinner".
     Make sure to generate all the output in the language that is used in the image. Provide detailed instructions and ingredients list based on what you see in the image.
     If for example the image is in spanish, the entire output should be in spanish.
-    IMPORTANT: You must return a complete recipe with all required fields: title, summary, servings, readyInMinutes, diets, instructions (with steps), ingredients, and dishTypes.
-    Always provide diets that are relevant to the dish.
+
     ${additionalInstructions ? `Additionally, consider these instructions from the user: ${additionalInstructions}` : ""}`;
 
-    const userMessage = `Please analyze this food image and generate a recipe for it.${additionalInstructions ? ` ${additionalInstructions}` : ""}`;
-
-    const response = await googleai.models.generateContent({
-      model: "gemini-2.5-flash-preview-05-20",
-      contents: [
+    const completion = await openai.beta.chat.completions.parse({
+      model: "gpt-4.1-mini",
+      messages: [
+        {
+          role: "system",
+          content: systemMessage,
+        },
         {
           role: "user",
-          parts: [
-            { text: systemMessage },
-            { text: userMessage },
+          content: [
             {
-              inlineData: {
-                mimeType: "image/jpeg",
-                data: base64Image,
+              type: "text",
+              text: `Please analyze this food image and generate a recipe for it.${additionalInstructions ? ` ${additionalInstructions}` : ""}`,
+            },
+            {
+              type: "image_url",
+              image_url: {
+                url: `data:image/jpeg;base64,${base64Image}`,
+                detail: "high",
               },
             },
           ],
         },
       ],
-      config: {
-        responseMimeType: "application/json",
-        responseSchema: {
-          type: Type.OBJECT,
-          properties: {
-            title: { type: Type.STRING },
-            summary: { type: Type.STRING },
-            servings: { type: Type.INTEGER },
-            readyInMinutes: { type: Type.INTEGER },
-            diets: {
-              type: Type.ARRAY,
-              items: { type: Type.STRING },
-            },
-            instructions: {
-              type: Type.OBJECT,
-              properties: {
-                name: { type: Type.STRING },
-                steps: {
-                  type: Type.ARRAY,
-                  items: {
-                    type: Type.OBJECT,
-                    properties: {
-                      number: { type: Type.INTEGER },
-                      step: { type: Type.STRING },
-                    },
-                  },
-                },
-              },
-            },
-            ingredients: {
-              type: Type.ARRAY,
-              items: {
-                type: Type.OBJECT,
-                properties: {
-                  name: { type: Type.STRING },
-                  measures: {
-                    type: Type.OBJECT,
-                    properties: {
-                      amount: { type: Type.NUMBER },
-                      unit: { type: Type.STRING },
-                    },
-                  },
-                },
-              },
-            },
-            dishTypes: {
-              type: Type.ARRAY,
-              items: { type: Type.STRING },
-            },
-            error: { type: Type.STRING, nullable: true },
-          },
-          propertyOrdering: [
-            "title",
-            "summary",
-            "servings",
-            "readyInMinutes",
-            "diets",
-            "instructions",
-            "ingredients",
-            "dishTypes",
-            "error",
-          ],
-        },
-      },
+      response_format: zodResponseFormat(Recipe, "generate_recipe"),
     });
 
-    // Parse the JSON response
-    const responseText = response.text;
-    if (!responseText) {
-      throw new Error("Empty response from Google AI");
-    }
-
-    const aiResponse = JSON.parse(responseText);
+    const aiResponse = completion.choices[0].message.parsed;
 
     if (!aiResponse) {
       throw new Error("Failed to generate AI response");
