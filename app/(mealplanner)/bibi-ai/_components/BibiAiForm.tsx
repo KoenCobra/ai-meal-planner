@@ -168,18 +168,6 @@ const BibiAiForm = ({
                   Remove
                 </Button>
               )}
-              {(isGeneratingRecipe || isGeneratingImage) && (
-                <Button
-                  type="button"
-                  variant="outline"
-                  className="flex-shrink-0 mx-auto"
-                  onClick={() => {
-                    window.location.reload();
-                  }}
-                >
-                  STOP
-                </Button>
-              )}
             </div>
           </div>
 
