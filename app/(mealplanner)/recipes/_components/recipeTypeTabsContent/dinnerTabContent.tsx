@@ -1,7 +1,5 @@
 import { Id } from "@/convex/_generated/dataModel";
-import { useDinnerRecipes } from "../../_hooks/useDinnerRecipes";
-import { EmptyState } from "../EmptyState";
-import { RecipeGrid } from "../RecipeGrid";
+import { InfiniteRecipeGrid } from "../InfiniteRecipeGrid";
 
 interface DinnerTabContentProps {
   menuId?: Id<"menus">;
@@ -9,24 +7,13 @@ interface DinnerTabContentProps {
 }
 
 const DinnerTabContent = ({ menuId, onDelete }: DinnerTabContentProps) => {
-  const { dinnerRecipes, isLoading, isError } = useDinnerRecipes({ menuId });
-
-  if (isLoading) {
-    return <div>Loading...</div>;
-  }
-
-  if (isError) {
-    return <div>Error loading recipes</div>;
-  }
-
   return (
-    <div>
-      {dinnerRecipes?.page.length === 0 ? (
-        <EmptyState mealType="Dinner" />
-      ) : (
-        <RecipeGrid recipes={dinnerRecipes?.page || []} onDelete={onDelete} />
-      )}
-    </div>
+    <InfiniteRecipeGrid
+      mealType="dinner"
+      menuId={menuId}
+      onDelete={onDelete}
+      itemsPerPage={5}
+    />
   );
 };
 

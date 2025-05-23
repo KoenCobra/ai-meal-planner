@@ -1,7 +1,5 @@
 import { Id } from "@/convex/_generated/dataModel";
-import { useSnackRecipes } from "../../_hooks/useSnackRecipes";
-import { EmptyState } from "../EmptyState";
-import { RecipeGrid } from "../RecipeGrid";
+import { InfiniteRecipeGrid } from "../InfiniteRecipeGrid";
 
 interface SnackTabContentProps {
   menuId?: Id<"menus">;
@@ -9,24 +7,13 @@ interface SnackTabContentProps {
 }
 
 const SnackTabContent = ({ menuId, onDelete }: SnackTabContentProps) => {
-  const { snackRecipes, isLoading, isError } = useSnackRecipes({ menuId });
-
-  if (isLoading) {
-    return <div>Loading...</div>;
-  }
-
-  if (isError) {
-    return <div>Error loading recipes</div>;
-  }
-
   return (
-    <div>
-      {snackRecipes?.page.length === 0 ? (
-        <EmptyState mealType="Snack" />
-      ) : (
-        <RecipeGrid recipes={snackRecipes?.page || []} onDelete={onDelete} />
-      )}
-    </div>
+    <InfiniteRecipeGrid
+      mealType="snacks"
+      menuId={menuId}
+      onDelete={onDelete}
+      itemsPerPage={5}
+    />
   );
 };
 
