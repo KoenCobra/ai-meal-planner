@@ -1,4 +1,3 @@
-import ErrorBoundary from "@/components/ui/ErrorBoundary";
 import { auth } from "@clerk/nextjs/server";
 import { redirect } from "next/navigation";
 import React from "react";
@@ -25,7 +24,7 @@ const layout = async ({ children }: { children: React.ReactNode }) => {
       <div>
         <Navbar />
         <div className="px-2 lg:max-w-4xl mx-auto md:max-w-2xl py-3 pb-16">
-          <ErrorBoundary>{children}</ErrorBoundary>
+          {children}
         </div>
       </div>
     </BibiAiProvider>
