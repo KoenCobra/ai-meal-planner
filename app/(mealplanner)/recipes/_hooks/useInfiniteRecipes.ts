@@ -45,7 +45,7 @@ const getMealTypeQuery = (mealType: MealType, isMenu: boolean) => {
 export const useInfiniteRecipes = ({
   mealType,
   menuId,
-  itemsPerPage = 5,
+  itemsPerPage = 6,
 }: UseInfiniteRecipesProps) => {
   const { user } = useUser();
   const convex = useConvex();
