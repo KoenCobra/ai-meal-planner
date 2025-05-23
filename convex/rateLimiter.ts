@@ -16,18 +16,23 @@ export const rateLimiter = new RateLimiter(components.rateLimiter, {
     period: MINUTE,
     capacity: 30,
   },
-  deleteRecipe: { kind: "token bucket", rate: 5, period: MINUTE, capacity: 10 },
+  deleteRecipe: {
+    kind: "token bucket",
+    rate: 15,
+    period: MINUTE,
+    capacity: 25,
+  },
   syncRecipeIngredients: {
     kind: "token bucket",
-    rate: 5,
+    rate: 15,
     period: MINUTE,
-    capacity: 8,
+    capacity: 25,
   },
 
   // Menu operations - limit creation and sync operations
-  createMenu: { kind: "token bucket", rate: 8, period: MINUTE, capacity: 12 },
-  updateMenu: { kind: "token bucket", rate: 15, period: MINUTE, capacity: 20 },
-  deleteMenu: { kind: "token bucket", rate: 5, period: MINUTE, capacity: 8 },
+  createMenu: { kind: "token bucket", rate: 20, period: MINUTE, capacity: 25 },
+  updateMenu: { kind: "token bucket", rate: 20, period: MINUTE, capacity: 25 },
+  deleteMenu: { kind: "token bucket", rate: 15, period: MINUTE, capacity: 20 },
   addRecipeToMenu: {
     kind: "token bucket",
     rate: 30,
@@ -42,9 +47,9 @@ export const rateLimiter = new RateLimiter(components.rateLimiter, {
   },
   syncMenuIngredients: {
     kind: "token bucket",
-    rate: 3,
+    rate: 20,
     period: MINUTE,
-    capacity: 5,
+    capacity: 50,
   },
 
   // Grocery list operations - prevent spam adding/clearing
@@ -56,15 +61,15 @@ export const rateLimiter = new RateLimiter(components.rateLimiter, {
   },
   updateGroceryItem: {
     kind: "token bucket",
-    rate: 30,
+    rate: 50,
     period: MINUTE,
-    capacity: 45,
+    capacity: 75,
   },
   deleteGroceryItem: {
     kind: "token bucket",
-    rate: 30,
+    rate: 50,
     period: MINUTE,
-    capacity: 45,
+    capacity: 75,
   },
   toggleGroceryItem: {
     kind: "token bucket",
@@ -74,15 +79,15 @@ export const rateLimiter = new RateLimiter(components.rateLimiter, {
   },
   clearGroceryItems: {
     kind: "token bucket",
-    rate: 3,
+    rate: 15,
     period: MINUTE,
-    capacity: 5,
+    capacity: 25,
   },
   clearAllGroceryItems: {
     kind: "token bucket",
-    rate: 2,
+    rate: 15,
     period: MINUTE,
-    capacity: 3,
+    capacity: 25,
   },
 
   // File operations - expensive operations that need tight control
@@ -102,21 +107,21 @@ export const rateLimiter = new RateLimiter(components.rateLimiter, {
   // Search operations - prevent expensive search spam
   searchRecipes: {
     kind: "token bucket",
-    rate: 60,
+    rate: 20,
     period: MINUTE,
-    capacity: 100,
+    capacity: 50,
   },
   searchIngredients: {
     kind: "token bucket",
-    rate: 60,
+    rate: 20,
     period: MINUTE,
-    capacity: 100,
+    capacity: 50,
   },
   searchGroceryItems: {
     kind: "token bucket",
-    rate: 60,
+    rate: 20,
     period: MINUTE,
-    capacity: 100,
+    capacity: 50,
   },
 
   // Global limits for resource-intensive operations (per IP/anonymous users)
@@ -142,21 +147,21 @@ export const rateLimiter = new RateLimiter(components.rateLimiter, {
   // OpenAI API calls - expensive operations that need tight control
   generateRecipeAI: {
     kind: "token bucket",
-    rate: 20,
+    rate: 25,
     period: HOUR,
-    capacity: 25,
+    capacity: 30,
   },
   generateImageAI: {
     kind: "token bucket",
-    rate: 10,
+    rate: 25,
     period: HOUR,
-    capacity: 12,
+    capacity: 30,
   },
   analyzeImageAI: {
     kind: "token bucket",
-    rate: 15,
+    rate: 25,
     period: HOUR,
-    capacity: 18,
+    capacity: 30,
   },
 
   // Global limits for OpenAI API usage
