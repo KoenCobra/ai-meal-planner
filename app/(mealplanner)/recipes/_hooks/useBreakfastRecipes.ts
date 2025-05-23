@@ -7,8 +7,6 @@ export const useBreakfastRecipes = () => {
   const { user } = useUser();
   const userId = user?.id || "";
 
-  console.log("breakfast");
-
   const {
     data: breakfastRecipes,
     isLoading,
