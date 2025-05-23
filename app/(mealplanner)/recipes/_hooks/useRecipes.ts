@@ -38,10 +38,7 @@ export const useRecipes = (menuId?: Id<"menus">) => {
         recipe.dishTypes?.some((type) => type.toLowerCase() === "dinner"),
       ),
       snacks: recipeData.page.filter((recipe) =>
-        recipe.dishTypes?.some(
-          (type) =>
-            type.toLowerCase() === "snack" || type.toLowerCase() === "snacks",
-        ),
+        recipe.dishTypes?.some((type) => type.toLowerCase() === "snacks"),
       ),
     };
   };

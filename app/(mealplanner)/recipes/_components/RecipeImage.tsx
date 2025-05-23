@@ -33,7 +33,9 @@ export const RecipeImage = ({ recipe, className }: RecipeImageProps) => {
             src={imageUrl}
             alt={recipe.title}
             fill
+            sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
             className="object-cover rounded-t-lg"
+            priority
           />
         </div>
       )}

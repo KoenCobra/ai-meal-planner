@@ -4,6 +4,66 @@ import { mutation, query } from "./_generated/server";
 import { addOrUpdateGroceryItem } from "./groceryList";
 import { rateLimiter } from "./rateLimiter";
 
+export const getBreakfastRecipes = query({
+  args: {
+    userId: v.string(),
+    paginationOpts: paginationOptsValidator,
+  },
+  handler: async (ctx, args) => {
+    return await ctx.db
+      .query("recipes")
+      .withIndex("by_user", (q) => q.eq("userId", args.userId))
+      .order("desc")
+      .filter((q) => q.eq(q.field("dishTypes"), ["breakfast"]))
+      .paginate(args.paginationOpts);
+  },
+});
+
+export const getLunchRecipes = query({
+  args: {
+    userId: v.string(),
+    paginationOpts: paginationOptsValidator,
+  },
+  handler: async (ctx, args) => {
+    return await ctx.db
+      .query("recipes")
+      .withIndex("by_user", (q) => q.eq("userId", args.userId))
+      .order("desc")
+      .filter((q) => q.eq(q.field("dishTypes"), ["lunch"]))
+      .paginate(args.paginationOpts);
+  },
+});
+
+export const getDinnerRecipes = query({
+  args: {
+    userId: v.string(),
+    paginationOpts: paginationOptsValidator,
+  },
+  handler: async (ctx, args) => {
+    return await ctx.db
+      .query("recipes")
+      .withIndex("by_user", (q) => q.eq("userId", args.userId))
+      .order("desc")
+      .filter((q) => q.eq(q.field("dishTypes"), ["dinner"]))
+      .paginate(args.paginationOpts);
+  },
+});
+
+export const getSnackRecipes = query({
+  args: {
+    userId: v.string(),
+    paginationOpts: paginationOptsValidator,
+  },
+  handler: async (ctx, args) => {
+    return await ctx.db
+      .query("recipes")
+      .withIndex("by_user", (q) => q.eq("userId", args.userId))
+      .order("desc")
+      .filter((q) => q.eq(q.field("dishTypes"), ["snacks"]))
+      .paginate(args.paginationOpts);
+  },
+});
+
 export const createRecipe = mutation({
   args: {
     userId: v.string(),
@@ -201,7 +261,7 @@ export const getAllRecipes = query({
       .query("recipes")
       .withIndex("by_user", (q) => q.eq("userId", args.userId))
       .order("desc")
-      .paginate(args.paginationOpts || { numItems: 10, cursor: null });
+      .paginate(args.paginationOpts || { numItems: 100, cursor: null });
   },
 });
 
