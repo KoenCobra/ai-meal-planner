@@ -1,9 +1,14 @@
 import { api } from "@/convex/_generated/api";
+import { Id } from "@/convex/_generated/dataModel";
 import { useUser } from "@clerk/clerk-react";
 import { convexQuery } from "@convex-dev/react-query";
 import { useQuery } from "@tanstack/react-query";
 
-export const useLunchRecipes = () => {
+interface UseLunchRecipesProps {
+  menuId?: Id<"menus">;
+}
+
+export const useLunchRecipes = ({ menuId }: UseLunchRecipesProps = {}) => {
   const { user } = useUser();
   const userId = user?.id || "";
 
@@ -12,13 +17,25 @@ export const useLunchRecipes = () => {
     isLoading,
     isError,
   } = useQuery({
-    ...convexQuery(api.recipes.getLunchRecipes, {
-      userId,
-      paginationOpts: {
-        numItems: 20,
-        cursor: null,
-      },
-    }),
+    ...convexQuery(
+      menuId ? api.menus.getMenuLunchRecipes : api.recipes.getLunchRecipes,
+      menuId
+        ? {
+            userId,
+            menuId,
+            paginationOpts: {
+              numItems: 20,
+              cursor: null,
+            },
+          }
+        : {
+            userId,
+            paginationOpts: {
+              numItems: 20,
+              cursor: null,
+            },
+          },
+    ),
   });
 
   return { lunchRecipes, isLoading, isError };

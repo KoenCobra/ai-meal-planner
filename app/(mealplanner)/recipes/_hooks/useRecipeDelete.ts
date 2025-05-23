@@ -49,10 +49,7 @@ export const useRecipeDelete = ({ menuId }: UseRecipeDeleteProps) => {
       localStore.setQuery(
         api.menus.getMenuRecipes,
         { userId: args.userId, menuId: args.menuId },
-        {
-          ...recipes,
-          page: recipes.page.filter((recipe) => recipe._id !== args.recipeId),
-        },
+        recipes.filter((recipe) => recipe._id !== args.recipeId),
       );
     }
   });

@@ -18,7 +18,7 @@ const RecipeDetails = ({ menuId }: RecipeDetailsProps) => {
   const {
     recipeToDelete,
     setRecipeToDelete,
-    // handleDelete,
+    handleDelete,
     handleConfirmDelete,
   } = useRecipeDelete({
     menuId,
@@ -49,7 +49,9 @@ const RecipeDetails = ({ menuId }: RecipeDetailsProps) => {
           <TabsTrigger value="snacks">Snacks</TabsTrigger>
         </TabsList>
       </Tabs>
-      {RecipeTabContent && <RecipeTabContent />}
+      {RecipeTabContent && (
+        <RecipeTabContent menuId={menuId} onDelete={handleDelete} />
+      )}
 
       <DeleteRecipeDialog
         open={!!recipeToDelete}

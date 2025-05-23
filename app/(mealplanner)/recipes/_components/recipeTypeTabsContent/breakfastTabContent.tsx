@@ -1,9 +1,20 @@
+import { Id } from "@/convex/_generated/dataModel";
 import { useBreakfastRecipes } from "../../_hooks/useBreakfastRecipes";
 import { EmptyState } from "../EmptyState";
 import { RecipeGrid } from "../RecipeGrid";
 
-const BreakfastTabContent = () => {
-  const { breakfastRecipes, isLoading, isError } = useBreakfastRecipes();
+interface BreakfastTabContentProps {
+  menuId?: Id<"menus">;
+  onDelete: (recipeId: Id<"recipes">, title: string) => void;
+}
+
+const BreakfastTabContent = ({
+  menuId,
+  onDelete,
+}: BreakfastTabContentProps) => {
+  const { breakfastRecipes, isLoading, isError } = useBreakfastRecipes({
+    menuId,
+  });
 
   if (isLoading) {
     return <div>Loading...</div>;
@@ -20,7 +31,7 @@ const BreakfastTabContent = () => {
       ) : (
         <RecipeGrid
           recipes={breakfastRecipes?.page || []}
-          onDelete={() => {}}
+          onDelete={onDelete}
         />
       )}
     </div>

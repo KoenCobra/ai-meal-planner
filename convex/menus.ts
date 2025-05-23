@@ -179,7 +179,6 @@ export const getMenuRecipes = query({
   args: {
     userId: v.string(),
     menuId: v.id("menus"),
-    paginationOpts: v.optional(paginationOptsValidator),
   },
   handler: async (ctx, args) => {
     const menu = await ctx.db.get(args.menuId);
@@ -190,16 +189,148 @@ export const getMenuRecipes = query({
       .query("menusOnRecipes")
       .withIndex("by_menu", (q) => q.eq("menuId", args.menuId))
       .order("desc")
-      .paginate(args.paginationOpts || { numItems: 10, cursor: null });
+      .collect();
+
+    const recipes = await Promise.all(
+      associations.map(async (assoc) => await ctx.db.get(assoc.recipeId)),
+    );
+
+    return recipes.filter(
+      (recipe): recipe is NonNullable<typeof recipe> => recipe !== null,
+    );
+  },
+});
+
+export const getMenuBreakfastRecipes = query({
+  args: {
+    userId: v.string(),
+    menuId: v.id("menus"),
+    paginationOpts: paginationOptsValidator,
+  },
+  handler: async (ctx, args) => {
+    const menu = await ctx.db.get(args.menuId);
+    if (!menu) throw new ConvexError("Menu not found");
+    if (menu.userId !== args.userId) throw new ConvexError("Not authorized");
+
+    const associations = await ctx.db
+      .query("menusOnRecipes")
+      .withIndex("by_menu", (q) => q.eq("menuId", args.menuId))
+      .order("desc")
+      .paginate(args.paginationOpts);
 
     const recipes = await Promise.all(
       associations.page.map(async (assoc) => await ctx.db.get(assoc.recipeId)),
     );
 
+    const breakfastRecipes = recipes.filter(
+      (recipe): recipe is NonNullable<typeof recipe> =>
+        recipe !== null && recipe.dishTypes.includes("breakfast"),
+    );
+
     return {
-      page: recipes.filter(
-        (recipe): recipe is NonNullable<typeof recipe> => recipe !== null,
-      ),
+      page: breakfastRecipes,
+      isDone: associations.isDone,
+      continueCursor: associations.continueCursor,
+    };
+  },
+});
+
+export const getMenuLunchRecipes = query({
+  args: {
+    userId: v.string(),
+    menuId: v.id("menus"),
+    paginationOpts: paginationOptsValidator,
+  },
+  handler: async (ctx, args) => {
+    const menu = await ctx.db.get(args.menuId);
+    if (!menu) throw new ConvexError("Menu not found");
+    if (menu.userId !== args.userId) throw new ConvexError("Not authorized");
+
+    const associations = await ctx.db
+      .query("menusOnRecipes")
+      .withIndex("by_menu", (q) => q.eq("menuId", args.menuId))
+      .order("desc")
+      .paginate(args.paginationOpts);
+
+    const recipes = await Promise.all(
+      associations.page.map(async (assoc) => await ctx.db.get(assoc.recipeId)),
+    );
+
+    const lunchRecipes = recipes.filter(
+      (recipe): recipe is NonNullable<typeof recipe> =>
+        recipe !== null && recipe.dishTypes.includes("lunch"),
+    );
+
+    return {
+      page: lunchRecipes,
+      isDone: associations.isDone,
+      continueCursor: associations.continueCursor,
+    };
+  },
+});
+
+export const getMenuDinnerRecipes = query({
+  args: {
+    userId: v.string(),
+    menuId: v.id("menus"),
+    paginationOpts: paginationOptsValidator,
+  },
+  handler: async (ctx, args) => {
+    const menu = await ctx.db.get(args.menuId);
+    if (!menu) throw new ConvexError("Menu not found");
+    if (menu.userId !== args.userId) throw new ConvexError("Not authorized");
+
+    const associations = await ctx.db
+      .query("menusOnRecipes")
+      .withIndex("by_menu", (q) => q.eq("menuId", args.menuId))
+      .order("desc")
+      .paginate(args.paginationOpts);
+
+    const recipes = await Promise.all(
+      associations.page.map(async (assoc) => await ctx.db.get(assoc.recipeId)),
+    );
+
+    const dinnerRecipes = recipes.filter(
+      (recipe): recipe is NonNullable<typeof recipe> =>
+        recipe !== null && recipe.dishTypes.includes("dinner"),
+    );
+
+    return {
+      page: dinnerRecipes,
+      isDone: associations.isDone,
+      continueCursor: associations.continueCursor,
+    };
+  },
+});
+
+export const getMenuSnackRecipes = query({
+  args: {
+    userId: v.string(),
+    menuId: v.id("menus"),
+    paginationOpts: paginationOptsValidator,
+  },
+  handler: async (ctx, args) => {
+    const menu = await ctx.db.get(args.menuId);
+    if (!menu) throw new ConvexError("Menu not found");
+    if (menu.userId !== args.userId) throw new ConvexError("Not authorized");
+
+    const associations = await ctx.db
+      .query("menusOnRecipes")
+      .withIndex("by_menu", (q) => q.eq("menuId", args.menuId))
+      .order("desc")
+      .paginate(args.paginationOpts);
+
+    const recipes = await Promise.all(
+      associations.page.map(async (assoc) => await ctx.db.get(assoc.recipeId)),
+    );
+
+    const snackRecipes = recipes.filter(
+      (recipe): recipe is NonNullable<typeof recipe> =>
+        recipe !== null && recipe.dishTypes.includes("snacks"),
+    );
+
+    return {
+      page: snackRecipes,
       isDone: associations.isDone,
       continueCursor: associations.continueCursor,
     };
@@ -210,15 +341,14 @@ export const getMenusContainingRecipe = query({
   args: {
     userId: v.string(),
     recipeId: v.id("recipes"),
-    paginationOpts: v.optional(paginationOptsValidator),
   },
   handler: async (ctx, args) => {
     const associations = await ctx.db
       .query("menusOnRecipes")
       .withIndex("by_recipe", (q) => q.eq("recipeId", args.recipeId))
-      .paginate(args.paginationOpts || { numItems: 10, cursor: null });
+      .collect();
 
-    const menuIds = associations.page.map((assoc) => assoc.menuId);
+    const menuIds = associations.map((assoc) => assoc.menuId);
 
     const menus = await Promise.all(
       menuIds.map(async (menuId) => {
@@ -230,13 +360,9 @@ export const getMenusContainingRecipe = query({
       }),
     );
 
-    return {
-      page: menus.filter(
-        (menu): menu is NonNullable<typeof menu> => menu !== null,
-      ),
-      isDone: associations.isDone,
-      continueCursor: associations.continueCursor,
-    };
+    return menus.filter(
+      (menu): menu is NonNullable<typeof menu> => menu !== null,
+    );
   },
 });
 
