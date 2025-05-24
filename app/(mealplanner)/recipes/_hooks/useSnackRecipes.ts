@@ -24,14 +24,14 @@ export const useSnackRecipes = ({ menuId }: UseSnackRecipesProps = {}) => {
             userId,
             menuId,
             paginationOpts: {
-              numItems: 20,
+              numItems: 6,
               cursor: null,
             },
           }
         : {
             userId,
             paginationOpts: {
-              numItems: 20,
+              numItems: 6,
               cursor: null,
             },
           },

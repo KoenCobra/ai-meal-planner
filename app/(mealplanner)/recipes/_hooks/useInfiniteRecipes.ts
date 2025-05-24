@@ -95,7 +95,6 @@ export const useInfiniteRecipes = ({
     getNextPageParam: (lastPage) => {
       return lastPage?.isDone ? undefined : lastPage?.continueCursor;
     },
-    enabled: !!userId && !!convex,
   });
 
   // Flatten all pages into a single array
