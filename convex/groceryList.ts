@@ -29,8 +29,9 @@ export const addItem = mutation({
 
     const existingItem = await ctx.db
       .query("groceryItems")
-      .withIndex("by_user", (q) => q.eq("userId", args.userId))
-      .filter((q) => q.eq(q.field("name"), args.name))
+      .withIndex("by_user_and_name", (q) =>
+        q.eq("userId", args.userId).eq("name", args.name),
+      )
       .first();
 
     if (existingItem && args.quantity && existingItem.quantity) {
@@ -70,8 +71,9 @@ export const addOrUpdateGroceryItem = async (
 ) => {
   const existingItem = await ctx.db
     .query("groceryItems")
-    .withIndex("by_user", (q) => q.eq("userId", userId))
-    .filter((q) => q.eq(q.field("name"), name))
+    .withIndex("by_user_and_name", (q) =>
+      q.eq("userId", userId).eq("name", name),
+    )
     .first();
 
   if (existingItem && existingItem.quantity) {
@@ -166,13 +168,13 @@ export const updateItem = mutation({
 });
 
 export const listItems = query({
-  args: {
-    userId: v.string(),
-  },
+  args: { userId: v.string() },
   handler: async (ctx, args) => {
     return await ctx.db
       .query("groceryItems")
-      .withIndex("by_user", (q) => q.eq("userId", args.userId))
+      .withIndex("by_user_and_creation_time", (q) =>
+        q.eq("userId", args.userId),
+      )
       .order("desc")
       .collect();
   },
@@ -204,13 +206,12 @@ export const clearCheckedItems = mutation({
 
     const checkedItems = await ctx.db
       .query("groceryItems")
-      .withIndex("by_user", (q) => q.eq("userId", args.userId))
+      .withIndex("by_user_and_checked", (q) =>
+        q.eq("userId", args.userId).eq("checked", true),
+      )
       .collect();
-
     for (const item of checkedItems) {
-      if (item.checked) {
-        await ctx.db.delete(item._id);
-      }
+      await ctx.db.delete(item._id);
     }
   },
 });
@@ -227,7 +228,9 @@ export const clearAllItems = mutation({
 
     const allItems = await ctx.db
       .query("groceryItems")
-      .withIndex("by_user", (q) => q.eq("userId", args.userId))
+      .withIndex("by_user_and_creation_time", (q) =>
+        q.eq("userId", args.userId),
+      )
       .collect();
 
     for (const item of allItems) {

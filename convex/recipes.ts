@@ -170,7 +170,9 @@ export const listRecipes = query({
   handler: async (ctx, args) => {
     return await ctx.db
       .query("recipes")
-      .withIndex("by_user", (q) => q.eq("userId", args.userId))
+      .withIndex("by_user_and_creation_time", (q) =>
+        q.eq("userId", args.userId),
+      )
       .order("desc")
       .paginate(args.paginationOpts);
   },
@@ -216,7 +218,9 @@ export const getAllRecipes = query({
   handler: async (ctx, args) => {
     return await ctx.db
       .query("recipes")
-      .withIndex("by_user", (q) => q.eq("userId", args.userId))
+      .withIndex("by_user_and_creation_time", (q) =>
+        q.eq("userId", args.userId),
+      )
       .order("desc")
       .paginate(args.paginationOpts || { numItems: 100, cursor: null });
   },
