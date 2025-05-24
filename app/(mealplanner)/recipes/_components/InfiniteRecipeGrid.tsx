@@ -1,6 +1,5 @@
 "use client";
 
-import { Button } from "@/components/ui/button";
 import { Id } from "@/convex/_generated/dataModel";
 import { Loader2 } from "lucide-react";
 import { useEffect, useRef } from "react";
@@ -21,7 +20,7 @@ export const InfiniteRecipeGrid = ({
   mealType,
   menuId,
   onDelete,
-  itemsPerPage = 5,
+  itemsPerPage = 6,
 }: InfiniteRecipeGridProps) => {
   const {
     recipes,
@@ -91,18 +90,6 @@ export const InfiniteRecipeGrid = ({
           <div className="flex items-center justify-center py-4">
             <Loader2 className="h-6 w-6 animate-spin" />
             <span className="ml-2">Loading more recipes...</span>
-          </div>
-        )}
-
-        {hasNextPage && !isFetchingNextPage && (
-          <div className="flex justify-center">
-            <Button
-              variant="outline"
-              onClick={() => fetchNextPage()}
-              className="px-8"
-            >
-              Load More Recipes
-            </Button>
           </div>
         )}
 
