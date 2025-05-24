@@ -201,7 +201,7 @@ export const getMenuRecipes = query({
   },
 });
 
-// Optimized function to get menu recipes by dish type
+// Optimized single function to get menu recipes by dish type
 export const getMenuRecipesByDishType = query({
   args: {
     userId: v.string(),
@@ -209,11 +209,6 @@ export const getMenuRecipesByDishType = query({
     dishType: v.string(),
     paginationOpts: paginationOptsValidator,
   },
-  returns: v.object({
-    page: v.array(v.any()),
-    isDone: v.boolean(),
-    continueCursor: v.union(v.string(), v.null()),
-  }),
   handler: async (ctx, args) => {
     const menu = await ctx.db.get(args.menuId);
     if (!menu) throw new ConvexError("Menu not found");
@@ -236,142 +231,6 @@ export const getMenuRecipesByDishType = query({
 
     return {
       page: filteredRecipes,
-      isDone: associations.isDone,
-      continueCursor: associations.continueCursor,
-    };
-  },
-});
-
-export const getMenuBreakfastRecipes = query({
-  args: {
-    userId: v.string(),
-    menuId: v.id("menus"),
-    paginationOpts: paginationOptsValidator,
-  },
-  handler: async (ctx, args) => {
-    const menu = await ctx.db.get(args.menuId);
-    if (!menu) throw new ConvexError("Menu not found");
-    if (menu.userId !== args.userId) throw new ConvexError("Not authorized");
-
-    const associations = await ctx.db
-      .query("menusOnRecipes")
-      .withIndex("by_menu", (q) => q.eq("menuId", args.menuId))
-      .order("desc")
-      .paginate(args.paginationOpts);
-
-    const recipes = await Promise.all(
-      associations.page.map(async (assoc) => await ctx.db.get(assoc.recipeId)),
-    );
-
-    const breakfastRecipes = recipes.filter(
-      (recipe): recipe is NonNullable<typeof recipe> =>
-        recipe !== null && recipe.dishTypes.includes("breakfast"),
-    );
-
-    return {
-      page: breakfastRecipes,
-      isDone: associations.isDone,
-      continueCursor: associations.continueCursor,
-    };
-  },
-});
-
-export const getMenuLunchRecipes = query({
-  args: {
-    userId: v.string(),
-    menuId: v.id("menus"),
-    paginationOpts: paginationOptsValidator,
-  },
-  handler: async (ctx, args) => {
-    const menu = await ctx.db.get(args.menuId);
-    if (!menu) throw new ConvexError("Menu not found");
-    if (menu.userId !== args.userId) throw new ConvexError("Not authorized");
-
-    const associations = await ctx.db
-      .query("menusOnRecipes")
-      .withIndex("by_menu", (q) => q.eq("menuId", args.menuId))
-      .order("desc")
-      .paginate(args.paginationOpts);
-
-    const recipes = await Promise.all(
-      associations.page.map(async (assoc) => await ctx.db.get(assoc.recipeId)),
-    );
-
-    const lunchRecipes = recipes.filter(
-      (recipe): recipe is NonNullable<typeof recipe> =>
-        recipe !== null && recipe.dishTypes.includes("lunch"),
-    );
-
-    return {
-      page: lunchRecipes,
-      isDone: associations.isDone,
-      continueCursor: associations.continueCursor,
-    };
-  },
-});
-
-export const getMenuDinnerRecipes = query({
-  args: {
-    userId: v.string(),
-    menuId: v.id("menus"),
-    paginationOpts: paginationOptsValidator,
-  },
-  handler: async (ctx, args) => {
-    const menu = await ctx.db.get(args.menuId);
-    if (!menu) throw new ConvexError("Menu not found");
-    if (menu.userId !== args.userId) throw new ConvexError("Not authorized");
-
-    const associations = await ctx.db
-      .query("menusOnRecipes")
-      .withIndex("by_menu", (q) => q.eq("menuId", args.menuId))
-      .order("desc")
-      .paginate(args.paginationOpts);
-
-    const recipes = await Promise.all(
-      associations.page.map(async (assoc) => await ctx.db.get(assoc.recipeId)),
-    );
-
-    const dinnerRecipes = recipes.filter(
-      (recipe): recipe is NonNullable<typeof recipe> =>
-        recipe !== null && recipe.dishTypes.includes("dinner"),
-    );
-
-    return {
-      page: dinnerRecipes,
-      isDone: associations.isDone,
-      continueCursor: associations.continueCursor,
-    };
-  },
-});
-
-export const getMenuSnackRecipes = query({
-  args: {
-    userId: v.string(),
-    menuId: v.id("menus"),
-    paginationOpts: paginationOptsValidator,
-  },
-  handler: async (ctx, args) => {
-    const menu = await ctx.db.get(args.menuId);
-    if (!menu) throw new ConvexError("Menu not found");
-    if (menu.userId !== args.userId) throw new ConvexError("Not authorized");
-
-    const associations = await ctx.db
-      .query("menusOnRecipes")
-      .withIndex("by_menu", (q) => q.eq("menuId", args.menuId))
-      .order("desc")
-      .paginate(args.paginationOpts);
-
-    const recipes = await Promise.all(
-      associations.page.map(async (assoc) => await ctx.db.get(assoc.recipeId)),
-    );
-
-    const snackRecipes = recipes.filter(
-      (recipe): recipe is NonNullable<typeof recipe> =>
-        recipe !== null && recipe.dishTypes.includes("snacks"),
-    );
-
-    return {
-      page: snackRecipes,
       isDone: associations.isDone,
       continueCursor: associations.continueCursor,
     };

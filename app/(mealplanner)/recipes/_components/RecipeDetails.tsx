@@ -1,11 +1,10 @@
 "use client";
 
+import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Id } from "@/convex/_generated/dataModel";
 import { useSearchParams } from "next/navigation";
 import DeleteRecipeDialog from "../../_components/DeleteRecipeDialog";
 import { useRecipeDelete } from "../_hooks/useRecipeDelete";
-// import { useRecipes } from "../_hooks/useRecipes";
-import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { tabs } from "../tabs";
 
 interface RecipeDetailsProps {

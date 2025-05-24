@@ -4,88 +4,17 @@ import { mutation, query } from "./_generated/server";
 import { addOrUpdateGroceryItem } from "./groceryList";
 import { rateLimiter } from "./rateLimiter";
 
-// Optimized single function to get recipes by dish type
 export const getRecipesByDishType = query({
   args: {
     userId: v.string(),
     dishType: v.string(),
     paginationOpts: paginationOptsValidator,
   },
-  returns: v.object({
-    page: v.array(v.any()),
-    isDone: v.boolean(),
-    continueCursor: v.union(v.string(), v.null()),
-  }),
   handler: async (ctx, args) => {
     return await ctx.db
       .query("recipes")
       .withIndex("by_user_and_dish_types", (q) =>
         q.eq("userId", args.userId).eq("dishTypes", [args.dishType]),
-      )
-      .order("desc")
-      .paginate(args.paginationOpts);
-  },
-});
-
-// Legacy functions for backward compatibility - these now use the optimized function
-export const getBreakfastRecipes = query({
-  args: {
-    userId: v.string(),
-    paginationOpts: paginationOptsValidator,
-  },
-  handler: async (ctx, args) => {
-    return await ctx.db
-      .query("recipes")
-      .withIndex("by_user_and_dish_types", (q) =>
-        q.eq("userId", args.userId).eq("dishTypes", ["breakfast"]),
-      )
-      .order("desc")
-      .paginate(args.paginationOpts);
-  },
-});
-
-export const getLunchRecipes = query({
-  args: {
-    userId: v.string(),
-    paginationOpts: paginationOptsValidator,
-  },
-  handler: async (ctx, args) => {
-    return await ctx.db
-      .query("recipes")
-      .withIndex("by_user_and_dish_types", (q) =>
-        q.eq("userId", args.userId).eq("dishTypes", ["lunch"]),
-      )
-      .order("desc")
-      .paginate(args.paginationOpts);
-  },
-});
-
-export const getDinnerRecipes = query({
-  args: {
-    userId: v.string(),
-    paginationOpts: paginationOptsValidator,
-  },
-  handler: async (ctx, args) => {
-    return await ctx.db
-      .query("recipes")
-      .withIndex("by_user_and_dish_types", (q) =>
-        q.eq("userId", args.userId).eq("dishTypes", ["dinner"]),
-      )
-      .order("desc")
-      .paginate(args.paginationOpts);
-  },
-});
-
-export const getSnackRecipes = query({
-  args: {
-    userId: v.string(),
-    paginationOpts: paginationOptsValidator,
-  },
-  handler: async (ctx, args) => {
-    return await ctx.db
-      .query("recipes")
-      .withIndex("by_user_and_dish_types", (q) =>
-        q.eq("userId", args.userId).eq("dishTypes", ["snacks"]),
       )
       .order("desc")
       .paginate(args.paginationOpts);

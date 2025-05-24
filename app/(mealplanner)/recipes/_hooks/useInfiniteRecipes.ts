@@ -14,31 +14,9 @@ interface UseInfiniteRecipesProps {
 
 const getMealTypeQuery = (mealType: MealType, isMenu: boolean) => {
   if (isMenu) {
-    switch (mealType) {
-      case "breakfast":
-        return api.menus.getMenuBreakfastRecipes;
-      case "lunch":
-        return api.menus.getMenuLunchRecipes;
-      case "dinner":
-        return api.menus.getMenuDinnerRecipes;
-      case "snacks":
-        return api.menus.getMenuSnackRecipes;
-      default:
-        throw new Error(`Unknown meal type: ${mealType}`);
-    }
+    return api.menus.getMenuRecipesByDishType;
   } else {
-    switch (mealType) {
-      case "breakfast":
-        return api.recipes.getBreakfastRecipes;
-      case "lunch":
-        return api.recipes.getLunchRecipes;
-      case "dinner":
-        return api.recipes.getDinnerRecipes;
-      case "snacks":
-        return api.recipes.getSnackRecipes;
-      default:
-        throw new Error(`Unknown meal type: ${mealType}`);
-    }
+    return api.recipes.getRecipesByDishType;
   }
 };
 
@@ -76,6 +54,7 @@ export const useInfiniteRecipes = ({
         ? {
             userId,
             menuId,
+            dishType: mealType,
             paginationOpts: {
               numItems: itemsPerPage,
               cursor: pageParam || null,
@@ -83,6 +62,7 @@ export const useInfiniteRecipes = ({
           }
         : {
             userId,
+            dishType: mealType,
             paginationOpts: {
               numItems: itemsPerPage,
               cursor: pageParam || null,
