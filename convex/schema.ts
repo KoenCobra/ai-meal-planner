@@ -32,6 +32,7 @@ const applicationTables = {
   })
     .index("by_user", ["userId"])
     .index("by_title", ["title"])
+    .index("by_user_and_dish_types", ["userId", "dishTypes"])
     .searchIndex("search_title", {
       searchField: "title",
       filterFields: ["userId"],

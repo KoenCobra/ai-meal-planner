@@ -4,6 +4,30 @@ import { mutation, query } from "./_generated/server";
 import { addOrUpdateGroceryItem } from "./groceryList";
 import { rateLimiter } from "./rateLimiter";
 
+// Optimized single function to get recipes by dish type
+export const getRecipesByDishType = query({
+  args: {
+    userId: v.string(),
+    dishType: v.string(),
+    paginationOpts: paginationOptsValidator,
+  },
+  returns: v.object({
+    page: v.array(v.any()),
+    isDone: v.boolean(),
+    continueCursor: v.union(v.string(), v.null()),
+  }),
+  handler: async (ctx, args) => {
+    return await ctx.db
+      .query("recipes")
+      .withIndex("by_user_and_dish_types", (q) =>
+        q.eq("userId", args.userId).eq("dishTypes", [args.dishType]),
+      )
+      .order("desc")
+      .paginate(args.paginationOpts);
+  },
+});
+
+// Legacy functions for backward compatibility - these now use the optimized function
 export const getBreakfastRecipes = query({
   args: {
     userId: v.string(),
@@ -12,9 +36,10 @@ export const getBreakfastRecipes = query({
   handler: async (ctx, args) => {
     return await ctx.db
       .query("recipes")
-      .withIndex("by_user", (q) => q.eq("userId", args.userId))
+      .withIndex("by_user_and_dish_types", (q) =>
+        q.eq("userId", args.userId).eq("dishTypes", ["breakfast"]),
+      )
       .order("desc")
-      .filter((q) => q.eq(q.field("dishTypes"), ["breakfast"]))
       .paginate(args.paginationOpts);
   },
 });
@@ -27,9 +52,10 @@ export const getLunchRecipes = query({
   handler: async (ctx, args) => {
     return await ctx.db
       .query("recipes")
-      .withIndex("by_user", (q) => q.eq("userId", args.userId))
+      .withIndex("by_user_and_dish_types", (q) =>
+        q.eq("userId", args.userId).eq("dishTypes", ["lunch"]),
+      )
       .order("desc")
-      .filter((q) => q.eq(q.field("dishTypes"), ["lunch"]))
       .paginate(args.paginationOpts);
   },
 });
@@ -42,9 +68,10 @@ export const getDinnerRecipes = query({
   handler: async (ctx, args) => {
     return await ctx.db
       .query("recipes")
-      .withIndex("by_user", (q) => q.eq("userId", args.userId))
+      .withIndex("by_user_and_dish_types", (q) =>
+        q.eq("userId", args.userId).eq("dishTypes", ["dinner"]),
+      )
       .order("desc")
-      .filter((q) => q.eq(q.field("dishTypes"), ["dinner"]))
       .paginate(args.paginationOpts);
   },
 });
@@ -57,9 +84,10 @@ export const getSnackRecipes = query({
   handler: async (ctx, args) => {
     return await ctx.db
       .query("recipes")
-      .withIndex("by_user", (q) => q.eq("userId", args.userId))
+      .withIndex("by_user_and_dish_types", (q) =>
+        q.eq("userId", args.userId).eq("dishTypes", ["snacks"]),
+      )
       .order("desc")
-      .filter((q) => q.eq(q.field("dishTypes"), ["snacks"]))
       .paginate(args.paginationOpts);
   },
 });
@@ -200,7 +228,7 @@ export const getRecipe = query({
   handler: async (ctx, args) => {
     const recipe = await ctx.db.get(args.id);
     if (!recipe) return null;
-    if (recipe.userId !== args.userId) throw new Error("Not authorized");
+    if (recipe.userId !== args.userId) throw new ConvexError("Not authorized");
     return recipe;
   },
 });
