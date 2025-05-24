@@ -97,7 +97,6 @@ export const useInfiniteRecipes = ({
     },
   });
 
-  // Flatten all pages into a single array
   const recipes = data?.pages.flatMap((page) => page?.page || []) || [];
 
   return {
