@@ -3,7 +3,7 @@ import { InfiniteRecipeGrid } from "../InfiniteRecipeGrid";
 
 interface DinnerTabContentProps {
   menuId?: Id<"menus">;
-  onDelete: (recipeId: Id<"recipes">, title: string) => void;
+  onDelete: (recipeId: Id<"recipes">, title: string, dishType: string) => void;
 }
 
 const DinnerTabContent = ({ menuId, onDelete }: DinnerTabContentProps) => {

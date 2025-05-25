@@ -18,18 +18,32 @@ export const useRecipeDelete = ({ menuId }: UseRecipeDeleteProps) => {
   const [recipeToDelete, setRecipeToDelete] = useState<{
     id: Id<"recipes">;
     title: string;
+    dishType: string;
   } | null>(null);
 
   const deleteRecipe = useMutation(
     api.recipes.deleteRecipe,
   ).withOptimisticUpdate((localStore, args) => {
-    const recipes = localStore.getQuery(api.recipes.getAllRecipes, {
+    const recipes = localStore.getQuery(api.recipes.getRecipesByDishType, {
       userId: args.userId,
+      dishType: args.dishType,
+      paginationOpts: {
+        numItems: 100,
+        cursor: null,
+      },
     });
     if (recipes) {
       localStore.setQuery(
-        api.recipes.getAllRecipes,
-        { userId: args.userId },
+        api.recipes.getRecipesByDishType,
+        {
+          userId: args.userId,
+          dishType: args.dishType,
+          paginationOpts: {
+            numItems: 100,
+            cursor: null,
+          },
+        },
+
         {
           ...recipes,
           page: recipes.page.filter((recipe) => recipe._id !== args.id),
@@ -54,8 +68,12 @@ export const useRecipeDelete = ({ menuId }: UseRecipeDeleteProps) => {
     }
   });
 
-  const handleDelete = (recipeId: Id<"recipes">, title: string) => {
-    setRecipeToDelete({ id: recipeId, title });
+  const handleDelete = (
+    recipeId: Id<"recipes">,
+    title: string,
+    dishType: string,
+  ) => {
+    setRecipeToDelete({ id: recipeId, title, dishType });
   };
 
   const handleConfirmDelete = async () => {
@@ -75,6 +93,7 @@ export const useRecipeDelete = ({ menuId }: UseRecipeDeleteProps) => {
         await deleteRecipe({
           userId,
           id: recipeToDelete.id,
+          dishType: recipeToDelete.dishType,
         });
         toast.success("Recipe deleted successfully");
       }

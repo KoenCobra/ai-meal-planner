@@ -28,7 +28,7 @@ const applicationTables = {
         }),
       }),
     ),
-    dishTypes: v.array(v.string()),
+    dishTypes: v.string(),
   })
     .index("by_user", ["userId"])
     .index("by_title", ["title"])

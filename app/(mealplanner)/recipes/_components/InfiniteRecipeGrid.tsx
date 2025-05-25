@@ -12,7 +12,7 @@ type MealType = "breakfast" | "lunch" | "dinner" | "snacks";
 interface InfiniteRecipeGridProps {
   mealType: MealType;
   menuId?: Id<"menus">;
-  onDelete: (recipeId: Id<"recipes">, title: string) => void;
+  onDelete: (recipeId: Id<"recipes">, title: string, dishType: string) => void;
   itemsPerPage?: number;
 }
 

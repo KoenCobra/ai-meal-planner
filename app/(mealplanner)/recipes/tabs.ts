@@ -6,7 +6,7 @@ import SnackTabContent from "./_components/recipeTypeTabsContent/snackTabContent
 
 interface TabContentProps {
   menuId?: Id<"menus">;
-  onDelete: (recipeId: Id<"recipes">, title: string) => void;
+  onDelete: (recipeId: Id<"recipes">, title: string, dishType: string) => void;
 }
 
 export const tabs: {

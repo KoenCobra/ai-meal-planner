@@ -14,7 +14,7 @@ export const getRecipesByDishType = query({
     return await ctx.db
       .query("recipes")
       .withIndex("by_user_and_dish_types", (q) =>
-        q.eq("userId", args.userId).eq("dishTypes", [args.dishType]),
+        q.eq("userId", args.userId).eq("dishTypes", args.dishType),
       )
       .order("desc")
       .paginate(args.paginationOpts);
@@ -48,7 +48,7 @@ export const createRecipe = mutation({
         }),
       }),
     ),
-    dishTypes: v.array(v.string()),
+    dishTypes: v.string(),
   },
   handler: async (ctx, args) => {
     const { userId, ...recipeData } = args;
@@ -98,7 +98,7 @@ export const updateRecipe = mutation({
         }),
       ),
     ),
-    dishTypes: v.optional(v.array(v.string())),
+    dishTypes: v.optional(v.string()),
   },
   handler: async (ctx, args) => {
     const { id, userId, ...updates } = args;
@@ -120,6 +120,7 @@ export const deleteRecipe = mutation({
   args: {
     userId: v.string(),
     id: v.id("recipes"),
+    dishType: v.string(),
   },
   handler: async (ctx, args) => {
     // Rate limit recipe deletion per user
@@ -208,19 +209,19 @@ export const searchByIngredients = query({
   },
 });
 
-export const getAllRecipes = query({
-  args: {
-    userId: v.string(),
-    paginationOpts: v.optional(paginationOptsValidator),
-  },
-  handler: async (ctx, args) => {
-    return await ctx.db
-      .query("recipes")
-      .withIndex("by_user", (q) => q.eq("userId", args.userId))
-      .order("desc")
-      .paginate(args.paginationOpts || { numItems: 100, cursor: null });
-  },
-});
+// export const getAllRecipes = query({
+//   args: {
+//     userId: v.string(),
+//     paginationOpts: v.optional(paginationOptsValidator),
+//   },
+//   handler: async (ctx, args) => {
+//     return await ctx.db
+//       .query("recipes")
+//       .withIndex("by_user", (q) => q.eq("userId", args.userId))
+//       .order("desc")
+//       .paginate(args.paginationOpts || { numItems: 100, cursor: null });
+//   },
+// });
 
 export const syncIngredientsToGroceryList = mutation({
   args: {
