@@ -1,7 +1,8 @@
 import { api } from "@/convex/_generated/api";
 import { Id } from "@/convex/_generated/dataModel";
 import { useUser } from "@clerk/clerk-react";
-import { usePaginatedQuery } from "convex/react";
+import { useInfiniteQuery } from "@tanstack/react-query";
+import { useConvex } from "convex/react";
 
 type MealType = "breakfast" | "lunch" | "dinner" | "snacks";
 
@@ -25,40 +26,61 @@ export const useInfiniteRecipes = ({
   itemsPerPage = 6,
 }: UseInfiniteRecipesProps) => {
   const { user } = useUser();
+  const convex = useConvex();
   const userId = user?.id || "";
 
   const queryFn = getMealTypeQuery(mealType, !!menuId);
 
-  const args = menuId
-    ? {
-        userId,
-        menuId,
-        dishType: mealType,
-      }
-    : {
-        userId,
-        dishType: mealType,
-      };
-
   const {
-    results: recipes,
-    status,
-    loadMore,
+    data,
+    fetchNextPage,
+    hasNextPage,
+    isFetchingNextPage,
     isLoading,
-  } = usePaginatedQuery(queryFn, args, { initialNumItems: itemsPerPage });
+    isError,
+  } = useInfiniteQuery({
+    queryKey: [
+      "recipes",
+      mealType,
+      menuId ? "menu" : "all",
+      menuId,
+      userId,
+      itemsPerPage,
+    ],
+    queryFn: async ({ pageParam }) => {
+      if (!convex) throw new Error("Convex client not available");
 
-  const fetchNextPage = () => {
-    if (status === "CanLoadMore") {
-      loadMore(itemsPerPage);
-    }
-  };
+      const args = menuId
+        ? {
+            userId,
+            menuId,
+            dishType: mealType,
+            paginationOpts: {
+              numItems: itemsPerPage,
+              cursor: pageParam || null,
+            },
+          }
+        : {
+            userId,
+            dishType: mealType,
+            paginationOpts: {
+              numItems: itemsPerPage,
+              cursor: pageParam || null,
+            },
+          };
 
-  const hasNextPage = status === "CanLoadMore";
-  const isFetchingNextPage = status === "LoadingMore";
-  const isError = false; // Convex handles errors differently
+      return await convex.query(queryFn, args);
+    },
+    initialPageParam: null as string | null,
+    getNextPageParam: (lastPage) => {
+      return lastPage?.isDone ? undefined : lastPage?.continueCursor;
+    },
+  });
+
+  const recipes = data?.pages.flatMap((page) => page?.page || []) || [];
 
   return {
-    recipes: recipes || [],
+    recipes,
     fetchNextPage,
     hasNextPage,
     isFetchingNextPage,
