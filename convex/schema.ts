@@ -33,8 +33,6 @@ const applicationTables = {
     .index("by_user", ["userId"])
     .index("by_title", ["title"])
     .index("by_user_and_dish_types", ["userId", "dishTypes"])
-    .index("by_user_and_creation_time", ["userId", "_creationTime"])
-    .index("by_user_and_diets", ["userId", "diets"])
     .searchIndex("search_title", {
       searchField: "title",
       filterFields: ["userId"],
@@ -50,9 +48,7 @@ const applicationTables = {
   })
     .index("by_user", ["userId"])
     .index("by_name", ["name"])
-    .index("by_user_and_name", ["userId", "name"])
-    .index("by_user_and_creation_time", ["userId", "_creationTime"]),
-
+    .index("by_user_and_name", ["userId", "name"]),
   menusOnRecipes: defineTable({
     menuId: v.id("menus"),
     recipeId: v.id("recipes"),
@@ -69,7 +65,6 @@ const applicationTables = {
   })
     .index("by_user", ["userId"])
     .index("by_user_and_checked", ["userId", "checked"])
-    .index("by_user_and_creation_time", ["userId", "_creationTime"])
     .index("by_user_and_name", ["userId", "name"])
     .searchIndex("search_name", {
       searchField: "name",

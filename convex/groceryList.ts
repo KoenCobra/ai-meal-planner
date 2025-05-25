@@ -172,9 +172,7 @@ export const listItems = query({
   handler: async (ctx, args) => {
     return await ctx.db
       .query("groceryItems")
-      .withIndex("by_user_and_creation_time", (q) =>
-        q.eq("userId", args.userId),
-      )
+      .withIndex("by_user", (q) => q.eq("userId", args.userId))
       .order("desc")
       .collect();
   },
@@ -228,9 +226,7 @@ export const clearAllItems = mutation({
 
     const allItems = await ctx.db
       .query("groceryItems")
-      .withIndex("by_user_and_creation_time", (q) =>
-        q.eq("userId", args.userId),
-      )
+      .withIndex("by_user", (q) => q.eq("userId", args.userId))
       .collect();
 
     for (const item of allItems) {
