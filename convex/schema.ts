@@ -28,11 +28,11 @@ const applicationTables = {
         }),
       }),
     ),
-    dishTypes: v.string(),
+    dishType: v.string(),
   })
     .index("by_user", ["userId"])
     .index("by_title", ["title"])
-    .index("by_user_and_dish_types", ["userId", "dishTypes"])
+    .index("by_user_and_dish_type", ["userId", "dishType"])
     .searchIndex("search_title", {
       searchField: "title",
       filterFields: ["userId"],

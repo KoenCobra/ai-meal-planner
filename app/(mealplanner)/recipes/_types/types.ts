@@ -7,5 +7,5 @@ export type Recipe = {
   servings: number;
   storageId?: Id<"_storage">;
   diets: string[];
-  dishTypes: string;
+  dishType: string;
 };

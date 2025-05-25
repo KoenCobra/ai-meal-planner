@@ -13,8 +13,8 @@ export const getRecipesByDishType = query({
   handler: async (ctx, args) => {
     return await ctx.db
       .query("recipes")
-      .withIndex("by_user_and_dish_types", (q) =>
-        q.eq("userId", args.userId).eq("dishTypes", args.dishType),
+      .withIndex("by_user_and_dish_type", (q) =>
+        q.eq("userId", args.userId).eq("dishType", args.dishType),
       )
       .order("desc")
       .paginate(args.paginationOpts);
@@ -48,7 +48,7 @@ export const createRecipe = mutation({
         }),
       }),
     ),
-    dishTypes: v.string(),
+    dishType: v.string(),
   },
   handler: async (ctx, args) => {
     const { userId, ...recipeData } = args;
@@ -98,7 +98,7 @@ export const updateRecipe = mutation({
         }),
       ),
     ),
-    dishTypes: v.optional(v.string()),
+    dishType: v.optional(v.string()),
   },
   handler: async (ctx, args) => {
     const { id, userId, ...updates } = args;

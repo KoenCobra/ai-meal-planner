@@ -32,7 +32,7 @@ export const Recipe = z.object({
       }),
     }),
   ),
-  dishTypes: z.array(z.string()),
+  dishType: z.string(),
   error: z.string().nullish(),
   image: z.string().nullish(),
 });

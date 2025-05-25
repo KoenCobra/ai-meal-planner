@@ -40,7 +40,7 @@ export async function generateRecipe(input: GenerateRecipeInput) {
   You will always answer in the language that the user is using.
   The units of measurement will be based on the user's locale.
   Smoothies are by default snacks.
-  The dishTypes can only have 1 of the following values: "breakfast", "lunch", snacks  or "dinner".
+  The dishType can only have 1 of the following values: "breakfast", "lunch", snacks  or "dinner".
   You can only assign 1 of these values to a recipe.`;
 
   const userMessage = `
@@ -78,7 +78,7 @@ export async function generateRecipe(input: GenerateRecipeInput) {
     diets: aiResponse.diets,
     instructions: aiResponse.instructions,
     ingredients: aiResponse.ingredients,
-    dishTypes: aiResponse.dishTypes,
+    dishType: aiResponse.dishType,
     error: aiResponse.error,
   };
 }
@@ -206,7 +206,7 @@ export async function analyzeImageForRecipe(
 
     const systemMessage = `
     You are a recipe generator AI. Your task is to analyze the food image and generate a recipe that could recreate this dish. 
-    Your response must adhere to the Recipe schema structure. The dishTypes can only have 1 of the following values: "breakfast", "lunch", "snacks" or "dinner".
+    Your response must adhere to the Recipe schema structure. The dishType can only have 1 of the following values: "breakfast", "lunch", "snacks" or "dinner".
     You can only assign 1 of these values to a recipe.
     Make sure to generate all the output in the language that is used in the image. Provide detailed instructions and ingredients list based on what you see in the image.
     If for example the image is in spanish, the entire output should be in spanish.
@@ -254,7 +254,7 @@ export async function analyzeImageForRecipe(
       diets: aiResponse.diets,
       instructions: aiResponse.instructions,
       ingredients: aiResponse.ingredients,
-      dishTypes: aiResponse.dishTypes,
+      dishType: aiResponse.dishType,
       error: aiResponse.error,
     };
   } catch (error) {

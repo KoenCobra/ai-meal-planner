@@ -226,7 +226,7 @@ export const getMenuRecipesByDishType = query({
 
     const filteredRecipes = recipes.filter(
       (recipe): recipe is NonNullable<typeof recipe> =>
-        recipe !== null && recipe.dishTypes.includes(args.dishType),
+        recipe !== null && recipe.dishType === args.dishType,
     );
 
     return {

@@ -91,7 +91,7 @@ const AiResponse = ({ recipe, image, onClear }: BubuAiResponseProps) => {
           steps: recipe.instructions.steps,
         },
         ingredients: recipe.ingredients,
-        dishTypes: recipe.dishTypes || [],
+        dishType: recipe.dishType,
       });
 
       // If we successfully uploaded an image, link it to the recipe
