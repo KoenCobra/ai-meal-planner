@@ -25,10 +25,10 @@ const SearchPage = () => {
 
   // Initialize context with URL query parameter
   useEffect(() => {
-    if (initialQuery && !searchQuery) {
+    if (initialQuery ) {
       setSearchQuery(initialQuery);
     }
-  }, [initialQuery, searchQuery, setSearchQuery]);
+  }, [initialQuery, setSearchQuery]);
 
   // Debounce search query for performance
   useEffect(() => {
