@@ -34,7 +34,7 @@ const SearchPage = () => {
       } else {
         window.history.replaceState({}, "", "/search");
       }
-    }, 300);
+    }, 800);
 
     return () => clearTimeout(timer);
   }, [searchQuery]);
