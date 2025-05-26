@@ -4,7 +4,7 @@ import { mutation } from "./_generated/server";
 import { rateLimiter } from "./rateLimiter";
 
 /**
- * Rate-limited recipe search by title
+ * Rate-limited recipe search by title and ingredients
  * This wraps the search query with rate limiting to prevent expensive search spam
  */
 export const searchRecipesWithRateLimit = mutation({
@@ -23,35 +23,8 @@ export const searchRecipesWithRateLimit = mutation({
     // Perform the actual search using a query
     return await ctx.db
       .query("recipes")
-      .withSearchIndex("search_title", (q) =>
-        q.search("title", args.query).eq("userId", args.userId),
-      )
-      .paginate(args.paginationOpts);
-  },
-});
-
-/**
- * Rate-limited recipe search by ingredients
- * This wraps the search query with rate limiting to prevent expensive search spam
- */
-export const searchRecipesByIngredientsWithRateLimit = mutation({
-  args: {
-    userId: v.string(),
-    query: v.string(),
-    paginationOpts: paginationOptsValidator,
-  },
-  handler: async (ctx, args) => {
-    // Rate limit ingredient search per user
-    await rateLimiter.limit(ctx, "searchIngredients", {
-      key: args.userId,
-      throws: true,
-    });
-
-    // Perform the actual search using a query
-    return await ctx.db
-      .query("recipes")
-      .withSearchIndex("search_ingredients", (q) =>
-        q.search("ingredientsText", args.query).eq("userId", args.userId),
+      .withSearchIndex("search_recipes", (q) =>
+        q.search("searchText", args.query).eq("userId", args.userId),
       )
       .paginate(args.paginationOpts);
   },

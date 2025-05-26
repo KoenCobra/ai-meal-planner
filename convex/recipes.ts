@@ -64,10 +64,14 @@ export const createRecipe = mutation({
       .map((ingredient) => ingredient.name)
       .join(" ");
 
+    // Create combined search text for title and ingredients
+    const searchText = `${recipeData.title} ${ingredientsText}`;
+
     return await ctx.db.insert("recipes", {
       userId,
       ...recipeData,
       ingredientsText,
+      searchText,
     });
   },
 });
@@ -105,6 +109,7 @@ export const updateRecipe = mutation({
       ),
     ),
     ingredientsText: v.optional(v.string()),
+    searchText: v.optional(v.string()),
     dishType: v.optional(v.string()),
   },
   handler: async (ctx, args) => {
@@ -117,12 +122,18 @@ export const updateRecipe = mutation({
     if (!recipe) throw new Error("Recipe not found");
     if (recipe.userId !== userId) throw new Error("Not authorized");
 
-    // Update ingredients text if ingredients are being updated
+    // Update search text if title or ingredients are being updated
     const finalUpdates = { ...updates };
-    if (updates.ingredients) {
-      finalUpdates.ingredientsText = updates.ingredients
+    if (updates.ingredients || updates.title) {
+      // Get current recipe to access existing values
+      const currentTitle = updates.title || recipe.title;
+      const currentIngredients = updates.ingredients || recipe.ingredients;
+
+      finalUpdates.ingredientsText = currentIngredients
         .map((ingredient) => ingredient.name)
         .join(" ");
+
+      finalUpdates.searchText = `${currentTitle} ${finalUpdates.ingredientsText}`;
     }
 
     await ctx.db.patch(id, finalUpdates);
@@ -192,38 +203,6 @@ export const listRecipes = query({
   },
 });
 
-export const searchRecipes = query({
-  args: {
-    userId: v.string(),
-    query: v.string(),
-    paginationOpts: paginationOptsValidator,
-  },
-  handler: async (ctx, args) => {
-    return await ctx.db
-      .query("recipes")
-      .withSearchIndex("search_title", (q) =>
-        q.search("title", args.query).eq("userId", args.userId),
-      )
-      .paginate(args.paginationOpts);
-  },
-});
-
-export const searchByIngredients = query({
-  args: {
-    userId: v.string(),
-    query: v.string(),
-    paginationOpts: paginationOptsValidator,
-  },
-  handler: async (ctx, args) => {
-    return await ctx.db
-      .query("recipes")
-      .withSearchIndex("search_ingredients", (q) =>
-        q.search("ingredientsText", args.query).eq("userId", args.userId),
-      )
-      .paginate(args.paginationOpts);
-  },
-});
-
 export const searchRecipesByTitleAndIngredients = query({
   args: {
     userId: v.string(),
@@ -240,42 +219,15 @@ export const searchRecipesByTitleAndIngredients = query({
         .paginate(args.paginationOpts);
     }
 
-    // First try searching by title (usually more relevant)
-    const titleResults = await ctx.db
-      .query("recipes")
-      .withSearchIndex("search_title", (q) =>
-        q.search("title", args.query).eq("userId", args.userId),
-      )
-      .paginate(args.paginationOpts);
-
-    // If we have results from title search, return them
-    if (titleResults.page.length > 0) {
-      return titleResults;
-    }
-
-    // If no title results, search in ingredients
+    // Search in combined title and ingredients text
     return await ctx.db
       .query("recipes")
-      .withSearchIndex("search_ingredients", (q) =>
-        q.search("ingredientsText", args.query).eq("userId", args.userId),
+      .withSearchIndex("search_recipes", (q) =>
+        q.search("searchText", args.query).eq("userId", args.userId),
       )
       .paginate(args.paginationOpts);
   },
 });
-
-// export const getAllRecipes = query({
-//   args: {
-//     userId: v.string(),
-//     paginationOpts: v.optional(paginationOptsValidator),
-//   },
-//   handler: async (ctx, args) => {
-//     return await ctx.db
-//       .query("recipes")
-//       .withIndex("by_user", (q) => q.eq("userId", args.userId))
-//       .order("desc")
-//       .paginate(args.paginationOpts || { numItems: 100, cursor: null });
-//   },
-// });
 
 export const syncIngredientsToGroceryList = mutation({
   args: {
