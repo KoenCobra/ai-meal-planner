@@ -13,7 +13,6 @@ import type * as menus from "../menus.js";
 import type * as openaiRateLimit from "../openaiRateLimit.js";
 import type * as rateLimiter from "../rateLimiter.js";
 import type * as recipes_images from "../recipes/images.js";
-import type * as recipes_searchTextMigration from "../recipes/searchTextMigration.js";
 import type * as recipes from "../recipes.js";
 import type * as searchRateLimit from "../searchRateLimit.js";
 
@@ -37,7 +36,6 @@ declare const fullApi: ApiFromModules<{
   openaiRateLimit: typeof openaiRateLimit;
   rateLimiter: typeof rateLimiter;
   "recipes/images": typeof recipes_images;
-  "recipes/searchTextMigration": typeof recipes_searchTextMigration;
   recipes: typeof recipes;
   searchRateLimit: typeof searchRateLimit;
 }>;

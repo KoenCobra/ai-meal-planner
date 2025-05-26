@@ -4,7 +4,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Id } from "@/convex/_generated/dataModel";
 import { Loader2, Search, X } from "lucide-react";
-import { useRouter, useSearchParams } from "next/navigation";
+import { useRouter } from "next/navigation";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { RecipeGrid } from "../recipes/_components/RecipeGrid";
 import { useSearch } from "./_context/SearchContext";
@@ -13,37 +13,15 @@ import { useInfiniteSearch } from "./_hooks/useInfiniteSearch";
 
 const SearchPage = () => {
   const router = useRouter();
-  const searchParams = useSearchParams();
-  const initialQuery = searchParams.get("q") || "";
 
   const { searchQuery, setSearchQuery, clearSearch } = useSearch();
-  const [debouncedQuery, setDebouncedQuery] = useState(
-    searchQuery || initialQuery,
-  );
+  const [debouncedQuery, setDebouncedQuery] = useState("");
   const inputRef = useRef<HTMLInputElement>(null);
   const loadMoreRef = useRef<HTMLDivElement>(null);
 
-  // Initialize context with URL query parameter
-  useEffect(() => {
-    if (initialQuery) {
-      setSearchQuery(initialQuery);
-    }
-  }, [initialQuery, setSearchQuery]);
-
-  // Debounce search query for performance
   useEffect(() => {
     const timer = setTimeout(() => {
       setDebouncedQuery(searchQuery);
-      // Update URL without causing navigation
-      if (searchQuery.trim()) {
-        window.history.replaceState(
-          {},
-          "",
-          `/search?q=${encodeURIComponent(searchQuery.trim())}`,
-        );
-      } else {
-        window.history.replaceState({}, "", "/search");
-      }
     }, 1000);
 
     return () => clearTimeout(timer);
@@ -51,13 +29,12 @@ const SearchPage = () => {
 
   const { recipes, fetchNextPage, hasNextPage, isFetchingNextPage, isLoading } =
     useInfiniteSearch({
-      searchQuery: debouncedQuery,
+      searchQuery: debouncedQuery || "",
       itemsPerPage: 6,
     });
 
   const { deleteRecipe } = useDeleteRecipe();
 
-  // Auto-load more when scrolling near the bottom
   useEffect(() => {
     const observer = new IntersectionObserver(
       (entries) => {
@@ -108,7 +85,6 @@ const SearchPage = () => {
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
             className="pl-10 pr-10"
-            autoFocus
           />
           {searchQuery && (
             <Button
