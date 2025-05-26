@@ -7,6 +7,7 @@ import { Loader2, Search, X } from "lucide-react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { RecipeGrid } from "../recipes/_components/RecipeGrid";
+import { useSearch } from "./_context/SearchContext";
 import { useDeleteRecipe } from "./_hooks/useDeleteRecipe";
 import { useInfiniteSearch } from "./_hooks/useInfiniteSearch";
 
@@ -15,10 +16,19 @@ const SearchPage = () => {
   const searchParams = useSearchParams();
   const initialQuery = searchParams.get("q") || "";
 
-  const [searchQuery, setSearchQuery] = useState(initialQuery);
-  const [debouncedQuery, setDebouncedQuery] = useState(initialQuery);
+  const { searchQuery, setSearchQuery, clearSearch } = useSearch();
+  const [debouncedQuery, setDebouncedQuery] = useState(
+    searchQuery || initialQuery,
+  );
   const inputRef = useRef<HTMLInputElement>(null);
   const loadMoreRef = useRef<HTMLDivElement>(null);
+
+  // Initialize context with URL query parameter
+  useEffect(() => {
+    if (initialQuery && !searchQuery) {
+      setSearchQuery(initialQuery);
+    }
+  }, [initialQuery, searchQuery, setSearchQuery]);
 
   // Debounce search query for performance
   useEffect(() => {
@@ -72,8 +82,8 @@ const SearchPage = () => {
     [deleteRecipe],
   );
 
-  const clearSearch = () => {
-    setSearchQuery("");
+  const handleClearSearch = () => {
+    clearSearch();
     inputRef.current?.focus();
   };
 
@@ -104,7 +114,7 @@ const SearchPage = () => {
             <Button
               variant="ghost"
               size="sm"
-              onClick={clearSearch}
+              onClick={handleClearSearch}
               className="absolute right-1 top-1/2 transform -translate-y-1/2 h-8 w-8 p-0"
             >
               <X className="h-4 w-4" />

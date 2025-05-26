@@ -3,6 +3,7 @@ import { redirect } from "next/navigation";
 import React from "react";
 import Navbar from "./_components/Navbar";
 import { BibiAiProvider } from "./bibi-ai/BibiAiContext";
+import { SearchProvider } from "./search/_context/SearchProvider";
 
 const layout = async ({ children }: { children: React.ReactNode }) => {
   const { has, userId } = await auth();
@@ -21,12 +22,14 @@ const layout = async ({ children }: { children: React.ReactNode }) => {
 
   return (
     <BibiAiProvider>
-      <div>
-        <Navbar />
-        <div className="px-2 lg:max-w-4xl mx-auto md:max-w-2xl py-3 pb-16">
-          {children}
+      <SearchProvider>
+        <div>
+          <Navbar />
+          <div className="px-2 lg:max-w-4xl mx-auto md:max-w-2xl py-3 pb-16">
+            {children}
+          </div>
         </div>
-      </div>
+      </SearchProvider>
     </BibiAiProvider>
   );
 };
