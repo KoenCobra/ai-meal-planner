@@ -240,7 +240,7 @@ export const searchRecipesByTitleAndIngredients = query({
         .paginate(args.paginationOpts);
     }
 
-    // Search in titles first (usually more relevant)
+    // First try searching by title (usually more relevant)
     const titleResults = await ctx.db
       .query("recipes")
       .withSearchIndex("search_title", (q) =>
@@ -248,33 +248,18 @@ export const searchRecipesByTitleAndIngredients = query({
       )
       .paginate(args.paginationOpts);
 
-    // If we have enough results from title search, return them
-    if (titleResults.page.length >= (args.paginationOpts.numItems || 10)) {
+    // If we have results from title search, return them
+    if (titleResults.page.length > 0) {
       return titleResults;
     }
 
-    // Otherwise, search in ingredients to fill the gap
-    const remainingSlots =
-      (args.paginationOpts.numItems || 10) - titleResults.page.length;
-    const ingredientResults = await ctx.db
+    // If no title results, search in ingredients
+    return await ctx.db
       .query("recipes")
       .withSearchIndex("search_ingredients", (q) =>
         q.search("ingredientsText", args.query).eq("userId", args.userId),
       )
-      .paginate({ ...args.paginationOpts, numItems: remainingSlots });
-
-    // Filter out duplicates (recipes already in title results)
-    const titleIds = new Set(titleResults.page.map((recipe) => recipe._id));
-    const uniqueIngredientResults = ingredientResults.page.filter(
-      (recipe) => !titleIds.has(recipe._id),
-    );
-
-    return {
-      ...titleResults,
-      page: [...titleResults.page, ...uniqueIngredientResults],
-      isDone: titleResults.isDone && ingredientResults.isDone,
-      continueCursor: ingredientResults.continueCursor,
-    };
+      .paginate(args.paginationOpts);
   },
 });
 

@@ -124,12 +124,12 @@ const SearchPage = () => {
 
       {/* Results */}
       <div>
-        {isLoading && !recipes.length ? (
+        {isLoading && debouncedQuery && !recipes.length ? (
           <div className="flex items-center justify-center py-12">
             <Loader2 className="h-8 w-8 animate-spin" />
             <span className="ml-2">Searching recipes...</span>
           </div>
-        ) : debouncedQuery && recipes.length === 0 ? (
+        ) : debouncedQuery && recipes.length === 0 && !isLoading ? (
           <div className="text-center py-12">
             <Search className="h-16 w-16 mx-auto text-muted-foreground mb-4" />
             <h3 className="text-lg font-semibold mb-2">No recipes found</h3>

@@ -20,7 +20,7 @@ export const useInfiniteSearch = ({
 
   const results = usePaginatedQuery(
     api.recipes.searchRecipesByTitleAndIngredients,
-    userId
+    userId && trimmedQuery !== undefined
       ? {
           userId,
           query: trimmedQuery,
