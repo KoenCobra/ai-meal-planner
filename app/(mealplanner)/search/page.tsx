@@ -25,7 +25,7 @@ const SearchPage = () => {
 
   // Initialize context with URL query parameter
   useEffect(() => {
-    if (initialQuery ) {
+    if (initialQuery) {
       setSearchQuery(initialQuery);
     }
   }, [initialQuery, setSearchQuery]);
@@ -44,7 +44,7 @@ const SearchPage = () => {
       } else {
         window.history.replaceState({}, "", "/search");
       }
-    }, 800);
+    }, 1000);
 
     return () => clearTimeout(timer);
   }, [searchQuery]);
