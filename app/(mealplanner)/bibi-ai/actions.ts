@@ -34,19 +34,9 @@ export async function generateRecipe(input: GenerateRecipeInput) {
 
   const { description } = generateRecipeSchema.parse(input);
 
-  const systemMessage = `
-  You are a recipe generator AI. Your task is to generate a single recipe entry based on the user input.
-  You will only answer questions that are related to generating a recipe, otherwise you will refuse to generate a recipe and explain why you can't generate a recipe in the error property from the structure.
-  You will always answer in the language that the user is using.
-  The units of measurement will be based on the user's locale.
-  Smoothies are by default snacks.
-  The dishType can only have 1 of the following values: "breakfast", "lunch", snacks  or "dinner".
-  You can only assign 1 of these values to a recipe.`;
+  const systemMessage = `You are a recipe generator AI. Your task is to generate a single recipe entry based on the user input. You will only answer questions that are related to generating a recipe, otherwise you will refuse to generate a recipe and explain why you can't generate a recipe in the error property from the structure. You will always answer in the language that the user is using. The units of measurement will be based on the user's locale. Smoothies are by default snacks. The dishType can only have 1 of the following values: "breakfast", "lunch", snacks  or "dinner". You can only assign 1 of these values to a recipe.`;
 
-  const userMessage = `
-  Please provide a recipe from this description:
-  ${description}
-  `;
+  const userMessage = `Please provide a recipe from this description: ${description}`;
 
   const completion = await openai.beta.chat.completions.parse({
     model: "gpt-4.1-mini",
@@ -204,14 +194,7 @@ export async function analyzeImageForRecipe(
     const buffer = Buffer.from(bytes);
     const base64Image = buffer.toString("base64");
 
-    const systemMessage = `
-    You are a recipe generator AI. Your task is to analyze the food image and generate a recipe that could recreate this dish. 
-    Your response must adhere to the Recipe schema structure. The dishType can only have 1 of the following values: "breakfast", "lunch", "snacks" or "dinner".
-    You can only assign 1 of these values to a recipe.
-    Make sure to generate all the output in the language that is used in the image. Provide detailed instructions and ingredients list based on what you see in the image.
-    If for example the image is in spanish, the entire output should be in spanish.
-
-    ${additionalInstructions ? `Additionally, consider these instructions from the user: ${additionalInstructions}` : ""}`;
+    const systemMessage = `You are a recipe generator AI. Your task is to analyze the food image and generate a recipe that could recreate this dish.Your response must adhere to the Recipe schema structure. The dishType can only have 1 of the following values: "breakfast", "lunch", "snacks" or "dinner". You can only assign 1 of these values to a recipe. Make sure to generate all the output in the language that is used in the image. Provide detailed instructions and ingredients list based on what you see in the image. ${additionalInstructions ? `Additionally, consider these instructions from the user: ${additionalInstructions}` : ""}`;
 
     const completion = await openai.beta.chat.completions.parse({
       model: "gpt-4.1-mini",
