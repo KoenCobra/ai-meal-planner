@@ -28,6 +28,8 @@ const applicationTables = {
         }),
       }),
     ),
+    // Flattened ingredients string for search
+    ingredientsText: v.optional(v.string()),
     dishType: v.string(),
   })
     .index("by_user", ["userId"])
@@ -38,7 +40,7 @@ const applicationTables = {
       filterFields: ["userId"],
     })
     .searchIndex("search_ingredients", {
-      searchField: "ingredients",
+      searchField: "ingredientsText",
       filterFields: ["userId"],
     }),
 

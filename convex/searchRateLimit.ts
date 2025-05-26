@@ -51,7 +51,7 @@ export const searchRecipesByIngredientsWithRateLimit = mutation({
     return await ctx.db
       .query("recipes")
       .withSearchIndex("search_ingredients", (q) =>
-        q.search("ingredients", args.query).eq("userId", args.userId),
+        q.search("ingredientsText", args.query).eq("userId", args.userId),
       )
       .paginate(args.paginationOpts);
   },

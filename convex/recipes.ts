@@ -59,9 +59,15 @@ export const createRecipe = mutation({
     // Also check global recipe creation limit
     await rateLimiter.limit(ctx, "globalRecipeCreation", { throws: true });
 
+    // Create searchable ingredients text
+    const ingredientsText = recipeData.ingredients
+      .map((ingredient) => ingredient.name)
+      .join(" ");
+
     return await ctx.db.insert("recipes", {
       userId,
       ...recipeData,
+      ingredientsText,
     });
   },
 });
@@ -98,6 +104,7 @@ export const updateRecipe = mutation({
         }),
       ),
     ),
+    ingredientsText: v.optional(v.string()),
     dishType: v.optional(v.string()),
   },
   handler: async (ctx, args) => {
@@ -110,7 +117,15 @@ export const updateRecipe = mutation({
     if (!recipe) throw new Error("Recipe not found");
     if (recipe.userId !== userId) throw new Error("Not authorized");
 
-    await ctx.db.patch(id, updates);
+    // Update ingredients text if ingredients are being updated
+    const finalUpdates = { ...updates };
+    if (updates.ingredients) {
+      finalUpdates.ingredientsText = updates.ingredients
+        .map((ingredient) => ingredient.name)
+        .join(" ");
+    }
+
+    await ctx.db.patch(id, finalUpdates);
 
     return id;
   },
@@ -203,9 +218,63 @@ export const searchByIngredients = query({
     return await ctx.db
       .query("recipes")
       .withSearchIndex("search_ingredients", (q) =>
-        q.search("ingredients", args.query).eq("userId", args.userId),
+        q.search("ingredientsText", args.query).eq("userId", args.userId),
       )
       .paginate(args.paginationOpts);
+  },
+});
+
+export const searchRecipesByTitleAndIngredients = query({
+  args: {
+    userId: v.string(),
+    query: v.string(),
+    paginationOpts: paginationOptsValidator,
+  },
+  handler: async (ctx, args) => {
+    if (!args.query.trim()) {
+      // If no query, return all recipes paginated
+      return await ctx.db
+        .query("recipes")
+        .withIndex("by_user", (q) => q.eq("userId", args.userId))
+        .order("desc")
+        .paginate(args.paginationOpts);
+    }
+
+    // Search in titles first (usually more relevant)
+    const titleResults = await ctx.db
+      .query("recipes")
+      .withSearchIndex("search_title", (q) =>
+        q.search("title", args.query).eq("userId", args.userId),
+      )
+      .paginate(args.paginationOpts);
+
+    // If we have enough results from title search, return them
+    if (titleResults.page.length >= (args.paginationOpts.numItems || 10)) {
+      return titleResults;
+    }
+
+    // Otherwise, search in ingredients to fill the gap
+    const remainingSlots =
+      (args.paginationOpts.numItems || 10) - titleResults.page.length;
+    const ingredientResults = await ctx.db
+      .query("recipes")
+      .withSearchIndex("search_ingredients", (q) =>
+        q.search("ingredientsText", args.query).eq("userId", args.userId),
+      )
+      .paginate({ ...args.paginationOpts, numItems: remainingSlots });
+
+    // Filter out duplicates (recipes already in title results)
+    const titleIds = new Set(titleResults.page.map((recipe) => recipe._id));
+    const uniqueIngredientResults = ingredientResults.page.filter(
+      (recipe) => !titleIds.has(recipe._id),
+    );
+
+    return {
+      ...titleResults,
+      page: [...titleResults.page, ...uniqueIngredientResults],
+      isDone: titleResults.isDone && ingredientResults.isDone,
+      continueCursor: ingredientResults.continueCursor,
+    };
   },
 });
 
