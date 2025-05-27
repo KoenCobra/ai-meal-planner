@@ -60,10 +60,6 @@ export const useInfiniteRecipes = ({
       paginationOpts: { numItems: itemsPerPage, cursor: null },
     }),
     enabled: !!userId && !menuId,
-    staleTime: 1000 * 60 * 5, // 5 minutes - recipe data stays fresh
-    gcTime: 1000 * 60 * 15, // 15 minutes - keep in cache
-    refetchOnWindowFocus: false,
-    retry: 2,
   }) as {
     data: PaginationResult<Doc<"recipes">> | undefined;
     isLoading: boolean;
