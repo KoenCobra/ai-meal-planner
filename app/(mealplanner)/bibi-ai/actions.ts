@@ -1,5 +1,6 @@
 "use server";
 import { api } from "@/convex/_generated/api";
+import groq from "@/lib/groq";
 import openai from "@/lib/openai";
 import {
   GenerateRecipeInput,
@@ -8,7 +9,6 @@ import {
 } from "@/lib/validation";
 import { auth } from "@clerk/nextjs/server";
 import { ConvexHttpClient } from "convex/browser";
-import { zodResponseFormat } from "openai/helpers/zod";
 import sharp from "sharp";
 
 const convex = new ConvexHttpClient(process.env.NEXT_PUBLIC_CONVEX_URL!);
@@ -20,7 +20,7 @@ export async function generateRecipe(input: GenerateRecipeInput) {
     throw new Error("Unauthorized");
   }
 
-  // Check rate limits before making expensive OpenAI API call
+  // Check rate limits before making expensive API call
   const rateLimitCheck = await convex.mutation(
     api.openaiRateLimit.checkRecipeGenerationLimit,
     {
@@ -34,43 +34,96 @@ export async function generateRecipe(input: GenerateRecipeInput) {
 
   const { description } = generateRecipeSchema.parse(input);
 
-  const systemMessage = `You are a recipe generator AI. Your task is to generate a single recipe entry based on the user input. You will only answer questions that are related to generating a recipe, otherwise you will refuse to generate a recipe and explain why you can't generate a recipe in the error property from the structure. You will always answer in the language that the user is using. The units of measurement will be based on the user's locale. Smoothies are by default snacks. The dishType can only have 1 of the following values: "breakfast", "lunch", snacks  or "dinner". You can only assign 1 of these values to a recipe.`;
+  const systemMessage = `You are a recipe generator AI. Your task is to generate a single recipe entry based on the user input. You will only answer questions that are related to generating a recipe, otherwise you will refuse to generate a recipe and explain why you can't generate a recipe in the error property from the structure. You will always answer in the language that the user is using. The units of measurement will be based on the user's locale. Smoothies are by default snacks. The dishType can only have 1 of the following values: "breakfast", "lunch", "snacks" or "dinner". You can only assign 1 of these values to a recipe.
+
+IMPORTANT JSON FORMATTING RULES:
+- Use decimal numbers only (0.5 instead of 1/2)
+- No extra fields beyond the specified structure
+- All strings must be in double quotes
+- Numbers should be valid JSON numbers
+- Use null for empty values, not "null"
+
+Your response should ONLY contain a valid JSON object that matches this exact structure:
+{
+  "title": "string",
+  "summary": "string", 
+  "servings": number,
+  "readyInMinutes": number,
+  "diets": ["string"],
+  "instructions": {
+    "name": "string",
+    "steps": [
+      {
+        "number": number,
+        "step": "string"
+      }
+    ]
+  },
+  "ingredients": [
+    {
+      "name": "string",
+      "measures": {
+        "amount": number,
+        "unit": "string"
+      }
+    }
+  ],
+  "dishType": "breakfast" | "lunch" | "snacks" | "dinner",
+  "error": null,
+  "image": null
+}`;
 
   const userMessage = `Please provide a recipe from this description: ${description}`;
 
-  const completion = await openai.beta.chat.completions.parse({
-    model: "gpt-4.1-mini",
+  try {
+    const completion = await groq.chat.completions.create({
+      model: "gemma2-9b-it",
+      response_format: { type: "json_object" },
+      messages: [
+        {
+          role: "system",
+          content: systemMessage,
+        },
+        {
+          role: "user",
+          content: userMessage,
+        },
+      ],
+    });
 
-    messages: [
-      {
-        role: "system",
-        content: systemMessage,
-      },
-      {
-        role: "user",
-        content: userMessage,
-      },
-    ],
-    response_format: zodResponseFormat(Recipe, "generate_recipe"),
-  });
+    // Extract the response
+    const responseContent = completion.choices[0].message.content;
 
-  const aiResponse = completion.choices[0].message.parsed;
+    if (!responseContent) {
+      throw new Error("No response content from Groq");
+    }
 
-  if (!aiResponse) {
-    throw new Error("Failed to generate AI response");
+    // Parse and validate JSON
+    const jsonData = JSON.parse(responseContent);
+    const aiResponse = Recipe.parse(jsonData);
+
+    return {
+      title: aiResponse.title,
+      summary: aiResponse.summary,
+      servings: aiResponse.servings,
+      readyInMinutes: aiResponse.readyInMinutes,
+      diets: aiResponse.diets,
+      instructions: aiResponse.instructions,
+      ingredients: aiResponse.ingredients,
+      dishType: aiResponse.dishType,
+      error: aiResponse.error,
+    };
+  } catch (error) {
+    console.error("Error in generateRecipe:", error);
+
+    if (error instanceof SyntaxError) {
+      throw new Error("AI returned invalid JSON format");
+    } else if (error instanceof Error && error.message.includes("ZodError")) {
+      throw new Error("AI response doesn't match expected recipe schema");
+    } else {
+      throw new Error(`Failed to generate recipe: ${error}`);
+    }
   }
-
-  return {
-    title: aiResponse.title,
-    summary: aiResponse.summary,
-    servings: aiResponse.servings,
-    readyInMinutes: aiResponse.readyInMinutes,
-    diets: aiResponse.diets,
-    instructions: aiResponse.instructions,
-    ingredients: aiResponse.ingredients,
-    dishType: aiResponse.dishType,
-    error: aiResponse.error,
-  };
 }
 
 export async function generateRecipeImage(
@@ -176,7 +229,7 @@ export async function analyzeImageForRecipe(
     throw new Error("Unauthorized");
   }
 
-  // Check rate limits before making expensive OpenAI API call
+  // Check rate limits before making expensive API call
   const rateLimitCheck = await convex.mutation(
     api.openaiRateLimit.checkImageAnalysisLimit,
     {
@@ -194,10 +247,48 @@ export async function analyzeImageForRecipe(
     const buffer = Buffer.from(bytes);
     const base64Image = buffer.toString("base64");
 
-    const systemMessage = `You are a recipe generator AI. Your task is to analyze the food image and generate a recipe that could recreate this dish.Your response must adhere to the Recipe schema structure. The dishType can only have 1 of the following values: "breakfast", "lunch", "snacks" or "dinner". You can only assign 1 of these values to a recipe. Make sure to generate all the output in the language that is used in the image. Provide detailed instructions and ingredients list based on what you see in the image. ${additionalInstructions ? `Additionally, consider these instructions from the user: ${additionalInstructions}` : ""}`;
+    const systemMessage = `You are a recipe generator AI. Your task is to analyze the food image and generate a recipe that could recreate this dish. The dishType can only have 1 of the following values: "breakfast", "lunch", "snacks" or "dinner". You can only assign 1 of these values to a recipe. Make sure to generate all the output in the language that is used in the image. Provide detailed instructions and ingredients list based on what you see in the image. ${additionalInstructions ? `Additionally, consider these instructions from the user: ${additionalInstructions}` : ""}
 
-    const completion = await openai.beta.chat.completions.parse({
-      model: "gpt-4.1-mini",
+IMPORTANT JSON FORMATTING RULES:
+- Use decimal numbers only (0.5 instead of 1/2)
+- No extra fields beyond the specified structure
+- All strings must be in double quotes
+- Numbers should be valid JSON numbers
+- Use null for empty values, not "null"
+
+Your response should ONLY contain a valid JSON object that matches this exact structure:
+{
+  "title": "string",
+  "summary": "string", 
+  "servings": number,
+  "readyInMinutes": number,
+  "diets": ["string"],
+  "instructions": {
+    "name": "string",
+    "steps": [
+      {
+        "number": number,
+        "step": "string"
+      }
+    ]
+  },
+  "ingredients": [
+    {
+      "name": "string",
+      "measures": {
+        "amount": number,
+        "unit": "string"
+      }
+    }
+  ],
+  "dishType": "breakfast" | "lunch" | "snacks" | "dinner",
+  "error": null,
+  "image": null
+}`;
+
+    const completion = await groq.chat.completions.create({
+      model: "meta-llama/llama-4-scout-17b-16e-instruct",
+      response_format: { type: "json_object" },
       messages: [
         {
           role: "system",
@@ -214,20 +305,28 @@ export async function analyzeImageForRecipe(
               type: "image_url",
               image_url: {
                 url: `data:image/jpeg;base64,${base64Image}`,
-                detail: "high",
               },
             },
           ],
         },
       ],
-      response_format: zodResponseFormat(Recipe, "generate_recipe"),
+      temperature: 1,
+      max_completion_tokens: 1024,
+      top_p: 1,
+      stream: false,
+      stop: null,
     });
 
-    const aiResponse = completion.choices[0].message.parsed;
+    // Extract the response
+    const responseContent = completion.choices[0].message.content;
 
-    if (!aiResponse) {
-      throw new Error("Failed to generate AI response");
+    if (!responseContent) {
+      throw new Error("No response content from Groq");
     }
+
+    // Parse and validate JSON
+    const jsonData = JSON.parse(responseContent);
+    const aiResponse = Recipe.parse(jsonData);
 
     return {
       title: aiResponse.title,
@@ -242,6 +341,13 @@ export async function analyzeImageForRecipe(
     };
   } catch (error) {
     console.error("Error analyzing image:", error);
-    throw new Error(`Failed to analyze image: ${error}`);
+
+    if (error instanceof SyntaxError) {
+      throw new Error("AI returned invalid JSON format");
+    } else if (error instanceof Error && error.message.includes("ZodError")) {
+      throw new Error("AI response doesn't match expected recipe schema");
+    } else {
+      throw new Error(`Failed to analyze image: ${error}`);
+    }
   }
 }
