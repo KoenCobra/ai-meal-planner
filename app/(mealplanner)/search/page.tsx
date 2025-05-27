@@ -22,14 +22,14 @@ const SearchPage = () => {
   } = useRecipeDelete({});
 
   const { searchQuery, setSearchQuery, clearSearch } = useSearch();
-  const [debouncedQuery, setDebouncedQuery] = useState("");
+  const [debouncedQuery, setDebouncedQuery] = useState(searchQuery);
   const inputRef = useRef<HTMLInputElement>(null);
   const loadMoreRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     const timer = setTimeout(() => {
       setDebouncedQuery(searchQuery);
-    }, 1000);
+    }, 800);
 
     return () => clearTimeout(timer);
   }, [searchQuery]);
