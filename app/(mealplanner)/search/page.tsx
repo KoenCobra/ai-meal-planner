@@ -35,7 +35,6 @@ const SearchPage = () => {
   const { recipes, fetchNextPage, hasNextPage, isFetchingNextPage, isLoading } =
     useInfiniteSearch({
       searchQuery: debouncedQuery || "",
-      itemsPerPage: 3,
     });
 
   useEffect(() => {

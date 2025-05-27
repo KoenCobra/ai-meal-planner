@@ -8,12 +8,7 @@ interface SnackTabContentProps {
 
 const SnackTabContent = ({ menuId, onDelete }: SnackTabContentProps) => {
   return (
-    <InfiniteRecipeGrid
-      mealType="snacks"
-      menuId={menuId}
-      onDelete={onDelete}
-      itemsPerPage={3}
-    />
+    <InfiniteRecipeGrid mealType="snacks" menuId={menuId} onDelete={onDelete} />
   );
 };
 

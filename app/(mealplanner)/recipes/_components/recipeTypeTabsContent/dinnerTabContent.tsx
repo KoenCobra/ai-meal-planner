@@ -8,12 +8,7 @@ interface DinnerTabContentProps {
 
 const DinnerTabContent = ({ menuId, onDelete }: DinnerTabContentProps) => {
   return (
-    <InfiniteRecipeGrid
-      mealType="dinner"
-      menuId={menuId}
-      onDelete={onDelete}
-      itemsPerPage={3}
-    />
+    <InfiniteRecipeGrid mealType="dinner" menuId={menuId} onDelete={onDelete} />
   );
 };
 

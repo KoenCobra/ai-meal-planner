@@ -41,7 +41,7 @@ export const useInfiniteRecipes = ({
           }
         : "skip", // This won't be used due to enabled condition
     ),
-    enabled: !!userId && !!menuId,
+    enabled: !!menuId,
   }) as {
     data: PaginationResult<Doc<"recipes">> | undefined;
     isLoading: boolean;
@@ -59,7 +59,7 @@ export const useInfiniteRecipes = ({
       dishType: mealType,
       paginationOpts: { numItems: itemsPerPage, cursor: null },
     }),
-    enabled: !!userId && !menuId,
+    enabled: !menuId,
   }) as {
     data: PaginationResult<Doc<"recipes">> | undefined;
     isLoading: boolean;

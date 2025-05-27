@@ -15,7 +15,6 @@ const BreakfastTabContent = ({
       mealType="breakfast"
       menuId={menuId}
       onDelete={onDelete}
-      itemsPerPage={3}
     />
   );
 };

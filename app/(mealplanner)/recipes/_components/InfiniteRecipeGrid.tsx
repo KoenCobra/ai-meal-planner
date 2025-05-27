@@ -13,14 +13,12 @@ interface InfiniteRecipeGridProps {
   mealType: MealType;
   menuId?: Id<"menus">;
   onDelete: (recipeId: Id<"recipes">, title: string, dishType: string) => void;
-  itemsPerPage?: number;
 }
 
 export const InfiniteRecipeGrid = ({
   mealType,
   menuId,
   onDelete,
-  itemsPerPage,
 }: InfiniteRecipeGridProps) => {
   const {
     recipes,
@@ -32,7 +30,6 @@ export const InfiniteRecipeGrid = ({
   } = useInfiniteRecipes({
     mealType,
     menuId,
-    itemsPerPage,
   });
 
   const loadMoreRef = useRef<HTMLDivElement>(null);
