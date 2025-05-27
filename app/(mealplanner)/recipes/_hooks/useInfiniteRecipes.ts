@@ -6,6 +6,7 @@ import { convexQuery } from "@convex-dev/react-query";
 import { useQuery } from "@tanstack/react-query";
 import { usePaginatedQuery } from "convex/react";
 import type { PaginationResult } from "convex/server";
+import { useMemo } from "react";
 
 type MealType = "breakfast" | "lunch" | "dinner" | "snacks";
 
@@ -23,73 +24,111 @@ export const useInfiniteRecipes = ({
   const { user } = useUser();
   const userId = user?.id || "";
 
-  // Determine query configuration based on menuId
-  const isMenuQuery = !!menuId;
-  const queryFn = isMenuQuery
-    ? api.menus.getMenuRecipesByDishType
-    : api.recipes.getRecipesByDishType;
-  const queryArgs = isMenuQuery
-    ? { userId, menuId: menuId!, dishType: mealType }
-    : { userId, dishType: mealType };
-
-  // TanStack Query caching
+  // TanStack Query caching for menu recipes
   const {
-    data: cachedResults,
-    isLoading: isCacheLoading,
-    isFetching: isCacheFetching,
+    data: cachedMenuResults,
+    isLoading: isMenuCacheLoading,
+    isFetching: isMenuCacheFetching,
   } = useQuery({
-    ...convexQuery(queryFn, {
-      ...queryArgs,
-      paginationOpts: { numItems: itemsPerPage, cursor: null },
-    }),
-    enabled: isMenuQuery ? !!menuId : !menuId,
+    ...convexQuery(
+      api.menus.getMenuRecipesByDishType,
+      menuId
+        ? {
+            userId,
+            menuId,
+            dishType: mealType,
+            paginationOpts: { numItems: itemsPerPage, cursor: null },
+          }
+        : "skip", // This won't be used due to enabled condition
+    ),
+    enabled: !!userId && !!menuId,
   }) as {
     data: PaginationResult<Doc<"recipes">> | undefined;
     isLoading: boolean;
     isFetching: boolean;
   };
 
-  // Paginated query
-  const paginatedResults = usePaginatedQuery(
-    queryFn,
-    !!userId ? queryArgs : "skip",
+  // TanStack Query caching for regular recipes
+  const {
+    data: cachedRecipeResults,
+    isLoading: isRecipeCacheLoading,
+    isFetching: isRecipeCacheFetching,
+  } = useQuery({
+    ...convexQuery(api.recipes.getRecipesByDishType, {
+      userId,
+      dishType: mealType,
+      paginationOpts: { numItems: itemsPerPage, cursor: null },
+    }),
+    enabled: !!userId && !menuId,
+  }) as {
+    data: PaginationResult<Doc<"recipes">> | undefined;
+    isLoading: boolean;
+    isFetching: boolean;
+  };
+
+  // For menu recipes
+  const menuResults = usePaginatedQuery(
+    api.menus.getMenuRecipesByDishType,
+    menuId
+      ? {
+          userId,
+          menuId,
+          dishType: mealType,
+        }
+      : "skip",
     { initialNumItems: itemsPerPage },
   );
 
-  // Smart recipe selection - inline logic instead of useMemo
-  const paginatedRecipes = paginatedResults.results || [];
-  const cachedRecipes = cachedResults?.page || [];
+  // For all recipes
+  const recipeResults = usePaginatedQuery(
+    api.recipes.getRecipesByDishType,
+    !menuId
+      ? {
+          userId,
+          dishType: mealType,
+        }
+      : "skip",
+    { initialNumItems: itemsPerPage },
+  );
 
-  const recipes = (() => {
-    // If we have cached results and are still loading first page, show cached
-    if (
-      cachedRecipes.length > 0 &&
-      paginatedResults.status === "LoadingFirstPage"
-    ) {
-      return cachedRecipes;
+  // Use the appropriate result set based on whether we have a menuId
+  const activeResults = menuId ? menuResults : recipeResults;
+  const activeCachedResults = menuId ? cachedMenuResults : cachedRecipeResults;
+  const activeCacheLoading = menuId ? isMenuCacheLoading : isRecipeCacheLoading;
+
+  // Smart recipe selection: use cached data for better UX
+  const recipes = useMemo(() => {
+    const paginatedResults = activeResults.results || [];
+    const cached = activeCachedResults?.page || [];
+
+    // If we have cached results and are still loading first page
+    if (cached.length > 0 && activeResults.status === "LoadingFirstPage") {
+      return cached;
     }
 
     // If paginated has more results than cache, use paginated
-    if (paginatedRecipes.length > cachedRecipes.length) {
-      return paginatedRecipes;
+    if (paginatedResults.length > cached.length) {
+      return paginatedResults;
     }
 
     // For empty states, prefer showing any available data
-    return paginatedRecipes.length > 0 ? paginatedRecipes : cachedRecipes;
-  })();
+    return paginatedResults.length > 0 ? paginatedResults : cached;
+  }, [activeCachedResults?.page, activeResults.results, activeResults.status]);
 
-  const hasNextPage = paginatedResults.status === "CanLoadMore";
-  const isFetchingNextPage = paginatedResults.status === "LoadingMore";
+  const hasNextPage = activeResults.status === "CanLoadMore";
+  const isFetchingNextPage = activeResults.status === "LoadingMore";
 
   // Improved loading state: only show loading if we have no cached data
   const isLoading =
-    paginatedResults.status === "LoadingFirstPage" &&
-    cachedRecipes.length === 0 &&
-    isCacheLoading;
+    activeResults.status === "LoadingFirstPage" &&
+    (!activeCachedResults?.page || activeCachedResults.page.length === 0) &&
+    activeCacheLoading;
+
+  const isError = false; // Convex queries don't have error states like this
 
   const fetchNextPage = () => {
     if (hasNextPage) {
-      paginatedResults.loadMore(itemsPerPage);
+      activeResults.loadMore(itemsPerPage);
     }
   };
 
@@ -99,8 +138,10 @@ export const useInfiniteRecipes = ({
     hasNextPage,
     isFetchingNextPage,
     isLoading,
-    isError: false, // Convex queries don't have error states like this
-    isCacheFetching,
-    hasCachedData: cachedRecipes.length > 0,
+    isError,
+    // Additional useful states
+    isCacheFetching: menuId ? isMenuCacheFetching : isRecipeCacheFetching,
+    hasCachedData:
+      !!activeCachedResults?.page && activeCachedResults.page.length > 0,
   };
 };
