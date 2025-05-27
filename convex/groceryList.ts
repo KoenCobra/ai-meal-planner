@@ -1,6 +1,6 @@
 import { ConvexError, v } from "convex/values";
-
 import { mutation, MutationCtx, query } from "./_generated/server";
+import { rateLimiter } from "./rateLimiter";
 
 export const parseQuantity = (
   quantityStr: string,
@@ -22,10 +22,16 @@ export const addItem = mutation({
     quantity: v.optional(v.string()),
   },
   handler: async (ctx, args) => {
+    await rateLimiter.limit(ctx, "addGroceryItem", {
+      key: args.userId,
+      throws: true,
+    });
+
     const existingItem = await ctx.db
       .query("groceryItems")
-      .withIndex("by_user", (q) => q.eq("userId", args.userId))
-      .filter((q) => q.eq(q.field("name"), args.name))
+      .withIndex("by_user_and_name", (q) =>
+        q.eq("userId", args.userId).eq("name", args.name),
+      )
       .first();
 
     if (existingItem && args.quantity && existingItem.quantity) {
@@ -65,8 +71,9 @@ export const addOrUpdateGroceryItem = async (
 ) => {
   const existingItem = await ctx.db
     .query("groceryItems")
-    .withIndex("by_user", (q) => q.eq("userId", userId))
-    .filter((q) => q.eq(q.field("name"), name))
+    .withIndex("by_user_and_name", (q) =>
+      q.eq("userId", userId).eq("name", name),
+    )
     .first();
 
   if (existingItem && existingItem.quantity) {
@@ -103,6 +110,11 @@ export const deleteItem = mutation({
     id: v.id("groceryItems"),
   },
   handler: async (ctx, args) => {
+    await rateLimiter.limit(ctx, "deleteGroceryItem", {
+      key: args.userId,
+      throws: true,
+    });
+
     const item = await ctx.db.get(args.id);
     if (!item) throw new ConvexError("Item not found");
     if (item.userId !== args.userId) throw new ConvexError("Not authorized");
@@ -117,6 +129,11 @@ export const toggleItem = mutation({
     id: v.id("groceryItems"),
   },
   handler: async (ctx, args) => {
+    await rateLimiter.limit(ctx, "toggleGroceryItem", {
+      key: args.userId,
+      throws: true,
+    });
+
     const item = await ctx.db.get(args.id);
     if (!item) throw new ConvexError("Item not found");
     if (item.userId !== args.userId) throw new ConvexError("Not authorized");
@@ -133,6 +150,11 @@ export const updateItem = mutation({
     quantity: v.optional(v.string()),
   },
   handler: async (ctx, args) => {
+    await rateLimiter.limit(ctx, "updateGroceryItem", {
+      key: args.userId,
+      throws: true,
+    });
+
     const item = await ctx.db.get(args.id);
     if (!item) throw new ConvexError("Item not found");
     if (item.userId !== args.userId) throw new ConvexError("Not authorized");
@@ -146,9 +168,7 @@ export const updateItem = mutation({
 });
 
 export const listItems = query({
-  args: {
-    userId: v.string(),
-  },
+  args: { userId: v.string() },
   handler: async (ctx, args) => {
     return await ctx.db
       .query("groceryItems")
@@ -177,15 +197,19 @@ export const clearCheckedItems = mutation({
     userId: v.string(),
   },
   handler: async (ctx, args) => {
+    await rateLimiter.limit(ctx, "clearGroceryItems", {
+      key: args.userId,
+      throws: true,
+    });
+
     const checkedItems = await ctx.db
       .query("groceryItems")
-      .withIndex("by_user", (q) => q.eq("userId", args.userId))
+      .withIndex("by_user_and_checked", (q) =>
+        q.eq("userId", args.userId).eq("checked", true),
+      )
       .collect();
-
     for (const item of checkedItems) {
-      if (item.checked) {
-        await ctx.db.delete(item._id);
-      }
+      await ctx.db.delete(item._id);
     }
   },
 });
@@ -195,6 +219,11 @@ export const clearAllItems = mutation({
     userId: v.string(),
   },
   handler: async (ctx, args) => {
+    await rateLimiter.limit(ctx, "clearAllGroceryItems", {
+      key: args.userId,
+      throws: true,
+    });
+
     const allItems = await ctx.db
       .query("groceryItems")
       .withIndex("by_user", (q) => q.eq("userId", args.userId))

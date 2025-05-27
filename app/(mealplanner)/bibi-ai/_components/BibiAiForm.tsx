@@ -31,6 +31,7 @@ import {
 interface BibiAiFormProps {
   onRecipeGenerated: (recipe: RecipeInput, image?: string) => void;
   onGenerationStart?: () => void;
+  onClear?: () => void;
 }
 
 const BibiAiForm = ({

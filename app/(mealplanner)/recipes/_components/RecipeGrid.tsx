@@ -4,7 +4,7 @@ import { RecipeCard } from "./RecipeCard";
 
 interface RecipeGridProps {
   recipes: Recipe[];
-  onDelete: (recipeId: Id<"recipes">, title: string) => void;
+  onDelete: (recipeId: Id<"recipes">, title: string, dishType: string) => void;
 }
 
 export const RecipeGrid = ({ recipes, onDelete }: RecipeGridProps) => {

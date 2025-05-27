@@ -1,8 +1,25 @@
 import { paginationOptsValidator } from "convex/server";
 import { ConvexError, v } from "convex/values";
-
 import { mutation, query } from "./_generated/server";
 import { addOrUpdateGroceryItem } from "./groceryList";
+import { rateLimiter } from "./rateLimiter";
+
+export const getRecipesByDishType = query({
+  args: {
+    userId: v.string(),
+    dishType: v.string(),
+    paginationOpts: paginationOptsValidator,
+  },
+  handler: async (ctx, args) => {
+    return await ctx.db
+      .query("recipes")
+      .withIndex("by_user_and_dish_type", (q) =>
+        q.eq("userId", args.userId).eq("dishType", args.dishType),
+      )
+      .order("desc")
+      .paginate(args.paginationOpts);
+  },
+});
 
 export const createRecipe = mutation({
   args: {
@@ -31,14 +48,30 @@ export const createRecipe = mutation({
         }),
       }),
     ),
-    dishTypes: v.array(v.string()),
+    dishType: v.string(),
   },
   handler: async (ctx, args) => {
     const { userId, ...recipeData } = args;
 
+    // Rate limit recipe creation per user
+    await rateLimiter.limit(ctx, "createRecipe", { key: userId, throws: true });
+
+    // Also check global recipe creation limit
+    await rateLimiter.limit(ctx, "globalRecipeCreation", { throws: true });
+
+    // Create searchable ingredients text
+    const ingredientsText = recipeData.ingredients
+      .map((ingredient) => ingredient.name)
+      .join(" ");
+
+    // Create combined search text for title and ingredients
+    const searchText = `${recipeData.title} ${ingredientsText}`;
+
     return await ctx.db.insert("recipes", {
       userId,
       ...recipeData,
+      ingredientsText,
+      searchText,
     });
   },
 });
@@ -75,15 +108,35 @@ export const updateRecipe = mutation({
         }),
       ),
     ),
-    dishTypes: v.optional(v.array(v.string())),
+    ingredientsText: v.optional(v.string()),
+    searchText: v.optional(v.string()),
+    dishType: v.optional(v.string()),
   },
   handler: async (ctx, args) => {
     const { id, userId, ...updates } = args;
+
+    // Rate limit recipe updates per user
+    await rateLimiter.limit(ctx, "updateRecipe", { key: userId, throws: true });
+
     const recipe = await ctx.db.get(id);
     if (!recipe) throw new Error("Recipe not found");
     if (recipe.userId !== userId) throw new Error("Not authorized");
 
-    await ctx.db.patch(id, updates);
+    // Update search text if title or ingredients are being updated
+    const finalUpdates = { ...updates };
+    if (updates.ingredients || updates.title) {
+      // Get current recipe to access existing values
+      const currentTitle = updates.title || recipe.title;
+      const currentIngredients = updates.ingredients || recipe.ingredients;
+
+      finalUpdates.ingredientsText = currentIngredients
+        .map((ingredient) => ingredient.name)
+        .join(" ");
+
+      finalUpdates.searchText = `${currentTitle} ${finalUpdates.ingredientsText}`;
+    }
+
+    await ctx.db.patch(id, finalUpdates);
 
     return id;
   },
@@ -93,8 +146,15 @@ export const deleteRecipe = mutation({
   args: {
     userId: v.string(),
     id: v.id("recipes"),
+    dishType: v.string(),
   },
   handler: async (ctx, args) => {
+    // Rate limit recipe deletion per user
+    await rateLimiter.limit(ctx, "deleteRecipe", {
+      key: args.userId,
+      throws: true,
+    });
+
     const recipe = await ctx.db.get(args.id);
     if (!recipe) throw new ConvexError("Recipe not found");
     if (recipe.userId !== args.userId) throw new ConvexError("Not authorized");
@@ -124,7 +184,7 @@ export const getRecipe = query({
   handler: async (ctx, args) => {
     const recipe = await ctx.db.get(args.id);
     if (!recipe) return null;
-    if (recipe.userId !== args.userId) throw new Error("Not authorized");
+    if (recipe.userId !== args.userId) throw new ConvexError("Not authorized");
     return recipe;
   },
 });
@@ -143,49 +203,29 @@ export const listRecipes = query({
   },
 });
 
-export const searchRecipes = query({
+export const searchRecipesByTitleAndIngredients = query({
   args: {
     userId: v.string(),
     query: v.string(),
     paginationOpts: paginationOptsValidator,
   },
   handler: async (ctx, args) => {
+    if (!args.query.trim()) {
+      // If no query, return all recipes paginated
+      return await ctx.db
+        .query("recipes")
+        .withIndex("by_user", (q) => q.eq("userId", args.userId))
+        .order("desc")
+        .paginate(args.paginationOpts);
+    }
+
+    // Search in combined title and ingredients text
     return await ctx.db
       .query("recipes")
-      .withSearchIndex("search_title", (q) =>
-        q.search("title", args.query).eq("userId", args.userId),
+      .withSearchIndex("search_recipes", (q) =>
+        q.search("searchText", args.query).eq("userId", args.userId),
       )
       .paginate(args.paginationOpts);
-  },
-});
-
-export const searchByIngredients = query({
-  args: {
-    userId: v.string(),
-    query: v.string(),
-    paginationOpts: paginationOptsValidator,
-  },
-  handler: async (ctx, args) => {
-    return await ctx.db
-      .query("recipes")
-      .withSearchIndex("search_ingredients", (q) =>
-        q.search("ingredients", args.query).eq("userId", args.userId),
-      )
-      .paginate(args.paginationOpts);
-  },
-});
-
-export const getAllRecipes = query({
-  args: {
-    userId: v.string(),
-    paginationOpts: v.optional(paginationOptsValidator),
-  },
-  handler: async (ctx, args) => {
-    return await ctx.db
-      .query("recipes")
-      .withIndex("by_user", (q) => q.eq("userId", args.userId))
-      .order("desc")
-      .paginate(args.paginationOpts || { numItems: 10, cursor: null });
   },
 });
 
@@ -196,6 +236,12 @@ export const syncIngredientsToGroceryList = mutation({
   },
   returns: v.null(),
   handler: async (ctx, args) => {
+    // Rate limit sync operations per user - these can be expensive
+    await rateLimiter.limit(ctx, "syncRecipeIngredients", {
+      key: args.userId,
+      throws: true,
+    });
+
     const recipe = await ctx.db.get(args.recipeId);
     if (!recipe) throw new ConvexError("Recipe not found");
     if (recipe.userId !== args.userId) throw new ConvexError("Not authorized");

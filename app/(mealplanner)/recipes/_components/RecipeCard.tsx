@@ -36,9 +36,9 @@ interface RecipeCardProps {
     servings: number;
     storageId?: Id<"_storage">;
     diets: string[];
-    dishTypes: string[];
+    dishType: string;
   };
-  onDelete: (recipeId: Id<"recipes">, title: string) => void;
+  onDelete: (recipeId: Id<"recipes">, title: string, dishType: string) => void;
 }
 
 export const RecipeCard = ({ recipe, onDelete }: RecipeCardProps) => {
@@ -113,7 +113,7 @@ export const RecipeCard = ({ recipe, onDelete }: RecipeCardProps) => {
               </DropdownMenuItem>
               <DropdownMenuItem
                 onClick={() => {
-                  onDelete(recipe._id, recipe.title);
+                  onDelete(recipe._id, recipe.title, recipe.dishType);
                 }}
                 className="text-destructive cursor-pointer"
               >
@@ -141,14 +141,12 @@ export const RecipeCard = ({ recipe, onDelete }: RecipeCardProps) => {
           </CardContent>
           <CardFooter>
             <div className="flex flex-wrap gap-2">
-              {recipe.dishTypes?.map((type) => (
-                <span
-                  key={type}
-                  className="bg-secondary text-secondary-foreground px-2 py-1 rounded-full text-xs"
-                >
-                  {type}
-                </span>
-              ))}
+              <span
+                key={recipe.dishType}
+                className="bg-secondary text-secondary-foreground px-2 py-1 rounded-full text-xs"
+              >
+                {recipe.dishType}
+              </span>
             </div>
           </CardFooter>
         </Card>

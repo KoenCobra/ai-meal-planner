@@ -28,16 +28,17 @@ const applicationTables = {
         }),
       }),
     ),
-    dishTypes: v.array(v.string()),
+    // Flattened ingredients string for search
+    ingredientsText: v.optional(v.string()),
+    // Combined search text for title and ingredients
+    searchText: v.optional(v.string()),
+    dishType: v.string(),
   })
     .index("by_user", ["userId"])
     .index("by_title", ["title"])
-    .searchIndex("search_title", {
-      searchField: "title",
-      filterFields: ["userId"],
-    })
-    .searchIndex("search_ingredients", {
-      searchField: "ingredients",
+    .index("by_user_and_dish_type", ["userId", "dishType"])
+    .searchIndex("search_recipes", {
+      searchField: "searchText",
       filterFields: ["userId"],
     }),
 
@@ -48,7 +49,6 @@ const applicationTables = {
     .index("by_user", ["userId"])
     .index("by_name", ["name"])
     .index("by_user_and_name", ["userId", "name"]),
-
   menusOnRecipes: defineTable({
     menuId: v.id("menus"),
     recipeId: v.id("recipes"),
@@ -64,12 +64,20 @@ const applicationTables = {
     checked: v.boolean(),
   })
     .index("by_user", ["userId"])
+    .index("by_user_and_checked", ["userId", "checked"])
+    .index("by_user_and_name", ["userId", "name"])
     .searchIndex("search_name", {
       searchField: "name",
       filterFields: ["userId"],
     }),
 };
 
-export default defineSchema({
-  ...applicationTables,
-});
+export default defineSchema(
+  {
+    ...applicationTables,
+  },
+  {
+    schemaValidation: true,
+    strictTableNameTypes: true,
+  },
+);
