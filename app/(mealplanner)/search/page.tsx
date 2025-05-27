@@ -2,6 +2,7 @@
 
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { sanitizeInput } from "@/lib/utils";
 import { Loader2, Search, X } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 import DeleteRecipeDialog from "../_components/DeleteRecipeDialog";
@@ -34,7 +35,7 @@ const SearchPage = () => {
   const { recipes, fetchNextPage, hasNextPage, isFetchingNextPage, isLoading } =
     useInfiniteSearch({
       searchQuery: debouncedQuery || "",
-      itemsPerPage: 6,
+      itemsPerPage: 3,
     });
 
   useEffect(() => {
@@ -73,7 +74,7 @@ const SearchPage = () => {
             type="text"
             placeholder="Search recipes by title or ingredients..."
             value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
+            onChange={(e) => setSearchQuery(sanitizeInput(e.target.value))}
             className="pl-10 pr-10"
           />
           {searchQuery && (

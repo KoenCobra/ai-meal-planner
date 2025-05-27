@@ -12,7 +12,7 @@ const DinnerTabContent = ({ menuId, onDelete }: DinnerTabContentProps) => {
       mealType="dinner"
       menuId={menuId}
       onDelete={onDelete}
-      itemsPerPage={5}
+      itemsPerPage={3}
     />
   );
 };

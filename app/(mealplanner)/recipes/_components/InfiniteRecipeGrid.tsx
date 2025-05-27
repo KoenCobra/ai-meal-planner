@@ -20,7 +20,7 @@ export const InfiniteRecipeGrid = ({
   mealType,
   menuId,
   onDelete,
-  itemsPerPage = 6,
+  itemsPerPage,
 }: InfiniteRecipeGridProps) => {
   const {
     recipes,

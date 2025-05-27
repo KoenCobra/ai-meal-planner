@@ -12,7 +12,7 @@ const SnackTabContent = ({ menuId, onDelete }: SnackTabContentProps) => {
       mealType="snacks"
       menuId={menuId}
       onDelete={onDelete}
-      itemsPerPage={5}
+      itemsPerPage={3}
     />
   );
 };

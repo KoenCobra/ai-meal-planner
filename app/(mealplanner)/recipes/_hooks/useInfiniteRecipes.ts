@@ -19,7 +19,7 @@ interface UseInfiniteRecipesProps {
 export const useInfiniteRecipes = ({
   mealType,
   menuId,
-  itemsPerPage = 6,
+  itemsPerPage = 3,
 }: UseInfiniteRecipesProps) => {
   const { user } = useUser();
   const userId = user?.id || "";
