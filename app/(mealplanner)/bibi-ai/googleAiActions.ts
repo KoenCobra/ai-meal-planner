@@ -1,10 +1,10 @@
 "use server";
 
-import googleai from "@/lib/googleai";
 import { GenerateRecipeInput, generateRecipeSchema } from "@/lib/validation";
 import { Type } from "@google/genai";
 import sharp from "sharp";
 
+import googleAi from "@/lib/google-ai";
 import { auth } from "@clerk/nextjs/server";
 
 export async function generateRecipe(input: GenerateRecipeInput) {
@@ -33,7 +33,7 @@ export async function generateRecipe(input: GenerateRecipeInput) {
   `;
 
   try {
-    const response = await googleai.models.generateContent({
+    const response = await googleAi.models.generateContent({
       model: "gemini-2.5-flash-preview-05-20",
       contents: [
         {
@@ -146,7 +146,7 @@ export async function generateRecipeImage(
   }
 
   try {
-    const response = await googleai.models.generateImages({
+    const response = await googleAi.models.generateImages({
       model: "imagen-3.0-generate-002",
       prompt: `Professional food photography of ${recipeTitle}. ${recipeDescription}. Top-down view, beautiful plating, restaurant quality, soft natural lighting.`,
       config: {
@@ -239,7 +239,7 @@ export async function analyzeImageForRecipe(
 
     const userMessage = `Please analyze this food image and generate a recipe for it.${additionalInstructions ? ` ${additionalInstructions}` : ""}`;
 
-    const response = await googleai.models.generateContent({
+    const response = await googleAi.models.generateContent({
       model: "gemini-2.5-flash-preview-05-20",
       contents: [
         {
@@ -301,9 +301,8 @@ export async function analyzeImageForRecipe(
                 },
               },
             },
-            dishTypes: {
-              type: Type.ARRAY,
-              items: { type: Type.STRING },
+            dishType: {
+              type: Type.STRING,
             },
             error: { type: Type.STRING, nullable: true },
           },
@@ -315,7 +314,7 @@ export async function analyzeImageForRecipe(
             "diets",
             "instructions",
             "ingredients",
-            "dishTypes",
+            "dishType",
             "error",
           ],
         },
@@ -330,8 +329,6 @@ export async function analyzeImageForRecipe(
 
     const aiResponse = JSON.parse(responseText);
 
-    console.log(aiResponse);
-
     if (!aiResponse) {
       throw new Error("Failed to generate AI response");
     }
@@ -344,7 +341,7 @@ export async function analyzeImageForRecipe(
       diets: aiResponse.diets,
       instructions: aiResponse.instructions,
       ingredients: aiResponse.ingredients,
-      dishTypes: aiResponse.dishTypes,
+      dishType: aiResponse.dishType,
       error: aiResponse.error,
     };
   } catch (error) {

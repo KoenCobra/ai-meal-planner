@@ -26,7 +26,7 @@ import {
   analyzeImageForRecipe,
   generateRecipe,
   generateRecipeImage,
-} from "../actions";
+} from "../googleAiActions";
 
 interface BibiAiFormProps {
   onRecipeGenerated: (recipe: RecipeInput, image?: string) => void;
