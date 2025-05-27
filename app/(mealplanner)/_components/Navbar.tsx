@@ -17,30 +17,35 @@ const navItems = [
       <Sparkles className="size-4 absolute -top-1 -right-4 text-blue-500" />
     ),
     mobileIcon: <Sparkles className="size-5 text-blue-500" />,
+    mobileOnly: false,
   },
   {
     href: "/search",
     label: "Search",
     icon: null,
     mobileIcon: <Search className="size-5" />,
+    mobileOnly: true,
   },
   {
     href: "/recipes",
     label: "Recipes",
     icon: null,
     mobileIcon: <Book className="size-5" />,
+    mobileOnly: false,
   },
   {
     href: "/menus",
     label: "Menus",
     icon: null,
     mobileIcon: <Calendar className="size-5" />,
+    mobileOnly: false,
   },
   {
     href: "/grocery",
     label: "Grocery",
     icon: null,
     mobileIcon: <ShoppingBag className="size-5" />,
+    mobileOnly: false,
   },
 ] as const;
 
@@ -64,24 +69,26 @@ const Navbar = () => {
           </h1>
           <div className="hidden md:block">
             <ul className="flex gap-10 text-xl">
-              {navItems.map((item) => (
-                <li key={item.href}>
-                  <div className="relative">
-                    <Link
-                      href={item.href}
-                      className={cn(
-                        "transition-colors",
-                        pathname.startsWith(item.href)
-                          ? "font-bold"
-                          : "text-muted-foreground",
-                      )}
-                    >
-                      {item.label}
-                    </Link>
-                    {item.icon}
-                  </div>
-                </li>
-              ))}
+              {navItems
+                .filter((item) => !item.mobileOnly)
+                .map((item) => (
+                  <li key={item.href}>
+                    <div className="relative">
+                      <Link
+                        href={item.href}
+                        className={cn(
+                          "transition-colors",
+                          pathname.startsWith(item.href)
+                            ? "font-bold"
+                            : "text-muted-foreground",
+                        )}
+                      >
+                        {item.label}
+                      </Link>
+                      {item.icon}
+                    </div>
+                  </li>
+                ))}
             </ul>
           </div>
           <div className="flex items-center gap-3">

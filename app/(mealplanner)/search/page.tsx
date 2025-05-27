@@ -3,7 +3,6 @@
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Loader2, Search, X } from "lucide-react";
-import { useRouter } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
 import DeleteRecipeDialog from "../_components/DeleteRecipeDialog";
 import { RecipeGrid } from "../recipes/_components/RecipeGrid";
@@ -12,8 +11,6 @@ import { useSearch } from "./_context/SearchContext";
 import { useInfiniteSearch } from "./_hooks/useInfiniteSearch";
 
 const SearchPage = () => {
-  const router = useRouter();
-
   const {
     recipeToDelete,
     setRecipeToDelete,
@@ -66,12 +63,7 @@ const SearchPage = () => {
     <div className="space-y-6">
       {/* Search Header */}
       <div className="space-y-4">
-        <div className="flex items-center justify-between">
-          <h1 className="text-2xl font-bold">Search Recipes</h1>
-          <Button variant="outline" size="sm" onClick={() => router.back()}>
-            Back
-          </Button>
-        </div>
+        <h1 className="text-2xl font-bold">Search Recipes</h1>
 
         {/* Search Input */}
         <div className="relative">
