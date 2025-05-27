@@ -2,17 +2,24 @@
 
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Id } from "@/convex/_generated/dataModel";
 import { Loader2, Search, X } from "lucide-react";
 import { useRouter } from "next/navigation";
-import { useCallback, useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
+import DeleteRecipeDialog from "../_components/DeleteRecipeDialog";
 import { RecipeGrid } from "../recipes/_components/RecipeGrid";
+import { useRecipeDelete } from "../recipes/_hooks/useRecipeDelete";
 import { useSearch } from "./_context/SearchContext";
-import { useDeleteRecipe } from "./_hooks/useDeleteRecipe";
 import { useInfiniteSearch } from "./_hooks/useInfiniteSearch";
 
 const SearchPage = () => {
   const router = useRouter();
+
+  const {
+    recipeToDelete,
+    setRecipeToDelete,
+    handleDelete,
+    handleConfirmDelete,
+  } = useRecipeDelete({});
 
   const { searchQuery, setSearchQuery, clearSearch } = useSearch();
   const [debouncedQuery, setDebouncedQuery] = useState("");
@@ -33,8 +40,6 @@ const SearchPage = () => {
       itemsPerPage: 6,
     });
 
-  const { deleteRecipe } = useDeleteRecipe();
-
   useEffect(() => {
     const observer = new IntersectionObserver(
       (entries) => {
@@ -51,13 +56,6 @@ const SearchPage = () => {
 
     return () => observer.disconnect();
   }, [fetchNextPage, hasNextPage, isFetchingNextPage]);
-
-  const handleDelete = useCallback(
-    (recipeId: Id<"recipes">, title: string, dishType: string) => {
-      deleteRecipe(recipeId, title, dishType);
-    },
-    [deleteRecipe],
-  );
 
   const handleClearSearch = () => {
     clearSearch();
@@ -154,6 +152,13 @@ const SearchPage = () => {
           </>
         )}
       </div>
+
+      <DeleteRecipeDialog
+        open={!!recipeToDelete}
+        onOpenChange={(open) => !open && setRecipeToDelete(null)}
+        onConfirm={handleConfirmDelete}
+        recipeName={recipeToDelete?.title || ""}
+      />
     </div>
   );
 };
