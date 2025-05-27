@@ -16,6 +16,7 @@ const queryClient = new QueryClient({
       queryFn: convexQueryClient.queryFn(),
       staleTime: Infinity,
       gcTime: Infinity,
+      retry: 2,
     },
   },
 });
