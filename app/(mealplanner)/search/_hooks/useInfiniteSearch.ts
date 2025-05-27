@@ -14,7 +14,7 @@ interface UseInfiniteSearchProps {
 
 export const useInfiniteSearch = ({
   searchQuery,
-  itemsPerPage = 3,
+  itemsPerPage = 6,
 }: UseInfiniteSearchProps) => {
   const { user } = useUser();
   const userId = user?.id || "";
