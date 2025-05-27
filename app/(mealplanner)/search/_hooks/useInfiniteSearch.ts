@@ -22,8 +22,7 @@ export const useInfiniteSearch = ({
   // Debounced query to avoid too many API calls
   const trimmedQuery = useMemo(() => searchQuery.trim(), [searchQuery]);
 
-  // Use TanStack Query for caching search results
-  // This provides instant results from cache while updating in background
+  // TanStack Query for caching search results
   const {
     data: cachedResults,
     isLoading: isCacheLoading,
@@ -40,51 +39,49 @@ export const useInfiniteSearch = ({
     isFetching: boolean;
   };
 
-  // Use usePaginatedQuery for infinite loading functionality
-  const results = usePaginatedQuery(
+  // Paginated query for infinite loading
+  const paginatedResults = usePaginatedQuery(
     api.recipes.searchRecipesByTitleAndIngredients,
     userId && trimmedQuery !== undefined
-      ? {
-          userId,
-          query: trimmedQuery,
-        }
+      ? { userId, query: trimmedQuery }
       : "skip",
     { initialNumItems: itemsPerPage },
   );
 
-  // Smart recipe selection: use cached data for better UX
-  const recipes = useMemo(() => {
-    const paginatedResults = results.results || [];
-    const cached = cachedResults?.page || [];
+  // Smart recipe selection - inline logic instead of useMemo
+  const paginatedRecipes = paginatedResults.results || [];
+  const cachedRecipes = cachedResults?.page || [];
 
-    // If we have cached results and are still loading first page
-    if (cached.length > 0 && results.status === "LoadingFirstPage") {
-      return cached;
+  const recipes = (() => {
+    // If we have cached results and are still loading first page, show cached
+    if (
+      cachedRecipes.length > 0 &&
+      paginatedResults.status === "LoadingFirstPage"
+    ) {
+      return cachedRecipes;
     }
 
     // If paginated has more results than cache, use paginated
-    if (paginatedResults.length > cached.length) {
-      return paginatedResults;
+    if (paginatedRecipes.length > cachedRecipes.length) {
+      return paginatedRecipes;
     }
 
     // For empty states, prefer showing any available data
-    return paginatedResults.length > 0 ? paginatedResults : cached;
-  }, [cachedResults?.page, results.results, results.status]);
+    return paginatedRecipes.length > 0 ? paginatedRecipes : cachedRecipes;
+  })();
 
-  const hasNextPage = results.status === "CanLoadMore";
-  const isFetchingNextPage = results.status === "LoadingMore";
+  const hasNextPage = paginatedResults.status === "CanLoadMore";
+  const isFetchingNextPage = paginatedResults.status === "LoadingMore";
 
   // Improved loading state: only show loading if we have no cached data
   const isLoading =
-    results.status === "LoadingFirstPage" &&
-    (!cachedResults?.page || cachedResults.page.length === 0) &&
+    paginatedResults.status === "LoadingFirstPage" &&
+    cachedRecipes.length === 0 &&
     isCacheLoading;
-
-  const isError = false; // Convex queries don't have error states like this
 
   const fetchNextPage = () => {
     if (hasNextPage) {
-      results.loadMore(itemsPerPage);
+      paginatedResults.loadMore(itemsPerPage);
     }
   };
 
@@ -94,9 +91,8 @@ export const useInfiniteSearch = ({
     hasNextPage,
     isFetchingNextPage,
     isLoading,
-    isError,
-    // Additional useful states
+    isError: false, // Convex queries don't have error states like this
     isCacheFetching, // Shows when cache is updating in background
-    hasCachedData: !!cachedResults?.page && cachedResults.page.length > 0,
+    hasCachedData: cachedRecipes.length > 0,
   };
 };
