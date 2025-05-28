@@ -15,7 +15,7 @@ import { ConvexHttpClient } from "convex/browser";
 const convex = new ConvexHttpClient(process.env.NEXT_PUBLIC_CONVEX_URL!);
 
 fal.config({
-  credentials: process.env.FAL_KEY,
+  proxyUrl: "/api/fal/proxy",
 });
 
 export async function generateRecipe(input: GenerateRecipeInput) {
@@ -85,9 +85,9 @@ export async function generateRecipeImage(
     throw new Error(rateLimitCheck.message || "Rate limit exceeded");
   }
 
-  const result = await fal.subscribe("fal-ai/flux/dev", {
+  const result = await fal.subscribe("fal-ai/flux/schnell", {
     input: {
-      prompt: `Professional food photography of ${recipeTitle}. ${recipeDescription}. Top-down view, beautiful plating, restaurant quality, soft natural lighting.`,
+      prompt: `Professional food photography of ${recipeTitle}. ${recipeDescription}.`,
       image_size: "square_hd",
     },
     logs: true,

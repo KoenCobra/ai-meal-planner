@@ -97,7 +97,8 @@ const AiResponse = ({ recipe, image, onClear }: BubuAiResponseProps) => {
               className="rounded-lg  shadow-lg object-cover w-full h-full"
               width={1024}
               height={1024}
-              onLoad={() => setIsImageGenerating(false)}
+              blurDataURL={image}
+              placeholder="blur"
             />
           ) : (
             <div className="flex flex-col items-center justify-center w-full h-full bg-muted rounded-lg">
