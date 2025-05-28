@@ -1,5 +1,5 @@
 import type { NextConfig } from "next";
-import { MAX_FILE_SIZE } from "./lib/image-utils";
+import { MAX_FILE_SIZE } from "./lib/constants";
 
 const nextConfig: NextConfig = {
   images: {
@@ -7,6 +7,10 @@ const nextConfig: NextConfig = {
       {
         protocol: "https",
         hostname: "*.convex.cloud",
+      },
+      {
+        protocol: "https",
+        hostname: "v3.fal.media",
       },
     ],
   },

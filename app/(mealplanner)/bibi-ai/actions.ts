@@ -1,21 +1,21 @@
 "use server";
+
 import { api } from "@/convex/_generated/api";
-// import openai from "@/lib/openai";
+import { getTextModelBasedOnUserPlan } from "@/lib/userPlan";
 import {
   GenerateRecipeInput,
   generateRecipeSchema,
   Recipe,
 } from "@/lib/validation";
-import { google } from "@ai-sdk/google";
-import { openai } from "@ai-sdk/openai";
 import { auth } from "@clerk/nextjs/server";
+import { fal } from "@fal-ai/client";
 import { generateObject } from "ai";
 import { ConvexHttpClient } from "convex/browser";
 
 const convex = new ConvexHttpClient(process.env.NEXT_PUBLIC_CONVEX_URL!);
 
 export async function generateRecipe(input: GenerateRecipeInput) {
-  const { userId, has } = await auth();
+  const { userId } = await auth();
 
   if (!userId) {
     throw new Error("Unauthorized");
@@ -35,12 +35,8 @@ export async function generateRecipe(input: GenerateRecipeInput) {
 
   const { description } = generateRecipeSchema.parse(input);
 
-  const model = has({ plan: "serious_sizzler" })
-    ? google("gemini-2.5-flash-preview-05-20")
-    : openai("gpt-4.1-mini");
-
   const { object } = await generateObject({
-    model,
+    model: await getTextModelBasedOnUserPlan(),
     output: "object",
     schema: Recipe,
     prompt: `You will always answer in the language that the user is using. Smoothies are by default snacks. Please provide a recipe from this description: ${description}`,
@@ -63,78 +59,49 @@ export async function generateRecipe(input: GenerateRecipeInput) {
   };
 }
 
-// export async function generateRecipeImage(
-//   recipeTitle: string,
-//   recipeDescription: string,
-// ) {
-//   const { userId } = await auth();
+export async function generateRecipeImage(
+  recipeTitle: string,
+  recipeDescription: string,
+) {
+  const { userId } = await auth();
 
-//   if (!userId) {
-//     throw new Error("Unauthorized");
-//   }
+  if (!userId) {
+    throw new Error("Unauthorized");
+  }
 
-//   // Check rate limits before making expensive OpenAI API call
-//   const rateLimitCheck = await convex.mutation(
-//     api.openaiRateLimit.checkImageGenerationLimit,
-//     {
-//       userId,
-//     },
-//   );
+  // Check rate limits before making expensive API call
+  const rateLimitCheck = await convex.mutation(
+    api.openaiRateLimit.checkImageGenerationLimit,
+    {
+      userId,
+    },
+  );
 
-//   if (!rateLimitCheck.success) {
-//     throw new Error(rateLimitCheck.message || "Rate limit exceeded");
-//   }
+  if (!rateLimitCheck.success) {
+    throw new Error(rateLimitCheck.message || "Rate limit exceeded");
+  }
 
-//   try {
-//     const response = await openai.images.generate({
-//       model: "gpt-image-1",
-//       prompt: `Professional food photography of ${recipeTitle}. ${recipeDescription}. Top-down view, beautiful plating, restaurant quality, soft natural lighting.`,
-//       n: 1,
-//       size: "1024x1024",
-//       quality: "low",
-//     });
+  fal.config({
+    proxyUrl: "/api/fal/proxy",
+    credentials: process.env.FAL_KEY,
+  });
 
-//     // Check if we have a valid response
-//     if (!response.data || response.data.length === 0) {
-//       throw new Error("Empty response from OpenAI");
-//     }
+  const result = await fal.subscribe("fal-ai/flux/dev", {
+    input: {
+      prompt: `Professional food photography of ${recipeTitle}. ${recipeDescription}. Top-down view, beautiful plating, restaurant quality, soft natural lighting.`,
+      image_size: "square_hd",
+    },
+    logs: true,
+  });
 
-//     const imageData = response.data[0];
-//     if (!imageData || typeof imageData !== "object") {
-//       throw new Error("Invalid image data structure");
-//     }
-
-//     const b64Json = imageData.b64_json;
-//     if (!b64Json) {
-//       throw new Error("No base64 image data in response");
-//     }
-
-//     // Convert base64 to buffer
-//     const buffer = Buffer.from(b64Json, "base64");
-
-//     // Use Sharp to convert to WebP format with compression
-//     const webpBuffer = await sharp(buffer)
-//       .resize(800) // Resize to smaller dimensions
-//       .webp({ quality: 80 }) // Convert to WebP with 80% quality
-//       .toBuffer();
-
-//     // Convert back to base64 for return
-//     const webpBase64 = webpBuffer.toString("base64");
-
-//     return {
-//       imageBase64: `data:image/webp;base64,${webpBase64}`,
-//     };
-//   } catch (error) {
-//     console.error("Error in generateRecipeImage:", error);
-//     throw new Error(`Failed to generate or upload image: ${error}`);
-//   }
-// }
+  return result.data.images[0].url;
+}
 
 export async function analyzeImageForRecipe(
   image: File,
   additionalInstructions?: string,
 ) {
-  const { userId, has } = await auth();
+  const { userId } = await auth();
 
   if (!userId) {
     throw new Error("Unauthorized");
@@ -152,10 +119,6 @@ export async function analyzeImageForRecipe(
     throw new Error(rateLimitCheck.message || "Rate limit exceeded");
   }
 
-  const model = has({ plan: "serious_sizzler" })
-    ? google("gemini-2.5-flash-preview-05-20")
-    : openai("gpt-4.1-mini");
-
   try {
     // Convert the image file to base64
     const bytes = await image.arrayBuffer();
@@ -163,7 +126,7 @@ export async function analyzeImageForRecipe(
     const base64Image = buffer.toString("base64");
 
     const { object } = await generateObject({
-      model,
+      model: await getTextModelBasedOnUserPlan(),
       output: "object",
       schema: Recipe,
       messages: [
@@ -201,5 +164,34 @@ export async function analyzeImageForRecipe(
   } catch (error) {
     console.error("Error analyzing image:", error);
     throw new Error(`Failed to analyze image: ${error}`);
+  }
+}
+
+export async function convertToWebp(imageBase64: string) {
+  // This is a server action that can use sharp safely
+  const sharp = (await import("sharp")).default;
+
+  try {
+    // Remove data URL prefix if present
+    const base64Data = imageBase64.replace(/^data:image\/\w+;base64,/, "");
+
+    // Convert base64 to buffer
+    const buffer = Buffer.from(base64Data, "base64");
+
+    // Use Sharp to convert to WebP format with compression
+    const webpBuffer = await sharp(buffer)
+      .resize(800) // Resize to smaller dimensions
+      .webp({ quality: 80 }) // Convert to WebP with 80% quality
+      .toBuffer();
+
+    // Convert back to base64
+    const webpBase64 = webpBuffer.toString("base64");
+
+    return {
+      imageBase64: `data:image/webp;base64,${webpBase64}`,
+    };
+  } catch (error) {
+    console.error("Error converting image to WebP:", error);
+    throw new Error(`Failed to convert image to WebP: ${error}`);
   }
 }

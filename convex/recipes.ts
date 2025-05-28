@@ -29,9 +29,9 @@ export const createRecipe = mutation({
     servings: v.number(),
     readyInMinutes: v.number(),
     image: v.optional(v.string()),
+    imageUrl: v.optional(v.string()),
     diets: v.array(v.string()),
     instructions: v.object({
-      name: v.string(),
       steps: v.array(
         v.object({
           number: v.number(),
@@ -85,10 +85,10 @@ export const updateRecipe = mutation({
     servings: v.optional(v.number()),
     readyInMinutes: v.optional(v.number()),
     image: v.optional(v.string()),
+    imageUrl: v.optional(v.string()),
     diets: v.optional(v.array(v.string())),
     instructions: v.optional(
       v.object({
-        name: v.string(),
         steps: v.array(
           v.object({
             number: v.number(),
@@ -252,5 +252,34 @@ export const syncIngredientsToGroceryList = mutation({
     }
 
     return null;
+  },
+});
+
+export const updateRecipeImageUrl = mutation({
+  args: {
+    userId: v.string(),
+    recipeId: v.id("recipes"),
+    imageUrl: v.string(),
+  },
+  handler: async (ctx, args) => {
+    // Rate limit recipe image updates per user
+    await rateLimiter.limit(ctx, "updateRecipeImage", {
+      key: args.userId,
+      throws: true,
+    });
+
+    const recipe = await ctx.db.get(args.recipeId);
+    if (!recipe) {
+      throw new ConvexError("Recipe not found");
+    }
+    if (recipe.userId !== args.userId) {
+      throw new ConvexError("Not authorized");
+    }
+
+    await ctx.db.patch(args.recipeId, {
+      imageUrl: args.imageUrl,
+    });
+
+    return args.imageUrl;
   },
 });

@@ -23,8 +23,6 @@ const AiResponse = ({ recipe, image, onClear }: BubuAiResponseProps) => {
   const [isImageGenerating, setIsImageGenerating] = useState(true);
 
   const createRecipe = useMutation(api.recipes.createRecipe);
-  const updateRecipeImage = useMutation(api.recipes.images.updateRecipeImage);
-  const generateUploadUrl = useMutation(api.recipes.images.generateUploadUrl);
 
   // Reset state when recipe changes
   useEffect(() => {
@@ -42,39 +40,16 @@ const AiResponse = ({ recipe, image, onClear }: BubuAiResponseProps) => {
     try {
       setIsSaving(true);
 
-      let storageId = null;
+      let imageUrl = null;
 
-      // Upload image first if available
+      // Generate image URL if we have an image
       if (image) {
         try {
-          // Generate upload URL
-          const postUrl = await generateUploadUrl({
-            userId: user.id,
-          });
-
-          // Extract base64 data
-          const base64Data = image.split(",")[1] || image;
-          const binaryData = atob(base64Data);
-          const uint8Array = new Uint8Array(
-            binaryData.split("").map((char) => char.charCodeAt(0)),
-          );
-
-          // Upload the image
-          const result = await fetch(postUrl, {
-            method: "POST",
-            headers: { "Content-Type": "image/webp" },
-            body: uint8Array,
-          });
-
-          if (!result.ok) {
-            throw new Error("Failed to upload image");
-          }
-
-          const response = await result.json();
-          storageId = response.storageId;
+          // Use the existing image URL directly
+          imageUrl = image;
         } catch (error) {
-          console.error("Error uploading image:", error);
-          // Continue with recipe creation even if image upload fails
+          console.error("Error with image:", error);
+          // Continue with recipe creation even if there's an image issue
         }
       }
 
@@ -87,21 +62,12 @@ const AiResponse = ({ recipe, image, onClear }: BubuAiResponseProps) => {
         readyInMinutes: recipe.readyInMinutes,
         diets: recipe.diets,
         instructions: {
-          name: recipe.title,
           steps: recipe.instructions.steps,
         },
         ingredients: recipe.ingredients,
         dishType: recipe.dishType,
+        imageUrl: imageUrl || undefined, // Add the image URL directly
       });
-
-      // If we successfully uploaded an image, link it to the recipe
-      if (storageId) {
-        await updateRecipeImage({
-          userId: user.id,
-          recipeId: newRecipeId,
-          storageId,
-        });
-      }
 
       setSavedRecipeId(newRecipeId);
       toast.success("Recipe saved successfully!");

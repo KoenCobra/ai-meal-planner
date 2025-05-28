@@ -1,7 +1,7 @@
 import { convertToWebp } from "@/app/(mealplanner)/bibi-ai/actions";
 import { api } from "@/convex/_generated/api";
 import { Id } from "@/convex/_generated/dataModel";
-import { MAX_FILE_SIZE } from "@/lib/image-utils";
+import { MAX_FILE_SIZE } from "@/lib/constants";
 import { useMutation } from "convex/react";
 import { useRef } from "react";
 import { toast } from "sonner";

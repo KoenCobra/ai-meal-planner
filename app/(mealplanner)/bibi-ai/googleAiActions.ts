@@ -57,7 +57,6 @@ export async function generateRecipe(input: GenerateRecipeInput) {
             instructions: {
               type: Type.OBJECT,
               properties: {
-                name: { type: Type.STRING },
                 steps: {
                   type: Type.ARRAY,
                   items: {
@@ -272,7 +271,6 @@ export async function analyzeImageForRecipe(
             instructions: {
               type: Type.OBJECT,
               properties: {
-                name: { type: Type.STRING },
                 steps: {
                   type: Type.ARRAY,
                   items: {
