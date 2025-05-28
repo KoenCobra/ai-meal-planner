@@ -9,32 +9,44 @@ export const generateRecipeSchema = z.object({
 export type GenerateRecipeInput = z.infer<typeof generateRecipeSchema>;
 
 export const Recipe = z.object({
-  title: z.string(),
-  summary: z.string(),
-  servings: z.number(),
-  readyInMinutes: z.number(),
-  diets: z.array(z.string()),
+  title: z.string().describe("The title of the recipe"),
+  summary: z.string().describe("A short summary of the recipe"),
+  servings: z.number().describe("The number of servings the recipe makes"),
+  readyInMinutes: z
+    .number()
+    .describe("The number of minutes it takes to prepare the recipe"),
+  diets: z.array(z.string()).describe("The diets the recipe is suitable for"),
   instructions: z.object({
-    name: z.string(),
     steps: z.array(
       z.object({
-        number: z.number(),
-        step: z.string(),
+        number: z.number().describe("The step number"),
+        step: z.string().describe("The step description"),
       }),
     ),
   }),
   ingredients: z.array(
     z.object({
-      name: z.string(),
+      name: z.string().describe("The name of the ingredient"),
       measures: z.object({
-        amount: z.number(),
-        unit: z.string(),
+        amount: z.number().describe("The amount of the ingredient"),
+        unit: z
+          .string()
+          .describe(
+            "The units of measurement will be based on the user's locale",
+          ),
       }),
     }),
   ),
-  dishType: z.string(),
-  error: z.string().nullish(),
-  image: z.string().nullish(),
+  dishType: z
+    .string()
+    .describe(
+      "This can only have 1 of the following values: 'breakfast', 'lunch', 'snacks' or 'dinner'",
+    ),
+  error: z
+    .string()
+    .nullish()
+    .describe("The error message if the recipe is not generated"),
+  image: z.string().nullish().describe("The image of the recipe"),
 });
 
 export type RecipeInput = z.infer<typeof Recipe>;

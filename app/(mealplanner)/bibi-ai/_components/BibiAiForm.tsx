@@ -22,11 +22,7 @@ import {
   generateRecipeSchema,
   RecipeInput,
 } from "@/lib/validation";
-import {
-  analyzeImageForRecipe,
-  generateRecipe,
-  generateRecipeImage,
-} from "../googleAiActions";
+import { analyzeImageForRecipe, generateRecipe } from "../actions";
 
 interface BibiAiFormProps {
   onRecipeGenerated: (recipe: RecipeInput, image?: string) => void;
@@ -78,7 +74,7 @@ const BibiAiForm = ({
         description: sanitizedDescription,
       };
 
-      let recipe: RecipeInput;
+      let recipe;
 
       if (selectedImage) {
         recipe = await analyzeImageForRecipe(
@@ -92,10 +88,10 @@ const BibiAiForm = ({
       onRecipeGenerated(recipe);
 
       setIsGeneratingImage(true);
-      const image = await generateRecipeImage(recipe.title, recipe.summary);
-      if (image && image.imageBase64) {
-        onRecipeGenerated(recipe, image.imageBase64);
-      }
+      // const image = await generateRecipeImage(recipe.title, recipe.summary);
+      // if (image && image.imageBase64) {
+      //   onRecipeGenerated(recipe, image.imageBase64);
+      // }
     } catch (error) {
       toast.error("Something went wrong. Please try again.");
       console.error("Error generating recipe:", error);

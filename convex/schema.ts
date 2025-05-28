@@ -11,7 +11,6 @@ const applicationTables = {
     storageId: v.optional(v.id("_storage")),
     diets: v.array(v.string()),
     instructions: v.object({
-      name: v.string(),
       steps: v.array(
         v.object({
           number: v.number(),
