@@ -14,6 +14,10 @@ import { ConvexHttpClient } from "convex/browser";
 
 const convex = new ConvexHttpClient(process.env.NEXT_PUBLIC_CONVEX_URL!);
 
+fal.config({
+  credentials: process.env.FAL_KEY,
+});
+
 export async function generateRecipe(input: GenerateRecipeInput) {
   const { userId } = await auth();
 
@@ -80,11 +84,6 @@ export async function generateRecipeImage(
   if (!rateLimitCheck.success) {
     throw new Error(rateLimitCheck.message || "Rate limit exceeded");
   }
-
-  fal.config({
-    proxyUrl: "/api/fal/proxy",
-    credentials: process.env.FAL_KEY,
-  });
 
   const result = await fal.subscribe("fal-ai/flux/dev", {
     input: {
