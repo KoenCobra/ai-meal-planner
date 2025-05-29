@@ -20,7 +20,6 @@ const AiResponse = ({ recipe, image, onClear }: BubuAiResponseProps) => {
   const [savedRecipeId, setSavedRecipeId] =
     React.useState<Id<"recipes"> | null>(null);
   const [isSaving, setIsSaving] = useState(false);
-  const [isImageGenerating, setIsImageGenerating] = useState(true);
   const [isImageLoaded, setIsImageLoaded] = useState(false);
 
   const createRecipe = useMutation(api.recipes.createRecipe);
@@ -33,7 +32,6 @@ const AiResponse = ({ recipe, image, onClear }: BubuAiResponseProps) => {
   // Reset state when recipe changes
   useEffect(() => {
     setSavedRecipeId(null);
-    setIsImageGenerating(!image);
     setIsImageLoaded(false);
   }, [recipe, image]);
 
@@ -167,14 +165,14 @@ const AiResponse = ({ recipe, image, onClear }: BubuAiResponseProps) => {
             variant="outline"
             className="mt-4 text-xl p-7"
             onClick={handleSave}
-            disabled={!!savedRecipeId || isSaving || isImageGenerating}
+            disabled={!!savedRecipeId || isSaving || !isImageLoaded}
           >
             {isSaving ? (
               <>
                 <Loader2 className="mr-2 h-4 w-4 animate-spin" />
                 Saving Recipe
               </>
-            ) : isImageGenerating ? (
+            ) : !isImageLoaded ? (
               <>Waiting for image...</>
             ) : savedRecipeId ? (
               <>
@@ -195,7 +193,7 @@ const AiResponse = ({ recipe, image, onClear }: BubuAiResponseProps) => {
               className="mt-4"
               onClick={handleClear}
               title="Clear saved recipe"
-              disabled={isSaving || isImageGenerating}
+              disabled={isSaving || !isImageLoaded}
             >
               <Trash2 size={18} />
             </Button>
