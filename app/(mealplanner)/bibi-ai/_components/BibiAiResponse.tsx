@@ -21,13 +21,20 @@ const AiResponse = ({ recipe, image, onClear }: BubuAiResponseProps) => {
     React.useState<Id<"recipes"> | null>(null);
   const [isSaving, setIsSaving] = useState(false);
   const [isImageGenerating, setIsImageGenerating] = useState(true);
+  const [isImageLoaded, setIsImageLoaded] = useState(false);
 
   const createRecipe = useMutation(api.recipes.createRecipe);
+
+  // Create a simple blur data URL
+  const createBlurDataURL = () => {
+    return "data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMTAiIGhlaWdodD0iMTAiIHZpZXdCb3g9IjAgMCAxMCAxMCIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPGRlZnM+CjxsaW5lYXJHcmFkaWVudCBpZD0iZ3JhZGllbnQiIHgxPSIwJSIgeTE9IjAlIiB4Mj0iMTAwJSIgeTI9IjEwMCUiPgo8c3RvcCBvZmZzZXQ9IjAlIiBzdHlsZT0ic3RvcC1jb2xvcjojZjNmNGY2O3N0b3Atb3BhY2l0eToxIiAvPgo8c3RvcCBvZmZzZXQ9IjEwMCUiIHN0eWxlPSJzdG9wLWNvbG9yOiNlNWU3ZWI7c3RvcC1vcGFjaXR5OjEiIC8+CjwvbGluZWFyR3JhZGllbnQ+CjwvZGVmcz4KPHJlY3Qgd2lkdGg9IjEwIiBoZWlnaHQ9IjEwIiBmaWxsPSJ1cmwoI2dyYWRpZW50KSIgLz4KPHN2Zz4K";
+  };
 
   // Reset state when recipe changes
   useEffect(() => {
     setSavedRecipeId(null);
     setIsImageGenerating(!image);
+    setIsImageLoaded(false);
   }, [recipe, image]);
 
   if (recipe?.error) {
@@ -86,20 +93,48 @@ const AiResponse = ({ recipe, image, onClear }: BubuAiResponseProps) => {
     }
   };
 
+  const handleImageLoad = () => {
+    setIsImageLoaded(true);
+  };
+
   return (
     <>
       <div className="text-center mt-16">
         <div className="relative w-full max-w-2xl mx-auto aspect-square mb-6">
           {image ? (
-            <Image
-              src={image}
-              alt={recipe.title}
-              className="rounded-lg  shadow-lg object-cover w-full h-full"
-              width={1024}
-              height={1024}
-              blurDataURL={image}
-              placeholder="blur"
-            />
+            <>
+              <Image
+                src={image}
+                alt={recipe.title}
+                className="rounded-lg shadow-lg object-cover w-full h-full"
+                width={1024}
+                height={1024}
+                placeholder="blur"
+                blurDataURL={createBlurDataURL()}
+                priority
+                onLoad={handleImageLoad}
+              />
+              {!isImageLoaded && (
+                <div className="absolute inset-0 flex flex-col items-center justify-center bg-muted rounded-lg">
+                  <div className="relative w-16 h-16 mb-3">
+                    <div className="absolute top-0 left-0 w-full h-full border-4 border-t-primary border-r-transparent border-b-transparent border-l-transparent rounded-full animate-spin"></div>
+                    <div
+                      className="absolute top-0 left-0 w-full h-full border-4 border-t-transparent border-r-transparent border-b-primary border-l-transparent rounded-full animate-spin"
+                      style={{
+                        animationDirection: "reverse",
+                        animationDuration: "1.5s",
+                      }}
+                    ></div>
+                  </div>
+                  <p className="text-muted-foreground font-medium">
+                    Loading image...
+                  </p>
+                  <p className="text-xs text-muted-foreground mt-1">
+                    This may take a moment
+                  </p>
+                </div>
+              )}
+            </>
           ) : (
             <div className="flex flex-col items-center justify-center w-full h-full bg-muted rounded-lg">
               <div className="relative w-16 h-16 mb-3">
