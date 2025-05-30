@@ -12,10 +12,9 @@ const layout = async ({ children }: { children: React.ReactNode }) => {
     throw new Error("User not found");
   }
 
-  const hasSeriousSizzlerPlan = has({ plan: "serious_sizzler" });
-  const hasCuriousCookPlan = has({ plan: "curious_cook" });
+  const hasActiveSubscription = has({ plan: "active_subscription" });
 
-  if (!hasSeriousSizzlerPlan && !hasCuriousCookPlan) {
+  if (!hasActiveSubscription) {
     redirect("/billing");
   }
 
