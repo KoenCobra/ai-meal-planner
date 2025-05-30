@@ -10,10 +10,9 @@ import {
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
-import { sanitizeInput } from "@/lib/utils";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { ImageIcon, Loader2Icon, WandSparkles } from "lucide-react";
-import { useState } from "react";
+import { ImageIcon, Loader2Icon, WandSparkles, X } from "lucide-react";
+import { useEffect, useRef, useState } from "react";
 import { useForm } from "react-hook-form";
 import { toast } from "sonner";
 
@@ -23,10 +22,10 @@ import {
   RecipeInput,
 } from "@/lib/validation";
 import {
-  analyzeImageForRecipe,
-  generateRecipe,
-  generateRecipeImage,
-} from "../actions";
+  analyzeImageForRecipeWithAbort,
+  generateRecipeImageWithAbort,
+  generateRecipeWithAbort,
+} from "../client-actions";
 
 interface BibiAiFormProps {
   onRecipeGenerated: (recipe: RecipeInput, image?: string) => void;
@@ -41,6 +40,23 @@ const BibiAiForm = ({
   const [isGeneratingRecipe, setIsGeneratingRecipe] = useState(false);
   const [isGeneratingImage, setIsGeneratingImage] = useState(false);
   const [selectedImage, setSelectedImage] = useState<File | null>(null);
+
+  // Refs to hold the abort controllers
+  const recipeAbortControllerRef = useRef<AbortController | null>(null);
+  const imageAbortControllerRef = useRef<AbortController | null>(null);
+
+  // Cleanup on component unmount
+  useEffect(() => {
+    return () => {
+      // Abort any ongoing requests when component unmounts
+      if (recipeAbortControllerRef.current) {
+        recipeAbortControllerRef.current.abort("Recipe request aborted");
+      }
+      if (imageAbortControllerRef.current) {
+        imageAbortControllerRef.current.abort("Image request aborted");
+      }
+    };
+  }, []);
 
   const form = useForm<GenerateRecipeInput>({
     resolver: zodResolver(generateRecipeSchema),
@@ -64,6 +80,24 @@ const BibiAiForm = ({
     }
   };
 
+  const handleCancel = () => {
+    // Abort recipe generation if in progress
+    if (recipeAbortControllerRef.current) {
+      recipeAbortControllerRef.current.abort();
+      recipeAbortControllerRef.current = null;
+    }
+
+    // Abort image generation if in progress
+    if (imageAbortControllerRef.current) {
+      imageAbortControllerRef.current.abort();
+      imageAbortControllerRef.current = null;
+    }
+
+    // Reset states
+    setIsGeneratingRecipe(false);
+    setIsGeneratingImage(false);
+  };
+
   const onSubmit = async (input: GenerateRecipeInput) => {
     try {
       if (onGenerationStart) {
@@ -72,38 +106,59 @@ const BibiAiForm = ({
 
       setIsGeneratingRecipe(true);
 
-      const sanitizedDescription = sanitizeInput(input.description);
-      const sanitizedInput = {
-        ...input,
-        description: sanitizedDescription,
-      };
+      // Create abort controller for recipe generation
+      recipeAbortControllerRef.current = new AbortController();
 
       let recipe;
 
       if (selectedImage) {
-        recipe = await analyzeImageForRecipe(
+        recipe = await analyzeImageForRecipeWithAbort(
           selectedImage,
-          sanitizedInput.description.trim() || undefined,
+          input.description.trim() || undefined,
+          recipeAbortControllerRef.current.signal,
         );
       } else {
-        recipe = await generateRecipe(sanitizedInput);
+        recipe = await generateRecipeWithAbort(
+          input,
+          recipeAbortControllerRef.current.signal,
+        );
       }
+
+      // Clear the recipe abort controller since it's done
+      recipeAbortControllerRef.current = null;
+      setIsGeneratingRecipe(false);
 
       onRecipeGenerated(recipe);
 
+      // Start image generation
       setIsGeneratingImage(true);
-      const image = await generateRecipeImage(recipe.title, recipe.summary);
+
+      // Create abort controller for image generation
+      imageAbortControllerRef.current = new AbortController();
+
+      const image = await generateRecipeImageWithAbort(
+        recipe.title,
+        recipe.summary,
+        imageAbortControllerRef.current.signal,
+      );
+
+      // Clear the image abort controller since it's done
+      imageAbortControllerRef.current = null;
+
       if (image) {
         onRecipeGenerated(recipe, image);
       }
     } catch (error) {
-      toast.error("Something went wrong. Please try again.");
-      console.error("Error generating recipe:", error);
+      return console.log(error);
     } finally {
       setIsGeneratingRecipe(false);
       setIsGeneratingImage(false);
+      recipeAbortControllerRef.current = null;
+      imageAbortControllerRef.current = null;
     }
   };
+
+  const isGenerating = isGeneratingRecipe || isGeneratingImage;
 
   return (
     <div className="md:w-1/2 mx-auto">
@@ -123,7 +178,7 @@ const BibiAiForm = ({
                           ? "Add any specific instructions for your food image (optional)"
                           : 'E.g. "I want a recipe for a healthy breakfast" (in any language you prefer)'
                       }
-                      disabled={isGeneratingRecipe || isGeneratingImage}
+                      disabled={isGenerating}
                       onKeyDown={(e) => {
                         if (e.key === "Enter" && !e.shiftKey) {
                           e.preventDefault();
@@ -145,14 +200,14 @@ const BibiAiForm = ({
                 onChange={handleImageChange}
                 className="hidden"
                 id="image-upload"
-                disabled={isGeneratingRecipe || isGeneratingImage}
+                disabled={isGenerating}
               />
               <Button
                 type="button"
                 variant="outline"
                 onClick={() => document.getElementById("image-upload")?.click()}
                 className="w-full"
-                disabled={isGeneratingRecipe || isGeneratingImage}
+                disabled={isGenerating}
               >
                 <ImageIcon className="mr-2 h-4 w-4" />
                 {selectedImage ? selectedImage.name : "Upload a food image"}
@@ -163,7 +218,7 @@ const BibiAiForm = ({
                   variant="outline"
                   onClick={() => setSelectedImage(null)}
                   className="flex-shrink-0 mx-auto"
-                  disabled={isGeneratingRecipe || isGeneratingImage}
+                  disabled={isGenerating}
                 >
                   Remove
                 </Button>
@@ -171,13 +226,9 @@ const BibiAiForm = ({
             </div>
           </div>
 
-          <div className="flex justify-center">
+          <div className="flex justify-center gap-2">
             <Button
-              disabled={
-                isGeneratingRecipe ||
-                isGeneratingImage ||
-                (!description.trim() && !selectedImage)
-              }
+              disabled={isGenerating || (!description.trim() && !selectedImage)}
               type="submit"
               className="mt-2"
             >
@@ -188,12 +239,24 @@ const BibiAiForm = ({
                   : selectedImage
                     ? "Generate Recipe from Image"
                     : "Generate Recipe from Text"}
-              {isGeneratingRecipe || isGeneratingImage ? (
+              {isGenerating ? (
                 <Loader2Icon className="ml-2 animate-spin" />
               ) : (
                 <WandSparkles className="ml-2" />
               )}
             </Button>
+
+            {isGenerating && (
+              <Button
+                type="button"
+                variant="outline"
+                onClick={handleCancel}
+                className="mt-2"
+              >
+                <X className="mr-2 h-4 w-4" />
+                Cancel
+              </Button>
+            )}
           </div>
         </form>
       </Form>

@@ -1,5 +1,15 @@
 "use server";
 
+/**
+ * @deprecated These server actions are deprecated in favor of the new API routes
+ * that support request cancellation via AbortSignal:
+ * - /api/ai/generate-recipe
+ * - /api/ai/generate-image
+ * - /api/ai/analyze-image
+ *
+ * Use the client-actions.ts functions instead for cancellable requests.
+ */
+
 import { api } from "@/convex/_generated/api";
 import {
   GenerateRecipeInput,
