@@ -97,8 +97,59 @@ const AiResponse = ({ recipe, image, onClear }: BubuAiResponseProps) => {
 
   return (
     <>
-      <div className="text-center mt-16">
-        <div className="relative w-full max-w-2xl mx-auto aspect-square mb-6">
+      <div className="text-center mt-6">
+        <h1 className="text-4xl font-bold">{recipe?.title?.toUpperCase()}</h1>
+        <p className="text-muted-foreground mb-2 text-sm">
+          ({recipe?.diets?.join(" • ")})
+        </p>
+
+        <div className="flex justify-center items-center gap-3">
+          <Button
+            variant="outline"
+            className="mt-4 text-xl p-7"
+            onClick={handleSave}
+            disabled={!!savedRecipeId || isSaving || !isImageLoaded}
+          >
+            {isSaving ? (
+              <>
+                <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                Saving Recipe
+              </>
+            ) : !isImageLoaded ? (
+              <>Waiting for image...</>
+            ) : savedRecipeId ? (
+              <>
+                Recipe Saved
+                <Save className="ml-2" size={14} />
+              </>
+            ) : (
+              <>
+                Save Recipe
+                <Save className="ml-2" size={14} />
+              </>
+            )}
+          </Button>
+
+          {onClear && (
+            <Button
+              variant="ghost"
+              className="mt-4"
+              onClick={handleClear}
+              title="Clear saved recipe"
+              disabled={isSaving || !isImageLoaded}
+            >
+              <Trash2 size={18} />
+            </Button>
+          )}
+        </div>
+
+        <div className="border-b border-t border-border mt-6 py-3">
+          <p className="text-muted-foreground max-w-xl mx-auto">
+            {recipe?.summary}
+          </p>
+        </div>
+
+        <div className="relative w-full max-w-2xl mx-auto aspect-square mt-6 mb-6">
           {image ? (
             <>
               <Image
@@ -153,57 +204,6 @@ const AiResponse = ({ recipe, image, onClear }: BubuAiResponseProps) => {
               </p>
             </div>
           )}
-        </div>
-
-        <h1 className="text-4xl font-bold">{recipe?.title?.toUpperCase()}</h1>
-        <p className="text-muted-foreground mb-2 text-sm">
-          ({recipe?.diets?.join(" • ")})
-        </p>
-
-        <div className="flex justify-center items-center gap-3">
-          <Button
-            variant="outline"
-            className="mt-4 text-xl p-7"
-            onClick={handleSave}
-            disabled={!!savedRecipeId || isSaving || !isImageLoaded}
-          >
-            {isSaving ? (
-              <>
-                <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                Saving Recipe
-              </>
-            ) : !isImageLoaded ? (
-              <>Waiting for image...</>
-            ) : savedRecipeId ? (
-              <>
-                Recipe Saved
-                <Save className="ml-2" size={14} />
-              </>
-            ) : (
-              <>
-                Save Recipe
-                <Save className="ml-2" size={14} />
-              </>
-            )}
-          </Button>
-
-          {onClear && (
-            <Button
-              variant="ghost"
-              className="mt-4"
-              onClick={handleClear}
-              title="Clear saved recipe"
-              disabled={isSaving || !isImageLoaded}
-            >
-              <Trash2 size={18} />
-            </Button>
-          )}
-        </div>
-
-        <div className="border-b border-t border-border mt-6 py-3">
-          <p className="text-muted-foreground max-w-xl mx-auto">
-            {recipe?.summary}
-          </p>
         </div>
       </div>
       <div className="grid lg:grid-cols-6 mt-10 gap-8 lg:gap-16">
