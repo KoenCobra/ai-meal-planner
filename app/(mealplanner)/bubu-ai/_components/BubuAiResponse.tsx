@@ -212,8 +212,8 @@ const AiResponse = ({ recipe, image, onClear }: BubuAiResponseProps) => {
           <p className="text-muted-foreground mb-6">
             {recipe?.servings} servings | {recipe?.readyInMinutes} minutes
           </p>
-          {recipe?.ingredients?.map((ingredient) => (
-            <div key={ingredient.name} className="gap-5 mb-6">
+          {recipe?.ingredients?.map((ingredient, index) => (
+            <div key={`${ingredient.name}-${index}`} className="gap-5 mb-6">
               <p>
                 {ingredient.name?.charAt(0).toUpperCase() +
                   ingredient.name?.slice(1)}

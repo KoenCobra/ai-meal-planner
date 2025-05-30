@@ -1,12 +1,12 @@
 "use server";
 
 import { api } from "@/convex/_generated/api";
-import { getTextModelBasedOnUserPlan } from "@/lib/userPlan";
 import {
   GenerateRecipeInput,
   generateRecipeSchema,
   Recipe,
 } from "@/lib/validation";
+import { google } from "@ai-sdk/google";
 import { auth } from "@clerk/nextjs/server";
 import { fal } from "@fal-ai/client";
 import { generateObject } from "ai";
@@ -39,7 +39,7 @@ export async function generateRecipe(input: GenerateRecipeInput) {
   const { description } = generateRecipeSchema.parse(input);
 
   const { object } = await generateObject({
-    model: await getTextModelBasedOnUserPlan(),
+    model: google("gemini-2.5-flash-preview-05-20"),
     schema: Recipe,
     prompt: `You will always answer in the language that the user is using. Smoothies are by default snacks. Please provide a recipe from this description: ${description}`,
   });
@@ -119,7 +119,7 @@ export async function analyzeImageForRecipe(
     const base64Image = buffer.toString("base64");
 
     const { object } = await generateObject({
-      model: await getTextModelBasedOnUserPlan(),
+      model: google("gemini-2.5-flash-preview-05-20"),
       schema: Recipe,
       messages: [
         {
