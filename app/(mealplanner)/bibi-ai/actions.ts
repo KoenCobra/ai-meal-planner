@@ -25,7 +25,6 @@ export async function generateRecipe(input: GenerateRecipeInput) {
     throw new Error("Unauthorized");
   }
 
-  // Check rate limits before making expensive OpenAI API call
   const rateLimitCheck = await convex.mutation(
     api.openaiRateLimit.checkRecipeGenerationLimit,
     {
@@ -41,7 +40,6 @@ export async function generateRecipe(input: GenerateRecipeInput) {
 
   const { object } = await generateObject({
     model: await getTextModelBasedOnUserPlan(),
-    output: "object",
     schema: Recipe,
     prompt: `You will always answer in the language that the user is using. Smoothies are by default snacks. Please provide a recipe from this description: ${description}`,
   });
@@ -73,7 +71,6 @@ export async function generateRecipeImage(
     throw new Error("Unauthorized");
   }
 
-  // Check rate limits before making expensive API call
   const rateLimitCheck = await convex.mutation(
     api.openaiRateLimit.checkImageGenerationLimit,
     {
@@ -87,10 +84,9 @@ export async function generateRecipeImage(
 
   const result = await fal.subscribe("fal-ai/flux/schnell", {
     input: {
-      prompt: `Professional food photography of ${recipeTitle}. ${recipeDescription}.`,
+      prompt: `Professional food photography of ${recipeTitle}. ${recipeDescription}.Super high def 4K quality, and detailed.`,
       image_size: "square_hd",
     },
-    logs: true,
   });
 
   return result.data.images[0].url;
@@ -106,7 +102,6 @@ export async function analyzeImageForRecipe(
     throw new Error("Unauthorized");
   }
 
-  // Check rate limits before making expensive OpenAI API call
   const rateLimitCheck = await convex.mutation(
     api.openaiRateLimit.checkImageAnalysisLimit,
     {
@@ -119,14 +114,12 @@ export async function analyzeImageForRecipe(
   }
 
   try {
-    // Convert the image file to base64
     const bytes = await image.arrayBuffer();
     const buffer = Buffer.from(bytes);
     const base64Image = buffer.toString("base64");
 
     const { object } = await generateObject({
       model: await getTextModelBasedOnUserPlan(),
-      output: "object",
       schema: Recipe,
       messages: [
         {
@@ -167,14 +160,11 @@ export async function analyzeImageForRecipe(
 }
 
 export async function convertToWebp(imageBase64: string) {
-  // This is a server action that can use sharp safely
   const sharp = (await import("sharp")).default;
 
   try {
-    // Remove data URL prefix if present
     const base64Data = imageBase64.replace(/^data:image\/\w+;base64,/, "");
 
-    // Convert base64 to buffer
     const buffer = Buffer.from(base64Data, "base64");
 
     // Use Sharp to convert to WebP format with compression
