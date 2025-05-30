@@ -1,4 +1,4 @@
-import { convertToWebp } from "@/app/(mealplanner)/bibi-ai/actions";
+import { convertToWebp } from "@/app/(mealplanner)/bubu-ai/actions";
 import { api } from "@/convex/_generated/api";
 import { Id } from "@/convex/_generated/dataModel";
 import { MAX_FILE_SIZE } from "@/lib/constants";

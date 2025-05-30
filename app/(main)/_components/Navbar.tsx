@@ -16,7 +16,7 @@ const Navbar = () => {
     <nav className="sticky top-0 z-50 border-b-2 border-border shadow-xs w-full bg-background">
       <div className="container py-3 flex items-center justify-between">
         <Link className="text-2xl font-bold" href="/">
-          Bibi
+          Bubu
         </Link>
         <div className="hidden md:block">
           <ul className="flex gap-5">
@@ -27,7 +27,7 @@ const Navbar = () => {
               <Link href="/blog">Blog</Link>
             </li>
             <li>
-              <Link href="/bibi-ai">Meal Planner</Link>
+              <Link href="/bubu-ai">Meal Planner</Link>
             </li>
           </ul>
         </div>

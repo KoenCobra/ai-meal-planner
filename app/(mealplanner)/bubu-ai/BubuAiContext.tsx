@@ -3,7 +3,7 @@
 import { RecipeInput } from "@/lib/validation";
 import { createContext, ReactNode, useContext, useState } from "react";
 
-type BibiAiContextType = {
+type BubuAiContextType = {
   recipeData: RecipeInput | null;
   recipeImage: string;
   setRecipeData: (recipe: RecipeInput | null) => void;
@@ -11,9 +11,9 @@ type BibiAiContextType = {
   clearRecipe: () => void;
 };
 
-const BibiAiContext = createContext<BibiAiContextType | null>(null);
+const BubuAiContext = createContext<BubuAiContextType | null>(null);
 
-export const BibiAiProvider = ({ children }: { children: ReactNode }) => {
+export const BubuAiProvider = ({ children }: { children: ReactNode }) => {
   const [recipeData, setRecipeData] = useState<RecipeInput | null>(null);
   const [recipeImage, setRecipeImage] = useState<string>("");
 
@@ -23,7 +23,7 @@ export const BibiAiProvider = ({ children }: { children: ReactNode }) => {
   };
 
   return (
-    <BibiAiContext.Provider
+    <BubuAiContext.Provider
       value={{
         recipeData,
         recipeImage,
@@ -33,14 +33,14 @@ export const BibiAiProvider = ({ children }: { children: ReactNode }) => {
       }}
     >
       {children}
-    </BibiAiContext.Provider>
+    </BubuAiContext.Provider>
   );
 };
 
-export const useBibiAi = () => {
-  const context = useContext(BibiAiContext);
+export const useBubuAi = () => {
+  const context = useContext(BubuAiContext);
   if (!context) {
-    throw new Error("useBibiAi must be used within a BibiAiProvider");
+    throw new Error("useBubuAi must be used within a BubuAiProvider");
   }
   return context;
 };

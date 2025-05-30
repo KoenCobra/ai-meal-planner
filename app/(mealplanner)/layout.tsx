@@ -2,7 +2,7 @@ import { auth } from "@clerk/nextjs/server";
 import { redirect } from "next/navigation";
 import React from "react";
 import Navbar from "./_components/Navbar";
-import { BibiAiProvider } from "./bibi-ai/BibiAiContext";
+import { BubuAiProvider } from "./bubu-ai/BubuAiContext";
 import { SearchProvider } from "./search/_context/SearchProvider";
 
 const layout = async ({ children }: { children: React.ReactNode }) => {
@@ -20,7 +20,7 @@ const layout = async ({ children }: { children: React.ReactNode }) => {
   }
 
   return (
-    <BibiAiProvider>
+    <BubuAiProvider>
       <SearchProvider>
         <div>
           <Navbar />
@@ -29,7 +29,7 @@ const layout = async ({ children }: { children: React.ReactNode }) => {
           </div>
         </div>
       </SearchProvider>
-    </BibiAiProvider>
+    </BubuAiProvider>
   );
 };
 

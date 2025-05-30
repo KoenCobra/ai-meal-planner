@@ -1,4 +1,4 @@
-import React from "react";
+import ThemeToggle from "@/components/ThemeToggle";
 import {
   Sheet,
   SheetContent,
@@ -6,7 +6,6 @@ import {
   SheetTitle,
 } from "@/components/ui/sheet";
 import Link from "next/link";
-import ThemeToggle from "@/components/ThemeToggle";
 
 interface Props {
   open: boolean;
@@ -18,7 +17,7 @@ const HomeSheet = ({ open, setOpen }: Props) => {
     <Sheet open={open} onOpenChange={(open) => setOpen(open)}>
       <SheetContent>
         <SheetHeader>
-          <SheetTitle className="text-left text-2xl">Bibi</SheetTitle>
+          <SheetTitle className="text-left text-2xl">Bubu</SheetTitle>
         </SheetHeader>
         <div className="mt-6 grid text-left gap-3 px-5">
           <Link className="py-2" onClick={() => setOpen(false)} href="/detox">
@@ -27,7 +26,7 @@ const HomeSheet = ({ open, setOpen }: Props) => {
           <Link className="py-2" onClick={() => setOpen(false)} href="/blog">
             Blog
           </Link>
-          <Link className="py-2" onClick={() => setOpen(false)} href="/bibi-ai">
+          <Link className="py-2" onClick={() => setOpen(false)} href="/bubu-ai">
             Meal Planner
           </Link>
           <div className="mt-5 flex items-center gap-3 ">

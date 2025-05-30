@@ -11,8 +11,8 @@ import { usePathname } from "next/navigation";
 
 const navItems = [
   {
-    href: "/bibi-ai",
-    label: "Bibi AI",
+    href: "/bubu-ai",
+    label: "Bubu AI",
     icon: (
       <Sparkles className="size-4 absolute -top-1 -right-4 text-blue-500" />
     ),

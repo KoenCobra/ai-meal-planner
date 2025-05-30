@@ -1,9 +1,9 @@
 "use client";
 
 import { RecipeInput } from "@/lib/validation";
-import BibiAiForm from "./_components/BibiAiForm";
-import BibiAiResponse from "./_components/BibiAiResponse";
-import { useBibiAi } from "./BibiAiContext";
+import BubuAiForm from "./_components/BubuAiForm";
+import BubuAiResponse from "./_components/BubuAiResponse";
+import { useBubuAi } from "./BubuAiContext";
 
 const BibiAi = () => {
   const {
@@ -12,7 +12,7 @@ const BibiAi = () => {
     setRecipeData,
     setRecipeImage,
     clearRecipe,
-  } = useBibiAi();
+  } = useBubuAi();
 
   const handleRecipeGenerated = (recipe: RecipeInput, image?: string) => {
     setRecipeData(recipe);
@@ -29,18 +29,18 @@ const BibiAi = () => {
   return (
     <>
       <div className="text-center mb-6">
-        <h1 className="text-4xl font-bold">Ask Bibi</h1>
+        <h1 className="text-4xl font-bold">Ask Bubu</h1>
         <p className="text-muted-foreground mb-2">
-          Generate recipes with Bibi AI.
+          Generate recipes with Bubu AI.
         </p>
       </div>
-      <BibiAiForm
+      <BubuAiForm
         onRecipeGenerated={handleRecipeGenerated}
         onGenerationStart={handleGenerationStart}
       />
 
       {recipeData && (
-        <BibiAiResponse
+        <BubuAiResponse
           recipe={recipeData}
           image={recipeImage}
           onClear={clearRecipe}
