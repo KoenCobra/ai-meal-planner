@@ -24,7 +24,9 @@ export async function generateRecipeWithAbort(
 
   if (!response.ok) {
     if (response.status === 499) {
-      throw new Error("Request cancelled");
+      console.error(
+        `generateRecipeWithAbort: ${response.statusText} ${response.status}`,
+      );
     }
     const errorData = await response.json().catch(() => ({}));
     throw new Error(errorData.error || "Failed to generate recipe");
@@ -55,7 +57,9 @@ export async function analyzeImageForRecipeWithAbort(
 
   if (!response.ok) {
     if (response.status === 499) {
-      throw new Error("Request cancelled");
+      console.error(
+        `analyzeImageForRecipeWithAbort: ${response.statusText} ${response.status}`,
+      );
     }
     const errorData = await response.json().catch(() => ({}));
     throw new Error(errorData.error || "Failed to analyze image");
@@ -83,7 +87,9 @@ export async function generateRecipeImageWithAbort(
 
   if (!response.ok) {
     if (response.status === 499) {
-      throw new Error("Request cancelled");
+      console.error(
+        `generateRecipeImageWithAbort: ${response.statusText} ${response.status}`,
+      );
     }
     const errorData = await response.json().catch(() => ({}));
     throw new Error(errorData.error || "Failed to generate image");

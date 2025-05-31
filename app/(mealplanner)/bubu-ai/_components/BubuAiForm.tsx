@@ -12,7 +12,7 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { ImageIcon, Loader2Icon, WandSparkles, X } from "lucide-react";
-import { useEffect, useRef, useState } from "react";
+import { useRef, useState } from "react";
 import { useForm } from "react-hook-form";
 import { toast } from "sonner";
 
@@ -41,22 +41,8 @@ const BibiAiForm = ({
   const [isGeneratingImage, setIsGeneratingImage] = useState(false);
   const [selectedImage, setSelectedImage] = useState<File | null>(null);
 
-  // Refs to hold the abort controllers
   const recipeAbortControllerRef = useRef<AbortController | null>(null);
   const imageAbortControllerRef = useRef<AbortController | null>(null);
-
-  // Cleanup on component unmount
-  useEffect(() => {
-    return () => {
-      // Abort any ongoing requests when component unmounts
-      if (recipeAbortControllerRef.current) {
-        recipeAbortControllerRef.current.abort("Recipe request aborted");
-      }
-      if (imageAbortControllerRef.current) {
-        imageAbortControllerRef.current.abort("Image request aborted");
-      }
-    };
-  }, []);
 
   const form = useForm<GenerateRecipeInput>({
     resolver: zodResolver(generateRecipeSchema),
@@ -81,19 +67,16 @@ const BibiAiForm = ({
   };
 
   const handleCancel = () => {
-    // Abort recipe generation if in progress
     if (recipeAbortControllerRef.current) {
       recipeAbortControllerRef.current.abort();
       recipeAbortControllerRef.current = null;
     }
 
-    // Abort image generation if in progress
     if (imageAbortControllerRef.current) {
       imageAbortControllerRef.current.abort();
       imageAbortControllerRef.current = null;
     }
 
-    // Reset states
     setIsGeneratingRecipe(false);
     setIsGeneratingImage(false);
   };
@@ -124,16 +107,12 @@ const BibiAiForm = ({
         );
       }
 
-      // Clear the recipe abort controller since it's done
-      recipeAbortControllerRef.current = null;
       setIsGeneratingRecipe(false);
 
       onRecipeGenerated(recipe);
 
-      // Start image generation
       setIsGeneratingImage(true);
 
-      // Create abort controller for image generation
       imageAbortControllerRef.current = new AbortController();
 
       const image = await generateRecipeImageWithAbort(
@@ -141,9 +120,6 @@ const BibiAiForm = ({
         recipe.summary,
         imageAbortControllerRef.current.signal,
       );
-
-      // Clear the image abort controller since it's done
-      imageAbortControllerRef.current = null;
 
       if (image) {
         onRecipeGenerated(recipe, image);

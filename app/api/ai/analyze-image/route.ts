@@ -4,7 +4,7 @@ import { google } from "@ai-sdk/google";
 import { auth } from "@clerk/nextjs/server";
 import { generateObject } from "ai";
 import { ConvexHttpClient } from "convex/browser";
-import { NextRequest } from "next/server";
+import { NextRequest, NextResponse } from "next/server";
 
 const convex = new ConvexHttpClient(process.env.NEXT_PUBLIC_CONVEX_URL!);
 
@@ -13,21 +13,26 @@ export async function POST(req: NextRequest) {
     const { userId } = await auth();
 
     if (!userId) {
-      return new Response("Unauthorized", { status: 401 });
+      throw new Error("Unauthorized");
     }
 
     // Parse form data
     const formData = await req.formData();
+
+    if (!formData) {
+      return NextResponse.json(
+        { error: "Form data is required" },
+        { status: 400 },
+      );
+    }
+
     const image = formData.get("image") as File;
     const additionalInstructions = formData.get(
       "additionalInstructions",
     ) as string;
 
     if (!image) {
-      return new Response(JSON.stringify({ error: "Image is required" }), {
-        status: 400,
-        headers: { "Content-Type": "application/json" },
-      });
+      return NextResponse.json({ error: "Image is required" }, { status: 400 });
     }
 
     // Check rate limits
@@ -39,11 +44,11 @@ export async function POST(req: NextRequest) {
     );
 
     if (!rateLimitCheck.success) {
-      return new Response(
-        JSON.stringify({
+      return NextResponse.json(
+        {
           error: rateLimitCheck.message || "Rate limit exceeded",
-        }),
-        { status: 429, headers: { "Content-Type": "application/json" } },
+        },
+        { status: 429 },
       );
     }
 
@@ -79,9 +84,9 @@ export async function POST(req: NextRequest) {
     });
 
     if (!object) {
-      return new Response(
-        JSON.stringify({ error: "Failed to generate AI response" }),
-        { status: 500, headers: { "Content-Type": "application/json" } },
+      return NextResponse.json(
+        { error: "Failed to generate AI response" },
+        { status: 500 },
       );
     }
 
@@ -97,18 +102,16 @@ export async function POST(req: NextRequest) {
       error: object.error,
     };
 
-    return new Response(JSON.stringify(recipe), {
-      headers: { "Content-Type": "application/json" },
-    });
+    return NextResponse.json(recipe, { status: 200 });
   } catch (error) {
     if (error instanceof Error && error.name === "AbortError") {
-      return new Response("Request cancelled", { status: 499 });
+      return NextResponse.json({ error: "Request cancelled" }, { status: 499 });
     }
 
     console.error("Error analyzing image:", error);
-    return new Response(JSON.stringify({ error: "Failed to analyze image" }), {
-      status: 500,
-      headers: { "Content-Type": "application/json" },
-    });
+    return NextResponse.json(
+      { error: "Failed to analyze image" },
+      { status: 500 },
+    );
   }
 }
