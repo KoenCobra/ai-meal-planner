@@ -26,6 +26,11 @@ const BibiAi = () => {
     clearRecipe();
   };
 
+  const handleImageGenerationAborted = () => {
+    // Clear the recipe when image generation is aborted
+    clearRecipe();
+  };
+
   return (
     <>
       <div className="text-center mb-6">
@@ -37,6 +42,7 @@ const BibiAi = () => {
       <BubuAiForm
         onRecipeGenerated={handleRecipeGenerated}
         onGenerationStart={handleGenerationStart}
+        onImageGenerationAborted={handleImageGenerationAborted}
       />
 
       {recipeData && (

@@ -31,11 +31,13 @@ interface BibiAiFormProps {
   onRecipeGenerated: (recipe: RecipeInput, image?: string) => void;
   onGenerationStart?: () => void;
   onClear?: () => void;
+  onImageGenerationAborted?: () => void;
 }
 
 const BibiAiForm = ({
   onRecipeGenerated,
   onGenerationStart,
+  onImageGenerationAborted,
 }: BibiAiFormProps) => {
   const [isGeneratingRecipe, setIsGeneratingRecipe] = useState(false);
   const [isGeneratingImage, setIsGeneratingImage] = useState(false);
@@ -75,6 +77,10 @@ const BibiAiForm = ({
     if (imageAbortControllerRef.current) {
       imageAbortControllerRef.current.abort();
       imageAbortControllerRef.current = null;
+      // Notify parent that image generation was aborted
+      if (onImageGenerationAborted) {
+        onImageGenerationAborted();
+      }
     }
 
     setIsGeneratingRecipe(false);
