@@ -19,7 +19,7 @@ export const useInfiniteSearch = ({
   const { user } = useUser();
   const userId = user?.id || "";
 
-  // Debounced query to avoid too many API calls
+  // Trim the query to avoid unnecessary whitespace
   const trimmedQuery = useMemo(() => searchQuery.trim(), [searchQuery]);
 
   // Use TanStack Query for caching search results
@@ -34,6 +34,7 @@ export const useInfiniteSearch = ({
       query: trimmedQuery,
       paginationOpts: { numItems: itemsPerPage, cursor: null },
     }),
+    enabled: !!trimmedQuery, // Only run query when there's a search term
   }) as {
     data: PaginationResult<Doc<"recipes">> | undefined;
     isLoading: boolean;
@@ -43,7 +44,7 @@ export const useInfiniteSearch = ({
   // Use usePaginatedQuery for infinite loading functionality
   const results = usePaginatedQuery(
     api.recipes.searchRecipesByTitleIngredientsAndCategories,
-    userId && trimmedQuery !== undefined
+    userId && trimmedQuery !== ""
       ? {
           userId,
           query: trimmedQuery,

@@ -4,7 +4,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { sanitizeInput } from "@/lib/utils";
 import { Loader2, Search, X } from "lucide-react";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef } from "react";
 import DeleteRecipeDialog from "../_components/DeleteRecipeDialog";
 import { RecipeGrid } from "../recipes/_components/RecipeGrid";
 import { useRecipeDelete } from "../recipes/_hooks/useRecipeDelete";
@@ -19,22 +19,19 @@ const SearchPage = () => {
     handleConfirmDelete,
   } = useRecipeDelete({});
 
-  const { searchQuery, setSearchQuery, clearSearch } = useSearch();
-  const [debouncedQuery, setDebouncedQuery] = useState(searchQuery);
+  const {
+    searchQuery,
+    setSearchQuery,
+    clearSearch,
+    executeSearch,
+    executedQuery,
+  } = useSearch();
   const inputRef = useRef<HTMLInputElement>(null);
   const loadMoreRef = useRef<HTMLDivElement>(null);
 
-  useEffect(() => {
-    const timer = setTimeout(() => {
-      setDebouncedQuery(searchQuery);
-    }, 800);
-
-    return () => clearTimeout(timer);
-  }, [searchQuery]);
-
   const { recipes, fetchNextPage, hasNextPage, isFetchingNextPage, isLoading } =
     useInfiniteSearch({
-      searchQuery: debouncedQuery || "",
+      searchQuery: executedQuery || "",
     });
 
   useEffect(() => {
@@ -59,6 +56,18 @@ const SearchPage = () => {
     inputRef.current?.focus();
   };
 
+  const handleSearchSubmit = () => {
+    if (searchQuery.trim()) {
+      executeSearch();
+    }
+  };
+
+  const handleKeyPress = (e: React.KeyboardEvent<HTMLInputElement>) => {
+    if (e.key === "Enter") {
+      handleSearchSubmit();
+    }
+  };
+
   return (
     <div className="space-y-6">
       {/* Search Header */}
@@ -66,46 +75,60 @@ const SearchPage = () => {
         <h1 className="text-2xl font-bold">Search Recipes</h1>
 
         {/* Search Input */}
-        <div className="relative">
-          <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground h-4 w-4" />
-          <Input
-            ref={inputRef}
-            type="text"
-            placeholder="Search recipes by title, ingredients, or categories..."
-            value={searchQuery}
-            onChange={(e) => setSearchQuery(sanitizeInput(e.target.value))}
-            className="pl-10 pr-10"
-          />
-          {searchQuery && (
-            <Button
-              variant="ghost"
-              size="sm"
-              onClick={handleClearSearch}
-              className="absolute right-1 top-1/2 transform -translate-y-1/2 h-8 w-8 p-0"
-            >
-              <X className="h-4 w-4" />
-            </Button>
-          )}
+        <div className="flex gap-2">
+          <div className="relative flex-1">
+            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground h-4 w-4" />
+            <Input
+              ref={inputRef}
+              type="text"
+              placeholder="Search recipes by title, ingredients, or categories..."
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(sanitizeInput(e.target.value))}
+              onKeyPress={handleKeyPress}
+              className="pl-10 pr-10"
+            />
+            {searchQuery && (
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={handleClearSearch}
+                className="absolute right-1 top-1/2 transform -translate-y-1/2 h-8 w-8 p-0"
+              >
+                <X className="h-4 w-4" />
+              </Button>
+            )}
+          </div>
+          <Button
+            onClick={handleSearchSubmit}
+            disabled={!searchQuery.trim() || isLoading}
+            className="px-6"
+          >
+            {isLoading ? (
+              <Loader2 className="h-4 w-4 animate-spin" />
+            ) : (
+              <Search className="h-4 w-4" />
+            )}
+          </Button>
         </div>
 
         {/* Search Info */}
-        {debouncedQuery && (
+        {executedQuery && (
           <p className="text-sm text-muted-foreground">
             {isLoading
               ? "Searching..."
-              : `Found ${recipes.length} recipe${recipes.length === 1 ? "" : "s"} for "${debouncedQuery}"`}
+              : `Found ${recipes.length} recipe${recipes.length === 1 ? "" : "s"} for "${executedQuery}"`}
           </p>
         )}
       </div>
 
       {/* Results */}
       <div>
-        {isLoading && debouncedQuery && !recipes.length ? (
+        {isLoading && executedQuery && !recipes.length ? (
           <div className="flex items-center justify-center py-12">
             <Loader2 className="h-8 w-8 animate-spin" />
             <span className="ml-2">Searching recipes...</span>
           </div>
-        ) : debouncedQuery && recipes.length === 0 && !isLoading ? (
+        ) : executedQuery && recipes.length === 0 && !isLoading ? (
           <div className="text-center py-12">
             <Search className="h-16 w-16 mx-auto text-muted-foreground mb-4" />
             <h3 className="text-lg font-semibold mb-2">No recipes found</h3>
@@ -113,13 +136,13 @@ const SearchPage = () => {
               Try searching with different keywords, ingredients, or categories
             </p>
           </div>
-        ) : !debouncedQuery ? (
+        ) : !executedQuery ? (
           <div className="text-center py-12">
             <Search className="h-16 w-16 mx-auto text-muted-foreground mb-4" />
             <h3 className="text-lg font-semibold mb-2">Start searching</h3>
             <p className="text-muted-foreground">
-              Type in the search box above to find recipes by title,
-              ingredients, or categories
+              Type in the search box above and press Enter or click the search
+              button to find recipes
             </p>
           </div>
         ) : (

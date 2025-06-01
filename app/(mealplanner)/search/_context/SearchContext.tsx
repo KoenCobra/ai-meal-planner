@@ -6,15 +6,23 @@ type SearchContextType = {
   searchQuery: string;
   setSearchQuery: (query: string) => void;
   clearSearch: () => void;
+  executeSearch: () => void;
+  executedQuery: string;
 };
 
 const SearchContext = createContext<SearchContextType | null>(null);
 
 export const SearchProvider = ({ children }: { children: ReactNode }) => {
   const [searchQuery, setSearchQuery] = useState<string>("");
+  const [executedQuery, setExecutedQuery] = useState<string>("");
 
   const clearSearch = () => {
     setSearchQuery("");
+    setExecutedQuery("");
+  };
+
+  const executeSearch = () => {
+    setExecutedQuery(searchQuery.trim());
   };
 
   return (
@@ -23,6 +31,8 @@ export const SearchProvider = ({ children }: { children: ReactNode }) => {
         searchQuery,
         setSearchQuery,
         clearSearch,
+        executeSearch,
+        executedQuery,
       }}
     >
       {children}
