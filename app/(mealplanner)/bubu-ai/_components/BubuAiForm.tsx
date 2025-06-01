@@ -280,7 +280,10 @@ const BibiAiForm = ({
                                 onClick={handleCancel}
                                 className="rounded-full text-red-500 hover:text-red-600 hover:bg-red-50 dark:hover:bg-red-950/20"
                               >
-                                <Square className="size-4" />
+                                <Square
+                                  className="size-4"
+                                  fill="currentColor"
+                                />
                               </Button>
                             ) : null}
                           </div>
