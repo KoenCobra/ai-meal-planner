@@ -24,7 +24,7 @@ async function executeRecipeGeneration(
 
   if (!res.ok) {
     if (res.status === 499) {
-      console.error(`generateRecipeWithAbort: ${res.statusText} ${res.status}`);
+      console.error(`generateRecipe: ${res.statusText} ${res.status}`);
     }
     const errorData = await res.json().catch(() => ({}));
     throw new Error(errorData.error || "Failed to generate recipe");
@@ -55,9 +55,7 @@ async function executeImageAnalysis(
 
   if (!res.ok) {
     if (res.status === 499) {
-      console.error(
-        `analyzeImageForRecipeWithAbort: ${res.statusText} ${res.status}`,
-      );
+      console.error(`analyzeImageForRecipe: ${res.statusText} ${res.status}`);
     }
     const errorData = await res.json().catch(() => ({}));
     throw new Error(errorData.error || "Failed to analyze image");
@@ -85,9 +83,7 @@ async function executeImageGeneration(
 
   if (!res.ok) {
     if (res.status === 499) {
-      console.error(
-        `generateRecipeImageWithAbort: ${res.statusText} ${res.status}`,
-      );
+      console.error(`generateRecipeImage: ${res.statusText} ${res.status}`);
     }
     const errorData = await res.json().catch(() => ({}));
     throw new Error(errorData.error || "Failed to generate image");
@@ -97,13 +93,13 @@ async function executeImageGeneration(
   return data.imageUrl;
 }
 
-export function generateRecipeWithAbort(input: GenerateRecipeInput) {
+export function generateRecipe(input: GenerateRecipeInput) {
   const controller = new AbortController();
   const response = executeRecipeGeneration(input, controller.signal);
   return { response, controller };
 }
 
-export function analyzeImageForRecipeWithAbort(
+export function analyzeImageForRecipe(
   image: File,
   additionalInstructions?: string,
 ) {
@@ -116,7 +112,7 @@ export function analyzeImageForRecipeWithAbort(
   return { response, controller };
 }
 
-export function generateRecipeImageWithAbort(
+export function generateRecipeImage(
   recipeTitle: string,
   recipeDescription: string,
 ) {

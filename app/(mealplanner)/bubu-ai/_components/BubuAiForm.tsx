@@ -22,9 +22,9 @@ import {
   RecipeInput,
 } from "@/lib/validation";
 import {
-  analyzeImageForRecipeWithAbort,
-  generateRecipeImageWithAbort,
-  generateRecipeWithAbort,
+  analyzeImageForRecipe,
+  generateRecipe,
+  generateRecipeImage,
 } from "../client-actions";
 
 interface BibiAiFormProps {
@@ -98,14 +98,14 @@ const BibiAiForm = ({
       let recipe;
 
       if (selectedImage) {
-        const { response, controller } = analyzeImageForRecipeWithAbort(
+        const { response, controller } = analyzeImageForRecipe(
           selectedImage,
           input.description.trim() || undefined,
         );
         recipeControllerRef.current = controller;
         recipe = await response;
       } else {
-        const { response, controller } = generateRecipeWithAbort(input);
+        const { response, controller } = generateRecipe(input);
         recipeControllerRef.current = controller;
         recipe = await response;
       }
@@ -118,7 +118,7 @@ const BibiAiForm = ({
       setIsGeneratingImage(true);
 
       const { response: imageResponse, controller: imageController } =
-        generateRecipeImageWithAbort(recipe.title, recipe.summary);
+        generateRecipeImage(recipe.title, recipe.summary);
       imageControllerRef.current = imageController;
 
       const image = await imageResponse;
