@@ -23,7 +23,7 @@ async function executeRecipeGeneration(
   });
 
   if (!res.ok) {
-    const errorData = await res.json().catch(() => ({}));
+    const errorData = await res.json();
     throw new Error(errorData.error || "Failed to generate recipe");
   }
 
@@ -51,7 +51,7 @@ async function executeImageAnalysis(
   });
 
   if (!res.ok) {
-    const errorData = await res.json().catch(() => ({}));
+    const errorData = await res.json();
     throw new Error(errorData.error || "Failed to analyze image");
   }
 
@@ -76,7 +76,7 @@ async function executeImageGeneration(
   });
 
   if (!res.ok) {
-    const errorData = await res.json().catch(() => ({}));
+    const errorData = await res.json();
     throw new Error(errorData.error || "Failed to generate image");
   }
 
