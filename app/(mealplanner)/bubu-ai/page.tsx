@@ -1,8 +1,10 @@
 "use client";
 
-import { RecipeInput } from "@/lib/validation";
+import { Card, CardContent } from "@/components/ui/card";
+import type { RecipeInput } from "@/lib/validation";
 import BubuAiForm from "./_components/BubuAiForm";
 import BubuAiResponse from "./_components/BubuAiResponse";
+import Header from "./_components/Header";
 import { useBubuAi } from "./BubuAiContext";
 
 const BibiAi = () => {
@@ -31,25 +33,28 @@ const BibiAi = () => {
 
   return (
     <>
-      <div className="text-center mb-6">
-        <h1 className="text-4xl font-bold">Ask Bubu</h1>
-        <p className="text-muted-foreground mb-2">
-          Generate recipes with Bubu AI.
-        </p>
-      </div>
-      <BubuAiForm
-        onRecipeGenerated={handleRecipeGenerated}
-        onGenerationStart={handleGenerationStart}
-        onImageGenerationAborted={handleImageGenerationAborted}
-      />
+      <Header />
+      <div className="max-w-3xl mx-auto g-gradient-to-b from-zinc-50 to-zinc-100 dark:from-zinc-900 dark:to-zinc-800">
+        <Card className="border-none shadow-lg bg-white/80 backdrop-blur-sm dark:bg-zinc-900/80">
+          <CardContent className="p-6">
+            <BubuAiForm
+              onRecipeGenerated={handleRecipeGenerated}
+              onGenerationStart={handleGenerationStart}
+              onImageGenerationAborted={handleImageGenerationAborted}
+            />
+          </CardContent>
+        </Card>
 
-      {recipeData && (
-        <BubuAiResponse
-          recipe={recipeData}
-          image={recipeImage}
-          onClear={clearRecipe}
-        />
-      )}
+        {recipeData && (
+          <div className="mt-8 animate-fade-in">
+            <BubuAiResponse
+              recipe={recipeData}
+              image={recipeImage}
+              onClear={clearRecipe}
+            />
+          </div>
+        )}
+      </div>
     </>
   );
 };

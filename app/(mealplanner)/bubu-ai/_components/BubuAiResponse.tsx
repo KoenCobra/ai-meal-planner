@@ -1,10 +1,22 @@
+"use client";
+
+import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
+import { Card, CardContent } from "@/components/ui/card";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { api } from "@/convex/_generated/api";
-import { Id } from "@/convex/_generated/dataModel";
-import { RecipeInput } from "@/lib/validation";
+import type { Id } from "@/convex/_generated/dataModel";
+import type { RecipeInput } from "@/lib/validation";
 import { useUser } from "@clerk/clerk-react";
 import { useMutation } from "convex/react";
-import { Loader2, Save, Trash2 } from "lucide-react";
+import {
+  BookmarkIcon,
+  ChefHat,
+  Clock,
+  Loader2,
+  Trash2,
+  Users,
+} from "lucide-react";
 import Image from "next/image";
 import React, { useEffect, useState } from "react";
 import { toast } from "sonner";
@@ -15,7 +27,7 @@ interface BubuAiResponseProps {
   onClear?: () => void;
 }
 
-const AiResponse = ({ recipe, image, onClear }: BubuAiResponseProps) => {
+const BubuAiResponse = ({ recipe, image, onClear }: BubuAiResponseProps) => {
   const { user } = useUser();
   const [savedRecipeId, setSavedRecipeId] =
     React.useState<Id<"recipes"> | null>(null);
@@ -96,75 +108,24 @@ const AiResponse = ({ recipe, image, onClear }: BubuAiResponseProps) => {
   };
 
   return (
-    <>
-      <div className="text-center mt-6">
-        <h1 className="text-4xl font-bold">{recipe?.title?.toUpperCase()}</h1>
-        <p className="text-muted-foreground mb-2 text-sm">
-          ({recipe?.categories?.join(" • ")})
-        </p>
-
-        <div className="flex justify-center items-center gap-3">
-          <Button
-            variant="outline"
-            className="mt-4 text-xl p-7"
-            onClick={handleSave}
-            disabled={!!savedRecipeId || isSaving || !isImageLoaded}
-          >
-            {isSaving ? (
-              <>
-                <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                Saving Recipe
-              </>
-            ) : !isImageLoaded ? (
-              <>Waiting for image...</>
-            ) : savedRecipeId ? (
-              <>
-                Recipe Saved
-                <Save className="ml-2" size={14} />
-              </>
-            ) : (
-              <>
-                Save Recipe
-                <Save className="ml-2" size={14} />
-              </>
-            )}
-          </Button>
-
-          {onClear && (
-            <Button
-              variant="ghost"
-              className="mt-4"
-              onClick={handleClear}
-              title="Clear saved recipe"
-              disabled={isSaving || !isImageLoaded}
-            >
-              <Trash2 size={18} />
-            </Button>
-          )}
-        </div>
-
-        <div className="border-b border-t border-border mt-6 py-3">
-          <p className="text-muted-foreground max-w-xl mx-auto">
-            {recipe?.summary}
-          </p>
-        </div>
-
-        <div className="relative w-full max-w-2xl mx-auto aspect-square mt-6 mb-6">
-          {image ? (
-            <>
+    <Card className="border-none shadow-lg overflow-hidden bg-white/80 backdrop-blur-sm dark:bg-zinc-900/80">
+      <div className="relative">
+        {image ? (
+          <>
+            <div className="relative w-full h-[400px] md:h-[500px]">
               <Image
-                src={image}
+                src={image || "/placeholder.svg"}
                 alt={recipe.title}
-                className="rounded-lg shadow-lg object-cover w-full h-full"
-                width={1024}
-                height={1024}
+                className="object-cover"
+                fill
+                sizes="(max-width: 768px) 100vw, 1200px"
                 placeholder="blur"
                 blurDataURL={createBlurDataURL()}
                 priority
                 onLoad={handleImageLoad}
               />
               {!isImageLoaded && (
-                <div className="absolute inset-0 flex flex-col items-center justify-center bg-muted rounded-lg">
+                <div className="absolute inset-0 flex flex-col items-center justify-center bg-muted">
                   <div className="relative w-16 h-16 mb-3">
                     <div className="absolute top-0 left-0 w-full h-full border-4 border-t-primary border-r-transparent border-b-transparent border-l-transparent rounded-full animate-spin"></div>
                     <div
@@ -178,66 +139,141 @@ const AiResponse = ({ recipe, image, onClear }: BubuAiResponseProps) => {
                   <p className="text-muted-foreground font-medium">
                     Loading image...
                   </p>
-                  <p className="text-xs text-muted-foreground mt-1">
-                    This may take a moment
-                  </p>
                 </div>
               )}
-            </>
-          ) : (
-            <div className="flex flex-col items-center justify-center w-full h-full bg-muted rounded-lg">
-              <div className="relative w-16 h-16 mb-3">
-                <div className="absolute top-0 left-0 w-full h-full border-4 border-t-primary border-r-transparent border-b-transparent border-l-transparent rounded-full animate-spin"></div>
-                <div
-                  className="absolute top-0 left-0 w-full h-full border-4 border-t-transparent border-r-transparent border-b-primary border-l-transparent rounded-full animate-spin"
-                  style={{
-                    animationDirection: "reverse",
-                    animationDuration: "1.5s",
-                  }}
-                ></div>
-              </div>
-              <p className="text-muted-foreground font-medium">
-                Generating image...
-              </p>
-              <p className="text-xs text-muted-foreground mt-1">
-                This may take a moment
-              </p>
             </div>
+            <div className="absolute inset-0 bg-gradient-to-t from-black/70 to-transparent"></div>
+          </>
+        ) : (
+          <div className="w-full h-[400px] md:h-[500px] bg-gradient-to-r from-orange-500/20 to-rose-500/20 flex flex-col items-center justify-center">
+            <div className="relative w-16 h-16 mb-3">
+              <div className="absolute top-0 left-0 w-full h-full border-4 border-t-primary border-r-transparent border-b-transparent border-l-transparent rounded-full animate-spin"></div>
+              <div
+                className="absolute top-0 left-0 w-full h-full border-4 border-t-transparent border-r-transparent border-b-primary border-l-transparent rounded-full animate-spin"
+                style={{
+                  animationDirection: "reverse",
+                  animationDuration: "1.5s",
+                }}
+              ></div>
+            </div>
+            <p className="text-muted-foreground font-medium">
+              Generating image...
+            </p>
+          </div>
+        )}
+
+        <div className="absolute bottom-0 left-0 right-0 p-6 text-white">
+          <div className="flex flex-wrap gap-2 mb-2">
+            {recipe?.categories?.map((category, index) => (
+              <Badge
+                key={index}
+                variant="outline"
+                className="bg-black/40 backdrop-blur-sm border-white/20 text-white"
+              >
+                {category}
+              </Badge>
+            ))}
+          </div>
+          <h2 className="text-3xl md:text-4xl font-bold tracking-tight mb-2">
+            {recipe?.title}
+          </h2>
+          <div className="flex flex-wrap items-center gap-4 text-sm">
+            <div className="flex items-center gap-1">
+              <Clock className="h-4 w-4" />
+              <span>{recipe?.readyInMinutes} min</span>
+            </div>
+            <div className="flex items-center gap-1">
+              <Users className="h-4 w-4" />
+              <span>{recipe?.servings} servings</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <CardContent className="p-6">
+        <div className="mb-6">
+          <p className="text-muted-foreground">{recipe?.summary}</p>
+        </div>
+
+        <div className="flex flex-wrap gap-3 mb-6">
+          <Button
+            onClick={handleSave}
+            disabled={!!savedRecipeId || isSaving || !isImageLoaded}
+            className="gap-2"
+          >
+            {isSaving ? (
+              <Loader2 className="h-4 w-4 animate-spin" />
+            ) : savedRecipeId ? (
+              <BookmarkIcon className="h-4 w-4 fill-current" />
+            ) : (
+              <BookmarkIcon className="h-4 w-4" />
+            )}
+            {isSaving ? "Saving..." : savedRecipeId ? "Saved" : "Save Recipe"}
+          </Button>
+
+          {onClear && (
+            <Button
+              variant="outline"
+              onClick={handleClear}
+              disabled={isSaving}
+              className="gap-2"
+            >
+              <Trash2 className="h-4 w-4" />
+              Clear
+            </Button>
           )}
         </div>
-      </div>
-      <div className="grid lg:grid-cols-6 mt-10 gap-8 lg:gap-16">
-        <div className="lg:col-span-2">
-          <p className="font-bold text-xl">Ingredients</p>
-          <p className="text-muted-foreground mb-6">
-            {recipe?.servings} servings | {recipe?.readyInMinutes} minutes
-          </p>
-          {recipe?.ingredients?.map((ingredient, index) => (
-            <div key={`${ingredient.name}-${index}`} className="gap-5 mb-6">
-              <p>
-                {ingredient.name?.charAt(0).toUpperCase() +
-                  ingredient.name?.slice(1)}
-              </p>
-              <p className="text-muted-foreground">
-                {ingredient.measures?.amount === 0
-                  ? "to taste"
-                  : `${ingredient.measures?.amount} ${ingredient.measures?.unit || ""}`}
-              </p>
+
+        <Tabs defaultValue="ingredients" className="w-full">
+          <TabsList className="grid grid-cols-2 mb-6">
+            <TabsTrigger value="ingredients">Ingredients</TabsTrigger>
+            <TabsTrigger value="instructions">Instructions</TabsTrigger>
+          </TabsList>
+
+          <TabsContent value="ingredients" className="space-y-4">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              {recipe?.ingredients?.map((ingredient, index) => (
+                <div
+                  key={`${ingredient.name}-${index}`}
+                  className="flex items-start gap-3 p-3 rounded-lg border bg-background/50"
+                >
+                  <div className="h-8 w-8 rounded-full bg-orange-100 dark:bg-orange-900/30 flex items-center justify-center text-orange-600 dark:text-orange-400 shrink-0">
+                    <ChefHat className="h-4 w-4" />
+                  </div>
+                  <div>
+                    <p className="font-medium">
+                      {ingredient.name?.charAt(0).toUpperCase() +
+                        ingredient.name?.slice(1)}
+                    </p>
+                    <p className="text-sm text-muted-foreground">
+                      {ingredient.measures?.amount === 0
+                        ? "to taste"
+                        : `${ingredient.measures?.amount} ${ingredient.measures?.unit || ""}`}
+                    </p>
+                  </div>
+                </div>
+              ))}
             </div>
-          ))}
-        </div>
-        <div className="lg:col-span-4">
-          <p className="font-bold text-xl mb-6">Instructions</p>
-          {recipe?.instructions?.steps?.map((step, index) => (
-            <div key={step.number} className="mb-2 flex gap-2">
-              <span className="text-right">{index + 1}.</span>
-              <p className="mb-4">{step.step}</p>
+          </TabsContent>
+
+          <TabsContent value="instructions">
+            <div className="space-y-6">
+              {recipe?.instructions?.steps?.map((step, index) => (
+                <div key={step.number} className="flex gap-4">
+                  <div className="h-8 w-8 rounded-full bg-gradient-to-br from-orange-500 to-rose-500 flex items-center justify-center text-white font-medium shrink-0">
+                    {index + 1}
+                  </div>
+                  <div>
+                    <p>{step.step}</p>
+                  </div>
+                </div>
+              ))}
             </div>
-          ))}
-        </div>
-      </div>
-    </>
+          </TabsContent>
+        </Tabs>
+      </CardContent>
+    </Card>
   );
 };
 
-export default AiResponse;
+export default BubuAiResponse;

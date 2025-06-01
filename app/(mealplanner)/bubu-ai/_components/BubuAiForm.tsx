@@ -1,5 +1,8 @@
 "use client";
 
+import Image from "next/image";
+import type React from "react";
+
 import { Button } from "@/components/ui/button";
 import {
   Form,
@@ -8,18 +11,22 @@ import {
   FormItem,
   FormMessage,
 } from "@/components/ui/form";
-import { Input } from "@/components/ui/input";
-import { Textarea } from "@/components/ui/textarea";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { ImageIcon, Loader2Icon, WandSparkles, X } from "lucide-react";
+import {
+  ImageIcon,
+  Loader2Icon,
+  SendHorizontal,
+  Square,
+  X,
+} from "lucide-react";
 import { useRef, useState } from "react";
 import { useForm } from "react-hook-form";
 import { toast } from "sonner";
 
 import {
-  GenerateRecipeInput,
+  type GenerateRecipeInput,
   generateRecipeSchema,
-  RecipeInput,
+  type RecipeInput,
 } from "@/lib/validation";
 import {
   analyzeImageForRecipe,
@@ -42,9 +49,11 @@ const BibiAiForm = ({
   const [isGeneratingRecipe, setIsGeneratingRecipe] = useState(false);
   const [isGeneratingImage, setIsGeneratingImage] = useState(false);
   const [selectedImage, setSelectedImage] = useState<File | null>(null);
+  const [imagePreview, setImagePreview] = useState<string | null>(null);
 
   const recipeControllerRef = useRef<AbortController | null>(null);
   const imageControllerRef = useRef<AbortController | null>(null);
+  const textareaRef = useRef<HTMLTextAreaElement>(null);
 
   const form = useForm<GenerateRecipeInput>({
     resolver: zodResolver(generateRecipeSchema),
@@ -63,6 +72,13 @@ const BibiAiForm = ({
         return;
       }
       setSelectedImage(file);
+
+      // Create preview
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        setImagePreview(reader.result as string);
+      };
+      reader.readAsDataURL(file);
     }
   };
 
@@ -130,126 +146,162 @@ const BibiAiForm = ({
       setIsGeneratingImage(false);
       recipeControllerRef.current = null;
       imageControllerRef.current = null;
+      form.reset();
+      setSelectedImage(null);
+      setImagePreview(null);
     }
   };
 
   const isGenerating = isGeneratingRecipe || isGeneratingImage;
 
-  return (
-    <div className="md:w-1/2 mx-auto">
-      <Form {...form}>
-        <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-3">
-          <div className="space-y-3">
-            <FormField
-              control={form.control}
-              name="description"
-              render={({ field }) => (
-                <FormItem>
-                  <FormControl>
-                    <div className="relative">
-                      <Textarea
-                        {...field}
-                        placeholder={
-                          selectedImage
-                            ? "Add any specific instructions for your food image (optional)"
-                            : 'E.g. "I want a recipe for a healthy breakfast" (in any language you prefer)'
-                        }
-                        disabled={isGenerating}
-                        onKeyDown={(e) => {
-                          if (e.key === "Enter" && !e.shiftKey) {
-                            e.preventDefault();
-                            form.handleSubmit(onSubmit)();
-                          }
-                        }}
-                        className="pr-10"
-                      />
-                      {field.value && (
-                        <Button
-                          type="button"
-                          variant="ghost"
-                          size="sm"
-                          onClick={() => {
-                            field.onChange("");
-                            form.setValue("description", "");
-                          }}
-                          disabled={isGenerating}
-                          className="absolute right-2 top-2 h-6 w-6 p-0 hover:bg-gray-100"
-                        >
-                          <X className="h-4 w-4" />
-                        </Button>
-                      )}
-                    </div>
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
+  // Auto-resize textarea
+  const handleTextareaChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
+    const textarea = e.target;
+    textarea.style.height = "auto";
+    textarea.style.height = `${textarea.scrollHeight}px`;
+    form.setValue("description", textarea.value);
+  };
 
-            <div className="flex items-center flex-wrap gap-2">
-              <Input
-                type="file"
-                accept=".png,.jpg,.jpeg,.webp"
-                onChange={handleImageChange}
-                className="hidden"
-                id="image-upload"
-                disabled={isGenerating}
-              />
-              <Button
-                type="button"
-                variant="outline"
-                onClick={() => document.getElementById("image-upload")?.click()}
-                className="w-full"
-                disabled={isGenerating}
-              >
-                <ImageIcon className="mr-2 h-4 w-4" />
-                {selectedImage ? selectedImage.name : "Upload a food image"}
-              </Button>
-              {selectedImage && (
-                <Button
-                  type="button"
-                  variant="outline"
-                  onClick={() => setSelectedImage(null)}
-                  className="flex-shrink-0 mx-auto"
-                  disabled={isGenerating}
-                >
-                  Remove
-                </Button>
-              )}
+  return (
+    <div className="w-full">
+      <Form {...form}>
+        <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
+          <div className="relative">
+            <div className="flex items-start gap-3">
+              <div className="flex-1 space-y-2">
+                {selectedImage && imagePreview && (
+                  <div className="relative inline-block">
+                    <div className="flex items-center gap-3 p-2 rounded-md bg-zinc-900 dark:bg-zinc-800 text-white max-w-xs">
+                      <div className="h-10 w-10 relative overflow-hidden rounded-sm flex-shrink-0">
+                        <Image
+                          src={imagePreview || "/placeholder.svg"}
+                          alt="Selected food"
+                          fill
+                          className="object-cover"
+                        />
+                      </div>
+                      <div className="flex-1 min-w-0">
+                        <p className="text-sm truncate">{selectedImage.name}</p>
+                        <p className="text-xs text-zinc-400">
+                          {(selectedImage.size / 1024).toFixed(2)}kB
+                        </p>
+                      </div>
+                      <Button
+                        type="button"
+                        variant="ghost"
+                        size="icon"
+                        onClick={() => {
+                          setSelectedImage(null);
+                          setImagePreview(null);
+                        }}
+                        disabled={isGenerating}
+                        className="h-6 w-6 p-0 text-zinc-400 hover:text-white"
+                      >
+                        <X className="h-3 w-3" />
+                      </Button>
+                    </div>
+                  </div>
+                )}
+              </div>
+            </div>
+
+            <div className="mt-4 flex items-end gap-3">
+              <div className="flex-1">
+                <FormField
+                  control={form.control}
+                  name="description"
+                  render={({ field }) => (
+                    <FormItem className="space-y-0">
+                      <FormControl>
+                        <div className="relative flex items-end rounded-xl border bg-background focus-within:ring-1 focus-within:ring-ring">
+                          <textarea
+                            {...field}
+                            ref={textareaRef}
+                            placeholder={
+                              selectedImage
+                                ? "Add any specific instructions for your food image (optional)"
+                                : 'E.g. "I want a recipe for a healthy breakfast" (in any language you prefer)'
+                            }
+                            disabled={isGenerating}
+                            onChange={handleTextareaChange}
+                            onKeyDown={(e) => {
+                              if (e.key === "Enter" && !e.shiftKey) {
+                                e.preventDefault();
+                                form.handleSubmit(onSubmit)();
+                              }
+                            }}
+                            className="flex-1 resize-none border-0 bg-transparent p-3 pr-12 focus-visible:outline-none focus-visible:ring-0 disabled:opacity-50 min-h-[80px] max-h-[200px] overflow-y-auto"
+                            rows={1}
+                          />
+
+                          <div className="flex items-center p-3">
+                            <label
+                              htmlFor="image-upload"
+                              className="cursor-pointer"
+                            >
+                              <Button
+                                type="button"
+                                variant="ghost"
+                                size="icon"
+                                onClick={() =>
+                                  document
+                                    .getElementById("image-upload")
+                                    ?.click()
+                                }
+                                className="rounded-full"
+                                disabled={isGenerating}
+                              >
+                                <ImageIcon className="size" />
+                              </Button>
+                            </label>
+
+                            <Button
+                              disabled={
+                                isGenerating ||
+                                (!description.trim() && !selectedImage)
+                              }
+                              type="submit"
+                              size="icon"
+                              variant="ghost"
+                              className="rounded-full"
+                            >
+                              {isGenerating ? (
+                                <Loader2Icon className="size-4 animate-spin" />
+                              ) : (
+                                <SendHorizontal className="size-4" />
+                              )}
+                            </Button>
+
+                            {isGenerating ? (
+                              <Button
+                                type="button"
+                                variant="ghost"
+                                size="icon"
+                                onClick={handleCancel}
+                                className="rounded-full text-red-500 hover:text-red-600 hover:bg-red-50 dark:hover:bg-red-950/20"
+                              >
+                                <Square className="size-4" />
+                              </Button>
+                            ) : null}
+                          </div>
+                        </div>
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+              </div>
             </div>
           </div>
 
-          <div className="flex justify-center gap-2">
-            <Button
-              disabled={isGenerating || (!description.trim() && !selectedImage)}
-              type="submit"
-              className="mt-2"
-            >
-              {isGeneratingRecipe
-                ? "Generating Recipe"
-                : isGeneratingImage
-                  ? "Generating Image"
-                  : selectedImage
-                    ? "Generate Recipe from Image"
-                    : "Generate Recipe from Text"}
-              {isGenerating ? (
-                <Loader2Icon className="ml-2 animate-spin" />
-              ) : (
-                <WandSparkles className="ml-2" />
-              )}
-            </Button>
-
-            {isGenerating && (
-              <Button
-                type="button"
-                variant="outline"
-                onClick={handleCancel}
-                className="mt-2"
-              >
-                <X className="mr-2 h-4 w-4" />
-                Cancel
-              </Button>
-            )}
-          </div>
+          <input
+            type="file"
+            accept=".png,.jpg,.jpeg,.webp"
+            onChange={handleImageChange}
+            className="hidden"
+            id="image-upload"
+            disabled={isGenerating}
+          />
         </form>
       </Form>
     </div>
