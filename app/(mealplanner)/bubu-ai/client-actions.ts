@@ -1,45 +1,46 @@
 "use client";
 
 import { sanitizeInput } from "@/lib/utils";
-import { GenerateRecipeInput, RecipeInput } from "@/lib/validation";
+import { GenerateRecipeInput } from "@/lib/validation";
 
-export async function generateRecipeWithAbort(
-  input: GenerateRecipeInput,
-  abortSignal?: AbortSignal,
-): Promise<RecipeInput> {
+export function generateRecipeWithAbort(input: GenerateRecipeInput) {
+  const controller = new AbortController();
+
   const sanitizedDescription = sanitizeInput(input.description);
   const sanitizedInput = {
     ...input,
     description: sanitizedDescription,
   };
 
-  const response = await fetch("/api/ai/generate-recipe", {
+  const response = fetch("/api/ai/generate-recipe", {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
     },
     body: JSON.stringify(sanitizedInput),
-    signal: abortSignal,
+    signal: controller.signal,
+  }).then(async (response) => {
+    if (!response.ok) {
+      if (response.status === 499) {
+        console.error(
+          `generateRecipeWithAbort: ${response.statusText} ${response.status}`,
+        );
+      }
+      const errorData = await response.json().catch(() => ({}));
+      throw new Error(errorData.error || "Failed to generate recipe");
+    }
+    return response.json();
   });
 
-  if (!response.ok) {
-    if (response.status === 499) {
-      console.error(
-        `generateRecipeWithAbort: ${response.statusText} ${response.status}`,
-      );
-    }
-    const errorData = await response.json().catch(() => ({}));
-    throw new Error(errorData.error || "Failed to generate recipe");
-  }
-
-  return response.json();
+  return { response, controller };
 }
 
-export async function analyzeImageForRecipeWithAbort(
+export function analyzeImageForRecipeWithAbort(
   image: File,
   additionalInstructions?: string,
-  abortSignal?: AbortSignal,
-): Promise<RecipeInput> {
+) {
+  const controller = new AbortController();
+
   const formData = new FormData();
   formData.append("image", image);
   if (additionalInstructions) {
@@ -49,31 +50,33 @@ export async function analyzeImageForRecipeWithAbort(
     );
   }
 
-  const response = await fetch("/api/ai/analyze-image", {
+  const response = fetch("/api/ai/analyze-image", {
     method: "POST",
     body: formData,
-    signal: abortSignal,
+    signal: controller.signal,
+  }).then(async (response) => {
+    if (!response.ok) {
+      if (response.status === 499) {
+        console.error(
+          `analyzeImageForRecipeWithAbort: ${response.statusText} ${response.status}`,
+        );
+      }
+      const errorData = await response.json().catch(() => ({}));
+      throw new Error(errorData.error || "Failed to analyze image");
+    }
+    return response.json();
   });
 
-  if (!response.ok) {
-    if (response.status === 499) {
-      console.error(
-        `analyzeImageForRecipeWithAbort: ${response.statusText} ${response.status}`,
-      );
-    }
-    const errorData = await response.json().catch(() => ({}));
-    throw new Error(errorData.error || "Failed to analyze image");
-  }
-
-  return response.json();
+  return { response, controller };
 }
 
-export async function generateRecipeImageWithAbort(
+export function generateRecipeImageWithAbort(
   recipeTitle: string,
   recipeDescription: string,
-  abortSignal?: AbortSignal,
-): Promise<string> {
-  const response = await fetch("/api/ai/generate-image", {
+) {
+  const controller = new AbortController();
+
+  const response = fetch("/api/ai/generate-image", {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
@@ -82,19 +85,20 @@ export async function generateRecipeImageWithAbort(
       recipeTitle,
       recipeDescription,
     }),
-    signal: abortSignal,
+    signal: controller.signal,
+  }).then(async (response) => {
+    if (!response.ok) {
+      if (response.status === 499) {
+        console.error(
+          `generateRecipeImageWithAbort: ${response.statusText} ${response.status}`,
+        );
+      }
+      const errorData = await response.json().catch(() => ({}));
+      throw new Error(errorData.error || "Failed to generate image");
+    }
+    const data = await response.json();
+    return data.imageUrl;
   });
 
-  if (!response.ok) {
-    if (response.status === 499) {
-      console.error(
-        `generateRecipeImageWithAbort: ${response.statusText} ${response.status}`,
-      );
-    }
-    const errorData = await response.json().catch(() => ({}));
-    throw new Error(errorData.error || "Failed to generate image");
-  }
-
-  const data = await response.json();
-  return data.imageUrl;
+  return { response, controller };
 }

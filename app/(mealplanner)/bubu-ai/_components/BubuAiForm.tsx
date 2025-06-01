@@ -43,8 +43,8 @@ const BibiAiForm = ({
   const [isGeneratingImage, setIsGeneratingImage] = useState(false);
   const [selectedImage, setSelectedImage] = useState<File | null>(null);
 
-  const recipeAbortControllerRef = useRef<AbortController | null>(null);
-  const imageAbortControllerRef = useRef<AbortController | null>(null);
+  const recipeControllerRef = useRef<AbortController | null>(null);
+  const imageControllerRef = useRef<AbortController | null>(null);
 
   const form = useForm<GenerateRecipeInput>({
     resolver: zodResolver(generateRecipeSchema),
@@ -69,14 +69,14 @@ const BibiAiForm = ({
   };
 
   const handleCancel = () => {
-    if (recipeAbortControllerRef.current) {
-      recipeAbortControllerRef.current.abort();
-      recipeAbortControllerRef.current = null;
+    if (recipeControllerRef.current) {
+      recipeControllerRef.current.abort();
+      recipeControllerRef.current = null;
     }
 
-    if (imageAbortControllerRef.current) {
-      imageAbortControllerRef.current.abort();
-      imageAbortControllerRef.current = null;
+    if (imageControllerRef.current) {
+      imageControllerRef.current.abort();
+      imageControllerRef.current = null;
       // Notify parent that image generation was aborted
       if (onImageGenerationAborted) {
         onImageGenerationAborted();
@@ -95,37 +95,33 @@ const BibiAiForm = ({
 
       setIsGeneratingRecipe(true);
 
-      // Create abort controller for recipe generation
-      recipeAbortControllerRef.current = new AbortController();
-
       let recipe;
 
       if (selectedImage) {
-        recipe = await analyzeImageForRecipeWithAbort(
+        const { response, controller } = analyzeImageForRecipeWithAbort(
           selectedImage,
           input.description.trim() || undefined,
-          recipeAbortControllerRef.current.signal,
         );
+        recipeControllerRef.current = controller;
+        recipe = await response;
       } else {
-        recipe = await generateRecipeWithAbort(
-          input,
-          recipeAbortControllerRef.current.signal,
-        );
+        const { response, controller } = generateRecipeWithAbort(input);
+        recipeControllerRef.current = controller;
+        recipe = await response;
       }
 
       setIsGeneratingRecipe(false);
+      recipeControllerRef.current = null;
 
       onRecipeGenerated(recipe);
 
       setIsGeneratingImage(true);
 
-      imageAbortControllerRef.current = new AbortController();
+      const { response: imageResponse, controller: imageController } =
+        generateRecipeImageWithAbort(recipe.title, recipe.summary);
+      imageControllerRef.current = imageController;
 
-      const image = await generateRecipeImageWithAbort(
-        recipe.title,
-        recipe.summary,
-        imageAbortControllerRef.current.signal,
-      );
+      const image = await imageResponse;
 
       if (image) {
         onRecipeGenerated(recipe, image);
@@ -135,8 +131,8 @@ const BibiAiForm = ({
     } finally {
       setIsGeneratingRecipe(false);
       setIsGeneratingImage(false);
-      recipeAbortControllerRef.current = null;
-      imageAbortControllerRef.current = null;
+      recipeControllerRef.current = null;
+      imageControllerRef.current = null;
     }
   };
 
