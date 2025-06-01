@@ -171,129 +171,105 @@ const BibiAiForm = ({
               <div className="flex-1 space-y-2">
                 {selectedImage && imagePreview && (
                   <div className="relative inline-block">
-                    <div className="flex items-center gap-3 p-2 rounded-md bg-zinc-900 dark:bg-zinc-800 text-white max-w-xs">
-                      <div className="h-10 w-10 relative overflow-hidden rounded-sm flex-shrink-0">
-                        <Image
-                          src={imagePreview || "/placeholder.svg"}
-                          alt="Selected food"
-                          fill
-                          className="object-cover"
-                        />
-                      </div>
-                      <div className="flex-1 min-w-0">
-                        <p className="text-sm truncate">{selectedImage.name}</p>
-                        <p className="text-xs text-zinc-400">
-                          {(selectedImage.size / 1024).toFixed(2)}kB
-                        </p>
-                      </div>
-                      <Button
-                        type="button"
-                        variant="ghost"
-                        size="icon"
-                        onClick={() => {
-                          setSelectedImage(null);
-                          setImagePreview(null);
-                        }}
-                        disabled={isGenerating}
-                        className="h-6 w-6 p-0 text-zinc-400 hover:text-white"
-                      >
-                        <X className="h-3 w-3" />
-                      </Button>
+                    <div className="h-20 w-20 relative overflow-hidden rounded-sm">
+                      <Image
+                        src={imagePreview || "/placeholder.svg"}
+                        alt="Selected food"
+                        fill
+                        className="object-cover"
+                      />
                     </div>
+                    <Button
+                      type="button"
+                      variant="ghost"
+                      size="icon"
+                      onClick={() => {
+                        setSelectedImage(null);
+                        setImagePreview(null);
+                      }}
+                      disabled={isGenerating}
+                      className="size-4 p-0 text-zinc-400 hover:text-white absolute -top-1 -right-1 bg-black/50 backdrop-blur-sm rounded-full"
+                    >
+                      <X className="size-3" />
+                    </Button>
                   </div>
                 )}
               </div>
             </div>
 
-            <div className="mt-4 flex items-end gap-3">
-              <div className="flex-1">
-                <FormField
-                  control={form.control}
-                  name="description"
-                  render={({ field }) => (
-                    <FormItem className="space-y-0">
-                      <FormControl>
-                        <div className="relative flex items-end rounded-xl border bg-background focus-within:ring-1 focus-within:ring-ring">
-                          <textarea
-                            {...field}
-                            ref={textareaRef}
-                            placeholder={
-                              selectedImage
-                                ? "Add any specific instructions for your food image (optional)"
-                                : 'E.g. "I want a recipe for a healthy breakfast" (in any language you prefer)'
-                            }
-                            disabled={isGenerating}
-                            onChange={handleTextareaChange}
-                            onKeyDown={(e) => {
-                              if (e.key === "Enter" && !e.shiftKey) {
-                                e.preventDefault();
-                                form.handleSubmit(onSubmit)();
-                              }
-                            }}
-                            className="flex-1 resize-none border-0 bg-transparent p-3 pr-12 focus-visible:outline-none focus-visible:ring-0 disabled:opacity-50 min-h-[80px] max-h-[200px] overflow-y-auto"
-                            rows={1}
-                          />
+            <FormField
+              control={form.control}
+              name="description"
+              render={({ field }) => (
+                <FormItem className="space-y-0">
+                  <FormControl>
+                    <textarea
+                      {...field}
+                      ref={textareaRef}
+                      placeholder={
+                        selectedImage
+                          ? "Add any specific instructions for your food image (optional)"
+                          : "Type your recipe description here..."
+                      }
+                      disabled={isGenerating}
+                      onChange={handleTextareaChange}
+                      onKeyDown={(e) => {
+                        if (e.key === "Enter" && !e.shiftKey) {
+                          e.preventDefault();
+                          form.handleSubmit(onSubmit)();
+                        }
+                      }}
+                      className="flex-1 resize-none border-0 bg-transparent p-0 focus-visible:outline-none focus-visible:ring-0 disabled:opacity-50 min-h-[60px]overflow-y-auto w-full"
+                    />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
 
-                          <div className="flex items-center p-3">
-                            <label
-                              htmlFor="image-upload"
-                              className="cursor-pointer"
-                            >
-                              <Button
-                                type="button"
-                                variant="ghost"
-                                size="icon"
-                                onClick={() =>
-                                  document
-                                    .getElementById("image-upload")
-                                    ?.click()
-                                }
-                                className="rounded-full"
-                                disabled={isGenerating}
-                              >
-                                <ImageIcon className="size" />
-                              </Button>
-                            </label>
+            <div className="flex items-center gap-2">
+              <label htmlFor="image-upload" className="cursor-pointer">
+                <Button
+                  type="button"
+                  variant="ghost"
+                  size="icon"
+                  onClick={() =>
+                    document.getElementById("image-upload")?.click()
+                  }
+                  className="rounded-full"
+                  disabled={isGenerating}
+                >
+                  <ImageIcon className="size" />
+                </Button>
+              </label>
 
-                            <Button
-                              disabled={
-                                isGenerating ||
-                                (!description.trim() && !selectedImage)
-                              }
-                              type="submit"
-                              size="icon"
-                              variant="ghost"
-                              className="rounded-full"
-                            >
-                              {isGenerating ? (
-                                <Loader2Icon className="size-4 animate-spin" />
-                              ) : (
-                                <SendHorizontal className="size-4" />
-                              )}
-                            </Button>
+              <Button
+                disabled={
+                  isGenerating || (!description.trim() && !selectedImage)
+                }
+                type="submit"
+                size="icon"
+                variant="ghost"
+                className="rounded-full"
+              >
+                {isGenerating ? (
+                  <Loader2Icon className="size-4 animate-spin" />
+                ) : (
+                  <SendHorizontal className="size-4" />
+                )}
+              </Button>
 
-                            {isGenerating ? (
-                              <Button
-                                type="button"
-                                variant="ghost"
-                                size="icon"
-                                onClick={handleCancel}
-                                className="rounded-full text-red-500 hover:text-red-600 hover:bg-red-50 dark:hover:bg-red-950/20"
-                              >
-                                <Square
-                                  className="size-4"
-                                  fill="currentColor"
-                                />
-                              </Button>
-                            ) : null}
-                          </div>
-                        </div>
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-              </div>
+              {isGenerating ? (
+                <Button
+                  type="button"
+                  variant="ghost"
+                  size="icon"
+                  onClick={handleCancel}
+                  className="rounded-full text-red-500 hover:text-red-600 hover:bg-red-50 dark:hover:bg-red-950/20"
+                >
+                  <Square className="size-4" fill="currentColor" />
+                </Button>
+              ) : null}
             </div>
           </div>
 

@@ -9,14 +9,7 @@ import type { Id } from "@/convex/_generated/dataModel";
 import type { RecipeInput } from "@/lib/validation";
 import { useUser } from "@clerk/clerk-react";
 import { useMutation } from "convex/react";
-import {
-  BookmarkIcon,
-  ChefHat,
-  Clock,
-  Loader2,
-  Trash2,
-  Users,
-} from "lucide-react";
+import { BookmarkIcon, Clock, Loader2, Trash2, Users } from "lucide-react";
 import Image from "next/image";
 import React, { useEffect, useState } from "react";
 import { toast } from "sonner";
@@ -237,9 +230,6 @@ const BubuAiResponse = ({ recipe, image, onClear }: BubuAiResponseProps) => {
                   key={`${ingredient.name}-${index}`}
                   className="flex items-start gap-3 p-3 rounded-lg border bg-background/50"
                 >
-                  <div className="h-8 w-8 rounded-full bg-orange-100 dark:bg-orange-900/30 flex items-center justify-center text-orange-600 dark:text-orange-400 shrink-0">
-                    <ChefHat className="h-4 w-4" />
-                  </div>
                   <div>
                     <p className="font-medium">
                       {ingredient.name?.charAt(0).toUpperCase() +
@@ -258,14 +248,9 @@ const BubuAiResponse = ({ recipe, image, onClear }: BubuAiResponseProps) => {
 
           <TabsContent value="instructions">
             <div className="space-y-6">
-              {recipe?.instructions?.steps?.map((step, index) => (
+              {recipe?.instructions?.steps?.map((step) => (
                 <div key={step.number} className="flex gap-4">
-                  <div className="h-8 w-8 rounded-full bg-gradient-to-br from-orange-500 to-rose-500 flex items-center justify-center text-white font-medium shrink-0">
-                    {index + 1}
-                  </div>
-                  <div>
-                    <p>{step.step}</p>
-                  </div>
+                  <p>{step.step}</p>
                 </div>
               ))}
             </div>

@@ -35,8 +35,8 @@ const BibiAi = () => {
     <>
       <Header />
       <div className="max-w-3xl mx-auto g-gradient-to-b from-zinc-50 to-zinc-100 dark:from-zinc-900 dark:to-zinc-800">
-        <Card className="border-none shadow-lg bg-white/80 backdrop-blur-sm dark:bg-zinc-900/80">
-          <CardContent className="p-6">
+        <Card className="border-none shadow-lg bg-white/80 backdrop-blur-sm dark:bg-zinc-900/80 p-0 pt-4">
+          <CardContent className="p-0 px-4">
             <BubuAiForm
               onRecipeGenerated={handleRecipeGenerated}
               onGenerationStart={handleGenerationStart}
