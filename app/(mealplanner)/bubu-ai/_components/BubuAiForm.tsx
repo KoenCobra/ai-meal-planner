@@ -146,22 +146,39 @@ const BibiAiForm = ({
               render={({ field }) => (
                 <FormItem>
                   <FormControl>
-                    <Textarea
-                      {...field}
-                      placeholder={
-                        selectedImage
-                          ? "Add any specific instructions for your food image (optional)"
-                          : 'E.g. "I want a recipe for a healthy breakfast" (in any language you prefer)'
-                      }
-                      disabled={isGenerating}
-                      onKeyDown={(e) => {
-                        if (e.key === "Enter" && !e.shiftKey) {
-                          e.preventDefault();
-                          form.handleSubmit(onSubmit)();
+                    <div className="relative">
+                      <Textarea
+                        {...field}
+                        placeholder={
+                          selectedImage
+                            ? "Add any specific instructions for your food image (optional)"
+                            : 'E.g. "I want a recipe for a healthy breakfast" (in any language you prefer)'
                         }
-                      }}
-                      rows={12}
-                    />
+                        disabled={isGenerating}
+                        onKeyDown={(e) => {
+                          if (e.key === "Enter" && !e.shiftKey) {
+                            e.preventDefault();
+                            form.handleSubmit(onSubmit)();
+                          }
+                        }}
+                        className="pr-10"
+                      />
+                      {field.value && (
+                        <Button
+                          type="button"
+                          variant="ghost"
+                          size="sm"
+                          onClick={() => {
+                            field.onChange("");
+                            form.setValue("description", "");
+                          }}
+                          disabled={isGenerating}
+                          className="absolute right-2 top-2 h-6 w-6 p-0 hover:bg-gray-100"
+                        >
+                          <X className="h-4 w-4" />
+                        </Button>
+                      )}
+                    </div>
                   </FormControl>
                   <FormMessage />
                 </FormItem>
