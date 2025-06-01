@@ -71,7 +71,7 @@ const SearchPage = () => {
           <Input
             ref={inputRef}
             type="text"
-            placeholder="Search recipes by title or ingredients..."
+            placeholder="Search recipes by title, ingredients, or categories..."
             value={searchQuery}
             onChange={(e) => setSearchQuery(sanitizeInput(e.target.value))}
             className="pl-10 pr-10"
@@ -110,7 +110,7 @@ const SearchPage = () => {
             <Search className="h-16 w-16 mx-auto text-muted-foreground mb-4" />
             <h3 className="text-lg font-semibold mb-2">No recipes found</h3>
             <p className="text-muted-foreground">
-              Try searching with different keywords or ingredients
+              Try searching with different keywords, ingredients, or categories
             </p>
           </div>
         ) : !debouncedQuery ? (
@@ -118,8 +118,8 @@ const SearchPage = () => {
             <Search className="h-16 w-16 mx-auto text-muted-foreground mb-4" />
             <h3 className="text-lg font-semibold mb-2">Start searching</h3>
             <p className="text-muted-foreground">
-              Type in the search box above to find recipes by title or
-              ingredients
+              Type in the search box above to find recipes by title,
+              ingredients, or categories
             </p>
           </div>
         ) : (

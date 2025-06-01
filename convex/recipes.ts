@@ -64,8 +64,11 @@ export const createRecipe = mutation({
       .map((ingredient) => ingredient.name)
       .join(" ");
 
-    // Create combined search text for title and ingredients
-    const searchText = `${recipeData.title} ${ingredientsText}`;
+    // Create searchable categories text
+    const categoriesText = recipeData.categories.join(" ");
+
+    // Create combined search text for title, ingredients, and categories
+    const searchText = `${recipeData.title} ${ingredientsText} ${categoriesText}`;
 
     return await ctx.db.insert("recipes", {
       userId,
@@ -124,16 +127,19 @@ export const updateRecipe = mutation({
 
     // Update search text if title or ingredients are being updated
     const finalUpdates = { ...updates };
-    if (updates.ingredients || updates.title) {
+    if (updates.ingredients || updates.title || updates.categories) {
       // Get current recipe to access existing values
       const currentTitle = updates.title || recipe.title;
       const currentIngredients = updates.ingredients || recipe.ingredients;
+      const currentCategories = updates.categories || recipe.categories;
 
       finalUpdates.ingredientsText = currentIngredients
         .map((ingredient) => ingredient.name)
         .join(" ");
 
-      finalUpdates.searchText = `${currentTitle} ${finalUpdates.ingredientsText}`;
+      const categoriesText = currentCategories.join(" ");
+
+      finalUpdates.searchText = `${currentTitle} ${finalUpdates.ingredientsText} ${categoriesText}`;
     }
 
     await ctx.db.patch(id, finalUpdates);
@@ -203,7 +209,7 @@ export const listRecipes = query({
   },
 });
 
-export const searchRecipesByTitleAndIngredients = query({
+export const searchRecipesByTitleIngredientsAndCategories = query({
   args: {
     userId: v.string(),
     query: v.string(),
@@ -219,7 +225,7 @@ export const searchRecipesByTitleAndIngredients = query({
         .paginate(args.paginationOpts);
     }
 
-    // Search in combined title and ingredients text
+    // Search in combined title, ingredients, and categories text
     return await ctx.db
       .query("recipes")
       .withSearchIndex("search_recipes", (q) =>

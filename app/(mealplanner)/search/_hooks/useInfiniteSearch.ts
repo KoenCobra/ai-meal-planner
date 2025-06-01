@@ -29,7 +29,7 @@ export const useInfiniteSearch = ({
     isLoading: isCacheLoading,
     isFetching: isCacheFetching,
   } = useQuery({
-    ...convexQuery(api.recipes.searchRecipesByTitleAndIngredients, {
+    ...convexQuery(api.recipes.searchRecipesByTitleIngredientsAndCategories, {
       userId,
       query: trimmedQuery,
       paginationOpts: { numItems: itemsPerPage, cursor: null },
@@ -42,7 +42,7 @@ export const useInfiniteSearch = ({
 
   // Use usePaginatedQuery for infinite loading functionality
   const results = usePaginatedQuery(
-    api.recipes.searchRecipesByTitleAndIngredients,
+    api.recipes.searchRecipesByTitleIngredientsAndCategories,
     userId && trimmedQuery !== undefined
       ? {
           userId,
