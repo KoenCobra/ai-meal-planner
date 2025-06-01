@@ -70,10 +70,6 @@ export async function POST(req: NextRequest) {
 
     return NextResponse.json(recipe, { status: 200 });
   } catch (error) {
-    if (error instanceof Error && error.name === "AbortError") {
-      return NextResponse.json({ error: "Request cancelled" }, { status: 499 });
-    }
-
     console.error("Error generating recipe:", error);
     return NextResponse.json(
       { error: "Failed to generate recipe" },

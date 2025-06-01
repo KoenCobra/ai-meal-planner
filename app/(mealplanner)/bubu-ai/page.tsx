@@ -22,12 +22,10 @@ const BibiAi = () => {
   };
 
   const handleGenerationStart = () => {
-    // Clear previous recipe and image when generation starts
     clearRecipe();
   };
 
   const handleImageGenerationAborted = () => {
-    // Clear the recipe when image generation is aborted
     clearRecipe();
   };
 

@@ -23,9 +23,6 @@ async function executeRecipeGeneration(
   });
 
   if (!res.ok) {
-    if (res.status === 499) {
-      console.error(`generateRecipe: ${res.statusText} ${res.status}`);
-    }
     const errorData = await res.json().catch(() => ({}));
     throw new Error(errorData.error || "Failed to generate recipe");
   }
@@ -54,9 +51,6 @@ async function executeImageAnalysis(
   });
 
   if (!res.ok) {
-    if (res.status === 499) {
-      console.error(`analyzeImageForRecipe: ${res.statusText} ${res.status}`);
-    }
     const errorData = await res.json().catch(() => ({}));
     throw new Error(errorData.error || "Failed to analyze image");
   }
@@ -82,9 +76,6 @@ async function executeImageGeneration(
   });
 
   if (!res.ok) {
-    if (res.status === 499) {
-      console.error(`generateRecipeImage: ${res.statusText} ${res.status}`);
-    }
     const errorData = await res.json().catch(() => ({}));
     throw new Error(errorData.error || "Failed to generate image");
   }

@@ -53,14 +53,12 @@ const BibiAiForm = ({
     },
   });
 
-  // Watch the description field for changes
   const description = form.watch("description");
 
   const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files && e.target.files[0]) {
       const file = e.target.files[0];
       if (file.size > 5 * 1024 * 1024) {
-        // 5MB limit
         toast.error("Image size should be less than 5MB");
         return;
       }
@@ -77,7 +75,6 @@ const BibiAiForm = ({
     if (imageControllerRef.current) {
       imageControllerRef.current.abort();
       imageControllerRef.current = null;
-      // Notify parent that image generation was aborted
       if (onImageGenerationAborted) {
         onImageGenerationAborted();
       }
