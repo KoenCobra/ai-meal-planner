@@ -6,6 +6,6 @@ export type Recipe = {
   readyInMinutes: number;
   servings: number;
   storageId?: Id<"_storage">;
-  diets: string[];
+  categories: string[];
   dishType: string;
 };

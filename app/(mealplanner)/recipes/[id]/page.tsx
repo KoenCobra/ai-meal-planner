@@ -47,7 +47,7 @@ const RecipeDetails = () => {
         <div className="text-center">
           <h1 className="text-4xl font-bold">{recipe.title.toUpperCase()}</h1>
           <p className="text-muted-foreground mb-2">
-            {recipe.diets?.join(" • ")}
+            {recipe.categories?.join(" • ")}
           </p>
           <div className="text-center border-t border-border">
             <h2 className="text-xl text-muted-foreground mt-5">

@@ -15,7 +15,9 @@ export const Recipe = z.object({
   readyInMinutes: z
     .number()
     .describe("The number of minutes it takes to prepare the recipe"),
-  diets: z.array(z.string()).describe("The diets the recipe is suitable for"),
+  categories: z
+    .array(z.string())
+    .describe("The categories the recipe is suitable for"),
   instructions: z.object({
     steps: z.array(
       z.object({

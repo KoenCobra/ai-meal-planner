@@ -10,7 +10,7 @@ const applicationTables = {
     readyInMinutes: v.number(),
     storageId: v.optional(v.id("_storage")),
     imageUrl: v.optional(v.string()),
-    diets: v.array(v.string()),
+    categories: v.array(v.string()),
     instructions: v.object({
       steps: v.array(
         v.object({

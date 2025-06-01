@@ -4,7 +4,7 @@ export type DiscoverRecipeItem = {
     title: string;
     readyInMinutes: number;
     image: string;
-    diets: string[];
+    categories: string[];
   }[];
 };
 
@@ -18,7 +18,7 @@ export type RecipeDetail = {
   extendedIngredients: ExtendedIngredient[];
   nutrition: Nutrition;
   caloricBreakdown: CaloricBreakdown;
-  diets: string[];
+  categories: string[];
   analyzedInstructions: AnalyzedInstruction[];
 };
 

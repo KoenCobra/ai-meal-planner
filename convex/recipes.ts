@@ -30,7 +30,7 @@ export const createRecipe = mutation({
     readyInMinutes: v.number(),
     image: v.optional(v.string()),
     imageUrl: v.optional(v.string()),
-    diets: v.array(v.string()),
+    categories: v.array(v.string()),
     instructions: v.object({
       steps: v.array(
         v.object({
@@ -86,7 +86,7 @@ export const updateRecipe = mutation({
     readyInMinutes: v.optional(v.number()),
     image: v.optional(v.string()),
     imageUrl: v.optional(v.string()),
-    diets: v.optional(v.array(v.string())),
+    categories: v.optional(v.array(v.string())),
     instructions: v.optional(
       v.object({
         steps: v.array(

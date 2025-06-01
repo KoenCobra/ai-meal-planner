@@ -61,7 +61,7 @@ export async function POST(req: NextRequest) {
       summary: object.summary,
       servings: object.servings,
       readyInMinutes: object.readyInMinutes,
-      diets: object.diets,
+      categories: object.categories,
       instructions: object.instructions,
       ingredients: object.ingredients,
       dishType: object.dishType,

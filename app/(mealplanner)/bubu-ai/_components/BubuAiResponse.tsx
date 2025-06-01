@@ -65,7 +65,7 @@ const AiResponse = ({ recipe, image, onClear }: BubuAiResponseProps) => {
         summary: recipe.summary,
         servings: recipe.servings,
         readyInMinutes: recipe.readyInMinutes,
-        diets: recipe.diets,
+        categories: recipe.categories,
         instructions: {
           steps: recipe.instructions.steps,
         },
@@ -100,7 +100,7 @@ const AiResponse = ({ recipe, image, onClear }: BubuAiResponseProps) => {
       <div className="text-center mt-6">
         <h1 className="text-4xl font-bold">{recipe?.title?.toUpperCase()}</h1>
         <p className="text-muted-foreground mb-2 text-sm">
-          ({recipe?.diets?.join(" • ")})
+          ({recipe?.categories?.join(" • ")})
         </p>
 
         <div className="flex justify-center items-center gap-3">

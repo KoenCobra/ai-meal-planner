@@ -35,7 +35,7 @@ interface RecipeCardProps {
     readyInMinutes: number;
     servings: number;
     storageId?: Id<"_storage">;
-    diets: string[];
+    categories: string[];
     dishType: string;
   };
   onDelete: (recipeId: Id<"recipes">, title: string, dishType: string) => void;
@@ -130,7 +130,7 @@ export const RecipeCard = ({ recipe, onDelete }: RecipeCardProps) => {
           <CardHeader>
             <CardTitle>{recipe.title}</CardTitle>
             <CardDescription>
-              {recipe.diets?.join(" • ") || "No specific diet"}
+              {recipe.categories?.join(" • ") || "No specific category"}
             </CardDescription>
           </CardHeader>
           <CardContent>
