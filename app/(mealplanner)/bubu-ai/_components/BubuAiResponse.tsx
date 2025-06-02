@@ -138,20 +138,23 @@ const BubuAiResponse = ({ recipe, image, onClear }: BubuAiResponseProps) => {
             <div className="absolute inset-0 bg-gradient-to-t from-black/70 to-transparent"></div>
           </>
         ) : (
-          <div className="w-full h-[400px] md:h-[500px] bg-gradient-to-r from-orange-500/20 to-rose-500/20 flex flex-col items-center justify-center">
-            <div className="relative w-16 h-16 mb-3">
-              <div className="absolute top-0 left-0 w-full h-full border-4 border-t-primary border-r-transparent border-b-transparent border-l-transparent rounded-full animate-spin"></div>
-              <div
-                className="absolute top-0 left-0 w-full h-full border-4 border-t-transparent border-r-transparent border-b-primary border-l-transparent rounded-full animate-spin"
-                style={{
-                  animationDirection: "reverse",
-                  animationDuration: "1.5s",
-                }}
-              ></div>
+          <div className="relative w-full h-[400px] md:h-[500px]">
+            <div className="absolute inset-0 flex flex-col items-center justify-center bg-muted">
+              <div className="relative w-16 h-16 mb-3">
+                <div className="absolute top-0 left-0 w-full h-full border-4 border-t-primary border-r-transparent border-b-transparent border-l-transparent rounded-full animate-spin"></div>
+                <div
+                  className="absolute top-0 left-0 w-full h-full border-4 border-t-transparent border-r-transparent border-b-primary border-l-transparent rounded-full animate-spin"
+                  style={{
+                    animationDirection: "reverse",
+                    animationDuration: "1.5s",
+                  }}
+                ></div>
+              </div>
+              <p className="text-muted-foreground font-medium">
+                Loading image...
+              </p>
+              <div className="absolute inset-0 bg-gradient-to-t from-black/70 to-transparent"></div>
             </div>
-            <p className="text-muted-foreground font-medium">
-              Generating image...
-            </p>
           </div>
         )}
 
