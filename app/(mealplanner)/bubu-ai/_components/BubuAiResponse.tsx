@@ -101,7 +101,7 @@ const BubuAiResponse = ({ recipe, image, onClear }: BubuAiResponseProps) => {
   };
 
   return (
-    <Card className="border-none shadow-lg overflow-hidden bg-white/80 backdrop-blur-sm dark:bg-zinc-900/80">
+    <Card className="border-none shadow-lg overflow-hidden bg-white/80 backdrop-blur-sm dark:bg-zinc-900/80 pt-0">
       <div className="relative">
         {image ? (
           <>
