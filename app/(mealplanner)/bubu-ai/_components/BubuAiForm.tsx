@@ -144,11 +144,6 @@ const BibiAiForm = ({
     } finally {
       setIsGeneratingRecipe(false);
       setIsGeneratingImage(false);
-      recipeControllerRef.current = null;
-      imageControllerRef.current = null;
-      form.reset();
-      setSelectedImage(null);
-      setImagePreview(null);
     }
   };
 

@@ -118,7 +118,7 @@ const BubuAiResponse = ({ recipe, image, onClear }: BubuAiResponseProps) => {
                 onLoad={handleImageLoad}
               />
               {!isImageLoaded && (
-                <div className="absolute inset-0 flex flex-col items-center justify-center bg-muted">
+                <div className="absolute inset-0 flex flex-col items-center bg-muted pt-20">
                   <div className="relative w-16 h-16 mb-3">
                     <div className="absolute top-0 left-0 w-full h-full border-4 border-t-primary border-r-transparent border-b-transparent border-l-transparent rounded-full animate-spin"></div>
                     <div
@@ -139,7 +139,7 @@ const BubuAiResponse = ({ recipe, image, onClear }: BubuAiResponseProps) => {
           </>
         ) : (
           <div className="relative w-full h-[400px] md:h-[500px]">
-            <div className="absolute inset-0 flex flex-col items-center justify-center bg-muted">
+            <div className="absolute inset-0 flex flex-col items-center bg-muted pt-20">
               <div className="relative w-16 h-16 mb-3">
                 <div className="absolute top-0 left-0 w-full h-full border-4 border-t-primary border-r-transparent border-b-transparent border-l-transparent rounded-full animate-spin"></div>
                 <div
