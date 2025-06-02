@@ -167,34 +167,32 @@ const BibiAiForm = ({
       <Form {...form}>
         <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
           <div className="relative">
-            <div className="flex items-start gap-3">
-              <div className="flex-1 space-y-2">
-                {selectedImage && imagePreview && (
-                  <div className="relative inline-block">
-                    <div className="h-20 w-20 relative overflow-hidden rounded-sm">
-                      <Image
-                        src={imagePreview || "/placeholder.svg"}
-                        alt="Selected food"
-                        fill
-                        className="object-cover"
-                      />
-                    </div>
-                    <Button
-                      type="button"
-                      variant="ghost"
-                      size="icon"
-                      onClick={() => {
-                        setSelectedImage(null);
-                        setImagePreview(null);
-                      }}
-                      disabled={isGenerating}
-                      className="size-4 p-0 text-zinc-400 hover:text-white absolute -top-1 -right-1 bg-black/50 backdrop-blur-sm rounded-full"
-                    >
-                      <X className="size-3" />
-                    </Button>
+            <div className="flex items-start">
+              {selectedImage && imagePreview && (
+                <div className="relative inline-block mb-4">
+                  <div className="h-20 w-20 relative overflow-hidden rounded-sm">
+                    <Image
+                      src={imagePreview || "/placeholder.svg"}
+                      alt="Selected food"
+                      fill
+                      className="object-cover"
+                    />
                   </div>
-                )}
-              </div>
+                  <Button
+                    type="button"
+                    variant="ghost"
+                    size="icon"
+                    onClick={() => {
+                      setSelectedImage(null);
+                      setImagePreview(null);
+                    }}
+                    disabled={isGenerating}
+                    className="size-5 p-0 text-zinc-100 hover:text-white absolute -top-1.5 -right-1.5 bg-black/70 backdrop-blur-sm rounded-full"
+                  >
+                    <X className="size-4" />
+                  </Button>
+                </div>
+              )}
             </div>
 
             <FormField
@@ -227,7 +225,7 @@ const BibiAiForm = ({
               )}
             />
 
-            <div className="flex items-center gap-2">
+            <div className="flex items-center">
               <label htmlFor="image-upload" className="cursor-pointer">
                 <Button
                   type="button"
