@@ -137,6 +137,11 @@ const BubuAiResponse = ({ recipe, image, onClear }: BubuAiResponseProps) => {
             </div>
             <div className="absolute inset-0 bg-gradient-to-t from-black/70 to-transparent"></div>
           </>
+        ) : recipe?.error ? (
+          <div className="relative w-full h-[400px] md:h-[500px]">
+            <div className="absolute inset-0 flex flex-col items-center justify-center bg-muted"></div>
+            <div className="absolute inset-0 bg-gradient-to-t from-black/70 to-transparent"></div>
+          </div>
         ) : (
           <div className="relative w-full h-[400px] md:h-[500px]">
             <div className="absolute inset-0 flex flex-col items-center bg-muted pt-20">
@@ -194,7 +199,9 @@ const BubuAiResponse = ({ recipe, image, onClear }: BubuAiResponseProps) => {
         <div className="flex flex-wrap gap-3 mb-6">
           <Button
             onClick={handleSave}
-            disabled={!!savedRecipeId || isSaving || !isImageLoaded}
+            disabled={
+              !!savedRecipeId || isSaving || !isImageLoaded || !!recipe?.error
+            }
             className="gap-2"
           >
             {isSaving ? (

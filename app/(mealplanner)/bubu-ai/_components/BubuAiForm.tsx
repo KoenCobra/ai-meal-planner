@@ -127,18 +127,22 @@ const BibiAiForm = ({
       setIsGeneratingRecipe(false);
       recipeControllerRef.current = null;
 
+      // First, send the recipe data (even if it has an error)
       onRecipeGenerated(recipe);
 
-      setIsGeneratingImage(true);
+      // Only generate image if the recipe was successfully created (no error)
+      if (!recipe.error) {
+        setIsGeneratingImage(true);
 
-      const { response: imageResponse, controller: imageController } =
-        generateRecipeImage(recipe.title, recipe.summary);
-      imageControllerRef.current = imageController;
+        const { response: imageResponse, controller: imageController } =
+          generateRecipeImage(recipe.title, recipe.summary);
+        imageControllerRef.current = imageController;
 
-      const image = await imageResponse;
+        const image = await imageResponse;
 
-      if (image) {
-        onRecipeGenerated(recipe, image);
+        if (image) {
+          onRecipeGenerated(recipe, image);
+        }
       }
     } catch (error) {
       return console.log(error);
