@@ -92,7 +92,6 @@ const BubuAiResponse = ({ recipe, image, onClear }: BubuAiResponseProps) => {
   const handleClear = () => {
     if (onClear) {
       onClear();
-      toast.success("Recipe cleared");
     }
   };
 
