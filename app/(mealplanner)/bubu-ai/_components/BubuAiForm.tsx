@@ -54,6 +54,7 @@ const BibiAiForm = ({
   const recipeControllerRef = useRef<AbortController | null>(null);
   const imageControllerRef = useRef<AbortController | null>(null);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
+  const fileInputRef = useRef<HTMLInputElement>(null);
 
   const form = useForm<GenerateRecipeInput>({
     resolver: zodResolver(generateRecipeSchema),
@@ -180,6 +181,9 @@ const BibiAiForm = ({
                     onClick={() => {
                       setSelectedImage(null);
                       setImagePreview(null);
+                      if (fileInputRef.current) {
+                        fileInputRef.current.value = "";
+                      }
                     }}
                     disabled={isGenerating}
                     className="size-5 p-0 text-zinc-100 hover:text-white absolute -top-1.5 -right-1.5 bg-black/70 backdrop-blur-sm rounded-full"
@@ -267,6 +271,7 @@ const BibiAiForm = ({
           </div>
 
           <input
+            ref={fileInputRef}
             type="file"
             accept=".png,.jpg,.jpeg,.webp"
             onChange={handleImageChange}
