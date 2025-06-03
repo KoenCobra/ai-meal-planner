@@ -178,6 +178,7 @@ const BibiAiForm = ({
                       alt="Selected food"
                       fill
                       className="object-cover"
+                      quality={50}
                     />
                   </div>
                   <Button

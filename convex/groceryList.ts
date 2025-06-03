@@ -142,31 +142,6 @@ export const toggleItem = mutation({
   },
 });
 
-export const updateItem = mutation({
-  args: {
-    userId: v.string(),
-    id: v.id("groceryItems"),
-    name: v.optional(v.string()),
-    quantity: v.optional(v.string()),
-  },
-  handler: async (ctx, args) => {
-    await rateLimiter.limit(ctx, "updateGroceryItem", {
-      key: args.userId,
-      throws: true,
-    });
-
-    const item = await ctx.db.get(args.id);
-    if (!item) throw new ConvexError("Item not found");
-    if (item.userId !== args.userId) throw new ConvexError("Not authorized");
-
-    const updates: { name?: string; quantity?: string } = {};
-    if (args.name !== undefined) updates.name = args.name;
-    if (args.quantity !== undefined) updates.quantity = args.quantity;
-
-    await ctx.db.patch(args.id, updates);
-  },
-});
-
 export const listItems = query({
   args: { userId: v.string() },
   handler: async (ctx, args) => {
@@ -175,20 +150,6 @@ export const listItems = query({
       .withIndex("by_user", (q) => q.eq("userId", args.userId))
       .order("desc")
       .collect();
-  },
-});
-
-export const searchItems = query({
-  args: {
-    userId: v.string(),
-    query: v.string(),
-  },
-  handler: async (ctx, args) => {
-    return ctx.db
-      .query("groceryItems")
-      .withSearchIndex("search_name", (q) =>
-        q.search("name", args.query).eq("userId", args.userId),
-      );
   },
 });
 

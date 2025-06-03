@@ -10,12 +10,6 @@ export const rateLimiter = new RateLimiter(components.rateLimiter, {
     period: MINUTE,
     capacity: 15,
   },
-  updateRecipe: {
-    kind: "token bucket",
-    rate: 20,
-    period: MINUTE,
-    capacity: 30,
-  },
   deleteRecipe: {
     kind: "token bucket",
     rate: 15,
@@ -59,12 +53,6 @@ export const rateLimiter = new RateLimiter(components.rateLimiter, {
     period: MINUTE,
     capacity: 75,
   },
-  updateGroceryItem: {
-    kind: "token bucket",
-    rate: 50,
-    period: MINUTE,
-    capacity: 75,
-  },
   deleteGroceryItem: {
     kind: "token bucket",
     rate: 50,
@@ -97,12 +85,6 @@ export const rateLimiter = new RateLimiter(components.rateLimiter, {
     period: MINUTE,
     capacity: 15,
   },
-  updateRecipeImage: {
-    kind: "token bucket",
-    rate: 10,
-    period: MINUTE,
-    capacity: 15,
-  },
 
   // Search operations - prevent expensive search spam
   searchRecipes: {
@@ -117,20 +99,7 @@ export const rateLimiter = new RateLimiter(components.rateLimiter, {
     period: MINUTE,
     capacity: 50,
   },
-  searchGroceryItems: {
-    kind: "token bucket",
-    rate: 20,
-    period: MINUTE,
-    capacity: 50,
-  },
 
-  // Global limits for resource-intensive operations (per IP/anonymous users)
-  globalFileUploads: {
-    kind: "fixed window",
-    rate: 100,
-    period: HOUR,
-    shards: 5,
-  },
   globalRecipeCreation: {
     kind: "fixed window",
     rate: 1000,
@@ -182,13 +151,6 @@ export const rateLimiter = new RateLimiter(components.rateLimiter, {
     rate: 750,
     period: HOUR,
     shards: 8,
-  },
-
-  // Auth-related limits (if you add authentication failures in the future)
-  authFailures: {
-    kind: "token bucket",
-    rate: 5,
-    period: HOUR,
   },
 });
 

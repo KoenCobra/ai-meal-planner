@@ -28,8 +28,7 @@ export const createRecipe = mutation({
     summary: v.string(),
     servings: v.number(),
     readyInMinutes: v.number(),
-    image: v.optional(v.string()),
-    imageUrl: v.optional(v.string()),
+    imageUrl: v.string(),
     categories: v.array(v.string()),
     instructions: v.object({
       steps: v.array(
@@ -79,75 +78,6 @@ export const createRecipe = mutation({
   },
 });
 
-export const updateRecipe = mutation({
-  args: {
-    userId: v.string(),
-    id: v.id("recipes"),
-    title: v.optional(v.string()),
-    summary: v.optional(v.string()),
-    servings: v.optional(v.number()),
-    readyInMinutes: v.optional(v.number()),
-    image: v.optional(v.string()),
-    imageUrl: v.optional(v.string()),
-    categories: v.optional(v.array(v.string())),
-    instructions: v.optional(
-      v.object({
-        steps: v.array(
-          v.object({
-            number: v.number(),
-            step: v.string(),
-          }),
-        ),
-      }),
-    ),
-    ingredients: v.optional(
-      v.array(
-        v.object({
-          name: v.string(),
-          measures: v.object({
-            amount: v.number(),
-            unit: v.string(),
-          }),
-        }),
-      ),
-    ),
-    ingredientsText: v.optional(v.string()),
-    searchText: v.optional(v.string()),
-    dishType: v.optional(v.string()),
-  },
-  handler: async (ctx, args) => {
-    const { id, userId, ...updates } = args;
-
-    // Rate limit recipe updates per user
-    await rateLimiter.limit(ctx, "updateRecipe", { key: userId, throws: true });
-
-    const recipe = await ctx.db.get(id);
-    if (!recipe) throw new Error("Recipe not found");
-    if (recipe.userId !== userId) throw new Error("Not authorized");
-
-    // Update search text if title or ingredients are being updated
-    const finalUpdates = { ...updates };
-    if (updates.ingredients || updates.title || updates.categories) {
-      // Get current recipe to access existing values
-      const currentTitle = updates.title || recipe.title;
-      const currentIngredients = updates.ingredients || recipe.ingredients;
-      const currentCategories = updates.categories || recipe.categories;
-
-      finalUpdates.ingredientsText = currentIngredients
-        .map((ingredient) => ingredient.name)
-        .join(" ");
-
-      const categoriesText = currentCategories.join(" ");
-
-      finalUpdates.searchText = `${currentTitle} ${finalUpdates.ingredientsText} ${categoriesText}`;
-    }
-
-    await ctx.db.patch(id, finalUpdates);
-
-    return id;
-  },
-});
-
 export const deleteRecipe = mutation({
   args: {
     userId: v.string(),
@@ -164,10 +94,6 @@ export const deleteRecipe = mutation({
     const recipe = await ctx.db.get(args.id);
     if (!recipe) throw new ConvexError("Recipe not found");
     if (recipe.userId !== args.userId) throw new ConvexError("Not authorized");
-
-    if (recipe.storageId) {
-      await ctx.storage.delete(recipe.storageId);
-    }
 
     const menuAssociations = await ctx.db
       .query("menusOnRecipes")
@@ -258,34 +184,5 @@ export const syncIngredientsToGroceryList = mutation({
     }
 
     return null;
-  },
-});
-
-export const updateRecipeImageUrl = mutation({
-  args: {
-    userId: v.string(),
-    recipeId: v.id("recipes"),
-    imageUrl: v.string(),
-  },
-  handler: async (ctx, args) => {
-    // Rate limit recipe image updates per user
-    await rateLimiter.limit(ctx, "updateRecipeImage", {
-      key: args.userId,
-      throws: true,
-    });
-
-    const recipe = await ctx.db.get(args.recipeId);
-    if (!recipe) {
-      throw new ConvexError("Recipe not found");
-    }
-    if (recipe.userId !== args.userId) {
-      throw new ConvexError("Not authorized");
-    }
-
-    await ctx.db.patch(args.recipeId, {
-      imageUrl: args.imageUrl,
-    });
-
-    return args.imageUrl;
   },
 });

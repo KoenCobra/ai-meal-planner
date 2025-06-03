@@ -1,13 +1,11 @@
 "use client";
 
-import { Id } from "@/convex/_generated/dataModel";
 import { RecipeImage } from "./RecipeImage";
 
 interface RecipeDetailHeaderProps {
   recipe: {
-    _id: Id<"recipes">;
     title: string;
-    storageId?: Id<"_storage">;
+    imageUrl: string;
   };
 }
 

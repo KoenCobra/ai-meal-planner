@@ -17,14 +17,13 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { Id } from "@/convex/_generated/dataModel";
 import { useUser } from "@clerk/clerk-react";
-import { MoreVertical, Plus, ShoppingCart, Trash, Upload } from "lucide-react";
+import { MoreVertical, Plus, ShoppingCart, Trash } from "lucide-react";
 import Link from "next/link";
 import { useSearchParams } from "next/navigation";
 
 import React from "react";
 import AddToMenuDialog from "../../_components/AddToMenuDialog";
 import { useAddToMenuDialogStore } from "../../_stores/useAddToMenuDialogStore";
-import { useImageUpload } from "../_hooks/useImageUpload";
 import { useSyncIngredients } from "../_hooks/useSyncIngredients";
 import { RecipeImage } from "./RecipeImage";
 
@@ -34,7 +33,7 @@ interface RecipeCardProps {
     title: string;
     readyInMinutes: number;
     servings: number;
-    storageId?: Id<"_storage">;
+    imageUrl: string;
     categories: string[];
     dishType: string;
   };
@@ -52,10 +51,6 @@ export const RecipeCard = ({ recipe, onDelete }: RecipeCardProps) => {
   const { open, recipeId, openDialog, closeDialog } = useAddToMenuDialogStore();
 
   const { handleSyncIngredients } = useSyncIngredients(user.id);
-  const { handleImageUpload, triggerFileInput, fileInputRef } = useImageUpload(
-    recipe._id,
-    user.id,
-  );
 
   return (
     <>
@@ -103,16 +98,6 @@ export const RecipeCard = ({ recipe, onDelete }: RecipeCardProps) => {
               </DropdownMenuItem>
               <DropdownMenuItem
                 onClick={() => {
-                  triggerFileInput();
-                  setDropdownOpen(false);
-                }}
-                className="cursor-pointer"
-              >
-                <Upload className="h-4 w-4 mr-2" />
-                Upload Image
-              </DropdownMenuItem>
-              <DropdownMenuItem
-                onClick={() => {
                   onDelete(recipe._id, recipe.title, recipe.dishType);
                 }}
                 className="text-destructive cursor-pointer"
@@ -151,14 +136,6 @@ export const RecipeCard = ({ recipe, onDelete }: RecipeCardProps) => {
           </CardFooter>
         </Card>
       </Link>
-
-      <input
-        type="file"
-        ref={fileInputRef}
-        className="hidden"
-        accept="image/*"
-        onChange={handleImageUpload}
-      />
 
       <AddToMenuDialog
         open={open}

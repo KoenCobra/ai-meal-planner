@@ -5,7 +5,7 @@ export type Recipe = {
   title: string;
   readyInMinutes: number;
   servings: number;
-  storageId?: Id<"_storage">;
+  imageUrl: string;
   categories: string[];
   dishType: string;
 };

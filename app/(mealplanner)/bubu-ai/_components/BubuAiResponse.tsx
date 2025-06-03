@@ -40,30 +40,14 @@ const BubuAiResponse = ({ recipe, image, onClear }: BubuAiResponseProps) => {
     setIsImageLoaded(false);
   }, [recipe, image]);
 
-  if (recipe?.error) {
-    toast.error(recipe.error);
-  }
-
   const handleSave = async () => {
     if (!user) return;
 
     try {
       setIsSaving(true);
 
-      let imageUrl = null;
+      if (!image || !recipe) return;
 
-      // Generate image URL if we have an image
-      if (image) {
-        try {
-          // Use the existing image URL directly
-          imageUrl = image;
-        } catch (error) {
-          console.error("Error with image:", error);
-          // Continue with recipe creation even if there's an image issue
-        }
-      }
-
-      // Create the recipe in the database
       const newRecipeId = await createRecipe({
         userId: user.id,
         title: recipe.title,
@@ -76,7 +60,7 @@ const BubuAiResponse = ({ recipe, image, onClear }: BubuAiResponseProps) => {
         },
         ingredients: recipe.ingredients,
         dishType: recipe.dishType,
-        imageUrl: imageUrl || undefined, // Add the image URL directly
+        imageUrl: image,
       });
 
       setSavedRecipeId(newRecipeId);
@@ -115,6 +99,7 @@ const BubuAiResponse = ({ recipe, image, onClear }: BubuAiResponseProps) => {
                 blurDataURL={createBlurDataURL()}
                 priority
                 onLoad={handleImageLoad}
+                quality={50}
               />
               {!isImageLoaded && (
                 <div className="absolute inset-0 flex flex-col items-center bg-muted pt-20">

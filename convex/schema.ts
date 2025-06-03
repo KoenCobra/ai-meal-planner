@@ -8,8 +8,7 @@ const applicationTables = {
     summary: v.string(),
     servings: v.number(),
     readyInMinutes: v.number(),
-    storageId: v.optional(v.id("_storage")),
-    imageUrl: v.optional(v.string()),
+    imageUrl: v.string(),
     categories: v.array(v.string()),
     instructions: v.object({
       steps: v.array(
@@ -28,9 +27,7 @@ const applicationTables = {
         }),
       }),
     ),
-    // Flattened ingredients string for search
     ingredientsText: v.optional(v.string()),
-    // Combined search text for title and ingredients
     searchText: v.optional(v.string()),
     dishType: v.string(),
   })

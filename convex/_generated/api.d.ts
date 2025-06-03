@@ -12,7 +12,6 @@ import type * as groceryList from "../groceryList.js";
 import type * as menus from "../menus.js";
 import type * as openaiRateLimit from "../openaiRateLimit.js";
 import type * as rateLimiter from "../rateLimiter.js";
-import type * as recipes_images from "../recipes/images.js";
 import type * as recipes from "../recipes.js";
 
 import type {
@@ -34,7 +33,6 @@ declare const fullApi: ApiFromModules<{
   menus: typeof menus;
   openaiRateLimit: typeof openaiRateLimit;
   rateLimiter: typeof rateLimiter;
-  "recipes/images": typeof recipes_images;
   recipes: typeof recipes;
 }>;
 declare const fullApiWithMounts: typeof fullApi;
