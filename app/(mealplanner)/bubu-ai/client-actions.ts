@@ -3,9 +3,9 @@
 import { sanitizeInput } from "@/lib/utils";
 import { GenerateRecipeInput, RecipeInput } from "@/lib/validation";
 
-export async function generateRecipeWithAbort(
+async function executeRecipeGeneration(
   input: GenerateRecipeInput,
-  abortSignal?: AbortSignal,
+  signal: AbortSignal,
 ): Promise<RecipeInput> {
   const sanitizedDescription = sanitizeInput(input.description);
   const sanitizedInput = {
@@ -13,27 +13,27 @@ export async function generateRecipeWithAbort(
     description: sanitizedDescription,
   };
 
-  const response = await fetch("/api/ai/generate-recipe", {
+  const res = await fetch("/api/ai/generate-recipe", {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
     },
     body: JSON.stringify(sanitizedInput),
-    signal: abortSignal,
+    signal,
   });
 
-  if (!response.ok) {
-    const errorData = await response.json().catch(() => ({}));
+  if (!res.ok) {
+    const errorData = await res.json();
     throw new Error(errorData.error || "Failed to generate recipe");
   }
 
-  return response.json();
+  return res.json();
 }
 
-export async function analyzeImageForRecipeWithAbort(
+async function executeImageAnalysis(
   image: File,
-  additionalInstructions?: string,
-  abortSignal?: AbortSignal,
+  additionalInstructions: string | undefined,
+  signal: AbortSignal,
 ): Promise<RecipeInput> {
   const formData = new FormData();
   formData.append("image", image);
@@ -44,26 +44,26 @@ export async function analyzeImageForRecipeWithAbort(
     );
   }
 
-  const response = await fetch("/api/ai/analyze-image", {
+  const res = await fetch("/api/ai/analyze-image", {
     method: "POST",
     body: formData,
-    signal: abortSignal,
+    signal,
   });
 
-  if (!response.ok) {
-    const errorData = await response.json().catch(() => ({}));
+  if (!res.ok) {
+    const errorData = await res.json();
     throw new Error(errorData.error || "Failed to analyze image");
   }
 
-  return response.json();
+  return res.json();
 }
 
-export async function generateRecipeImageWithAbort(
+async function executeImageGeneration(
   recipeTitle: string,
   recipeDescription: string,
-  abortSignal?: AbortSignal,
+  signal: AbortSignal,
 ): Promise<string> {
-  const response = await fetch("/api/ai/generate-image", {
+  const res = await fetch("/api/ai/generate-image", {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
@@ -72,14 +72,46 @@ export async function generateRecipeImageWithAbort(
       recipeTitle,
       recipeDescription,
     }),
-    signal: abortSignal,
+    signal,
   });
 
-  if (!response.ok) {
-    const errorData = await response.json().catch(() => ({}));
+  if (!res.ok) {
+    const errorData = await res.json();
     throw new Error(errorData.error || "Failed to generate image");
   }
 
-  const data = await response.json();
+  const data = await res.json();
   return data.imageUrl;
+}
+
+export function generateRecipe(input: GenerateRecipeInput) {
+  const controller = new AbortController();
+  const response = executeRecipeGeneration(input, controller.signal);
+  return { response, controller };
+}
+
+export function analyzeImageForRecipe(
+  image: File,
+  additionalInstructions?: string,
+) {
+  const controller = new AbortController();
+  const response = executeImageAnalysis(
+    image,
+    additionalInstructions,
+    controller.signal,
+  );
+  return { response, controller };
+}
+
+export function generateRecipeImage(
+  recipeTitle: string,
+  recipeDescription: string,
+) {
+  const controller = new AbortController();
+  const response = executeImageGeneration(
+    recipeTitle,
+    recipeDescription,
+    controller.signal,
+  );
+  return { response, controller };
 }

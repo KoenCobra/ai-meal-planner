@@ -29,9 +29,9 @@ import {
   type RecipeInput,
 } from "@/lib/validation";
 import {
-  analyzeImageForRecipeWithAbort,
-  generateRecipeImageWithAbort,
-  generateRecipeWithAbort,
+  analyzeImageForRecipe,
+  generateRecipe,
+  generateRecipeImage,
 } from "../client-actions";
 
 interface BibiAiFormProps {
@@ -51,8 +51,8 @@ const BibiAiForm = ({
   const [selectedImage, setSelectedImage] = useState<File | null>(null);
   const [imagePreview, setImagePreview] = useState<string | null>(null);
 
-  const recipeAbortControllerRef = useRef<AbortController | null>(null);
-  const imageAbortControllerRef = useRef<AbortController | null>(null);
+  const recipeControllerRef = useRef<AbortController | null>(null);
+  const imageControllerRef = useRef<AbortController | null>(null);
 
   const textareaRef = useRef<HTMLTextAreaElement>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
@@ -85,15 +85,15 @@ const BibiAiForm = ({
   };
 
   const handleCancel = () => {
-    if (recipeAbortControllerRef.current) {
-      recipeAbortControllerRef.current.abort();
-      recipeAbortControllerRef.current = null;
+    if (recipeControllerRef.current) {
+      recipeControllerRef.current.abort();
+      recipeControllerRef.current = null;
     }
 
-    if (imageAbortControllerRef.current) {
-      imageAbortControllerRef.current.abort();
-      imageAbortControllerRef.current = null;
-      // Notify parent that image generation was aborted
+    if (imageControllerRef.current) {
+      imageControllerRef.current.abort();
+      imageControllerRef.current = null;
+
       if (onImageGenerationAborted) {
         onImageGenerationAborted();
       }
@@ -102,6 +102,7 @@ const BibiAiForm = ({
     setIsGeneratingRecipe(false);
     setIsGeneratingImage(false);
   };
+
   const onSubmit = async (input: GenerateRecipeInput) => {
     try {
       if (onGenerationStart) {
@@ -110,55 +111,46 @@ const BibiAiForm = ({
 
       setIsGeneratingRecipe(true);
 
-      // Create abort controller for recipe generation
-      recipeAbortControllerRef.current = new AbortController();
-
       let recipe;
 
       if (selectedImage) {
-        recipe = await analyzeImageForRecipeWithAbort(
+        const { response, controller } = analyzeImageForRecipe(
           selectedImage,
           input.description.trim() || undefined,
-          recipeAbortControllerRef.current.signal,
         );
+        recipeControllerRef.current = controller;
+        recipe = await response;
       } else {
-        recipe = await generateRecipeWithAbort(
-          input,
-          recipeAbortControllerRef.current.signal,
-        );
+        const { response, controller } = generateRecipe(input);
+        recipeControllerRef.current = controller;
+        recipe = await response;
       }
 
-      // Clear the recipe abort controller since it's done
-      recipeAbortControllerRef.current = null;
       setIsGeneratingRecipe(false);
+      recipeControllerRef.current = null;
 
+      // First, send the recipe data (even if it has an error)
       onRecipeGenerated(recipe);
 
-      // Start image generation
-      setIsGeneratingImage(true);
+      // Only generate image if the recipe was successfully created (no error)
+      if (!recipe.error) {
+        setIsGeneratingImage(true);
 
-      // Create abort controller for image generation
-      imageAbortControllerRef.current = new AbortController();
+        const { response: imageResponse, controller: imageController } =
+          generateRecipeImage(recipe.title, recipe.summary);
+        imageControllerRef.current = imageController;
 
-      const image = await generateRecipeImageWithAbort(
-        recipe.title,
-        recipe.summary,
-        imageAbortControllerRef.current.signal,
-      );
+        const image = await imageResponse;
 
-      // Clear the image abort controller since it's done
-      imageAbortControllerRef.current = null;
-
-      if (image) {
-        onRecipeGenerated(recipe, image);
+        if (image) {
+          onRecipeGenerated(recipe, image);
+        }
       }
     } catch (error) {
       return console.log(error);
     } finally {
       setIsGeneratingRecipe(false);
       setIsGeneratingImage(false);
-      recipeAbortControllerRef.current = null;
-      imageAbortControllerRef.current = null;
     }
   };
 

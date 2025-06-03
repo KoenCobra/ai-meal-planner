@@ -45,10 +45,8 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    // Create AbortController for FAL API call
     const abortController = new AbortController();
 
-    // Forward abort signal
     req.signal.addEventListener("abort", () => {
       abortController.abort();
     });
