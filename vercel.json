@@ -1,0 +1,15 @@
+{
+  "$schema": "https://openapi.vercel.sh/vercel.json",
+  "functions": {
+    "app/api/ai/generate-recipe/route.ts": {
+      "maxDuration": 60
+    },
+    "app/api/ai/generate-image/route.ts": {
+      "maxDuration": 60
+    },
+    "app/api/ai/analyze-image/route.ts": {
+      "maxDuration": 60
+    }
+  },
+  "regions": ["iad1"]
+}
