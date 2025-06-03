@@ -9,20 +9,15 @@ import { NextRequest, NextResponse } from "next/server";
 const convex = new ConvexHttpClient(process.env.NEXT_PUBLIC_CONVEX_URL!);
 
 export async function POST(req: NextRequest) {
-  console.log("API route called: /api/ai/generate-recipe");
-
   try {
     const { userId } = await auth();
-    console.log("User ID:", userId);
 
     if (!userId) {
-      console.log("Unauthorized: No user ID");
-      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+      throw new Error("Unauthorized");
     }
 
     const input = generateRecipeSchema.parse(await req.json());
     const { description } = input;
-    console.log("Description:", description);
 
     if (!description) {
       return NextResponse.json(
@@ -73,7 +68,6 @@ export async function POST(req: NextRequest) {
       error: object.error,
     };
 
-    console.log("Recipe generated successfully");
     return NextResponse.json(recipe, { status: 200 });
   } catch (error) {
     console.error("Error generating recipe:", error);
