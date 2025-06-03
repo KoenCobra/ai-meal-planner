@@ -16,17 +16,10 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
-    // Parse form data
     const formData = await req.formData();
 
-    if (!formData) {
-      return NextResponse.json(
-        { error: "Form data is required" },
-        { status: 400 },
-      );
-    }
-
     const image = formData.get("image") as File;
+
     const additionalInstructions = formData.get(
       "additionalInstructions",
     ) as string;

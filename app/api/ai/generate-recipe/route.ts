@@ -19,13 +19,6 @@ export async function POST(req: NextRequest) {
     const input = generateRecipeSchema.parse(await req.json());
     const { description } = input;
 
-    if (!description) {
-      return NextResponse.json(
-        { error: "Description is required" },
-        { status: 400 },
-      );
-    }
-
     const rateLimitCheck = await convex.mutation(
       api.openaiRateLimit.checkRecipeGenerationLimit,
       {
