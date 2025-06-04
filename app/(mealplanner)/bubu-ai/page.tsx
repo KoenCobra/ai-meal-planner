@@ -46,7 +46,7 @@ const BibiAi = () => {
         </Card>
 
         {recipeData && (
-          <div className="mt-8 animate-fade-in">
+          <div className="mt-8 pb-6 animate-fade-in">
             <BubuAiResponse
               recipe={recipeData}
               image={recipeImage}
