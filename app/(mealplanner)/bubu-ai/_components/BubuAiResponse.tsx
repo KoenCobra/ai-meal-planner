@@ -9,6 +9,7 @@ import type { Id } from "@/convex/_generated/dataModel";
 import type { RecipeInput } from "@/lib/validation";
 import { useUser } from "@clerk/clerk-react";
 import { useMutation } from "convex/react";
+import { AnimatePresence, motion } from "framer-motion";
 import { BookmarkIcon, Clock, Loader2, Trash2, Users } from "lucide-react";
 import Image from "next/image";
 import React, { useEffect, useState } from "react";
@@ -26,6 +27,7 @@ const BubuAiResponse = ({ recipe, image, onClear }: BubuAiResponseProps) => {
     React.useState<Id<"recipes"> | null>(null);
   const [isSaving, setIsSaving] = useState(false);
   const [isImageLoaded, setIsImageLoaded] = useState(false);
+  const [activeTab, setActiveTab] = useState("ingredients");
 
   const createRecipe = useMutation(api.recipes.createRecipe);
 
@@ -83,178 +85,360 @@ const BubuAiResponse = ({ recipe, image, onClear }: BubuAiResponseProps) => {
     setIsImageLoaded(true);
   };
 
+  // Animation variants
+  const cardVariants = {
+    hidden: { opacity: 0, y: 20 },
+    visible: {
+      opacity: 1,
+      y: 0,
+      transition: {
+        duration: 0.6,
+        ease: "easeOut",
+      },
+    },
+  };
+
+  const imageContainerVariants = {
+    hidden: { opacity: 0 },
+    visible: {
+      opacity: 1,
+      transition: {
+        duration: 0.8,
+        ease: "easeOut",
+      },
+    },
+  };
+
+  const titleVariants = {
+    hidden: { opacity: 0, y: 20 },
+    visible: {
+      opacity: 1,
+      y: 0,
+      transition: {
+        delay: 0.3,
+        duration: 0.5,
+      },
+    },
+  };
+
+  const staggerContainer = {
+    hidden: { opacity: 0 },
+    visible: {
+      opacity: 1,
+      transition: {
+        staggerChildren: 0.1,
+      },
+    },
+  };
+
+  const itemVariants = {
+    hidden: { opacity: 0, y: 20 },
+    visible: {
+      opacity: 1,
+      y: 0,
+      transition: { type: "spring", stiffness: 300, damping: 24 },
+    },
+  };
+
   return (
-    <Card className="border-none shadow-lg overflow-hidden bg-white/80 backdrop-blur-sm dark:bg-zinc-900/80 pt-0">
-      <div className="relative">
-        {image ? (
-          <>
-            <div className="relative w-full h-[400px] md:h-[500px]">
-              <Image
-                src={image || "/placeholder.svg"}
-                alt={recipe.title}
-                className="object-cover"
-                fill
-                sizes="(max-width: 768px) 100vw, 1200px"
-                placeholder="blur"
-                blurDataURL={createBlurDataURL()}
-                priority
-                onLoad={handleImageLoad}
-                quality={50}
-              />
-              {!isImageLoaded && (
-                <div className="absolute inset-0 flex flex-col items-center bg-muted pt-20">
-                  <div className="relative w-16 h-16 mb-3">
-                    <div className="absolute top-0 left-0 w-full h-full border-4 border-t-primary border-r-transparent border-b-transparent border-l-transparent rounded-full animate-spin"></div>
-                    <div
-                      className="absolute top-0 left-0 w-full h-full border-4 border-t-transparent border-r-transparent border-b-primary border-l-transparent rounded-full animate-spin"
-                      style={{
-                        animationDirection: "reverse",
-                        animationDuration: "1.5s",
-                      }}
-                    ></div>
-                  </div>
-                  <p className="text-muted-foreground font-medium">
-                    Loading image...
-                  </p>
-                </div>
-              )}
-            </div>
-            <div className="absolute inset-0 bg-gradient-to-t from-black/70 to-transparent"></div>
-          </>
-        ) : recipe?.error ? (
-          <div className="relative w-full h-[400px] md:h-[500px]">
-            <div className="absolute inset-0 flex flex-col items-center justify-center bg-muted"></div>
-            <div className="absolute inset-0 bg-gradient-to-t from-black/70 to-transparent"></div>
-          </div>
-        ) : (
-          <div className="relative w-full h-[400px] md:h-[500px]">
-            <div className="absolute inset-0 flex flex-col items-center bg-muted pt-20">
-              <div className="relative w-16 h-16 mb-3">
-                <div className="absolute top-0 left-0 w-full h-full border-4 border-t-primary border-r-transparent border-b-transparent border-l-transparent rounded-full animate-spin"></div>
-                <div
-                  className="absolute top-0 left-0 w-full h-full border-4 border-t-transparent border-r-transparent border-b-primary border-l-transparent rounded-full animate-spin"
-                  style={{
-                    animationDirection: "reverse",
-                    animationDuration: "1.5s",
-                  }}
-                ></div>
+    <motion.div variants={cardVariants} initial="hidden" animate="visible">
+      <Card className="border-none shadow-lg overflow-hidden bg-white/80 backdrop-blur-sm dark:bg-zinc-900/80 pt-0">
+        <motion.div
+          className="relative"
+          variants={imageContainerVariants}
+          initial="hidden"
+          animate="visible"
+        >
+          {image ? (
+            <>
+              <div className="relative w-full h-[400px] md:h-[500px]">
+                <Image
+                  src={image || "/placeholder.svg"}
+                  alt={recipe.title}
+                  className="object-cover"
+                  fill
+                  sizes="(max-width: 768px) 100vw, 1200px"
+                  placeholder="blur"
+                  blurDataURL={createBlurDataURL()}
+                  priority
+                  onLoad={handleImageLoad}
+                  quality={50}
+                />
+                {!isImageLoaded && (
+                  <motion.div
+                    className="absolute inset-0 flex flex-col items-center bg-muted pt-20"
+                    animate={{
+                      opacity: [0.7, 1, 0.7],
+                      transition: {
+                        repeat: Number.POSITIVE_INFINITY,
+                        duration: 1.5,
+                      },
+                    }}
+                  >
+                    <div className="relative w-16 h-16 mb-3">
+                      <div className="absolute top-0 left-0 w-full h-full border-4 border-t-primary border-r-transparent border-b-transparent border-l-transparent rounded-full animate-spin"></div>
+                      <div
+                        className="absolute top-0 left-0 w-full h-full border-4 border-t-transparent border-r-transparent border-b-primary border-l-transparent rounded-full animate-spin"
+                        style={{
+                          animationDirection: "reverse",
+                          animationDuration: "1.5s",
+                        }}
+                      ></div>
+                    </div>
+                    <p className="text-muted-foreground font-medium">
+                      Loading image...
+                    </p>
+                  </motion.div>
+                )}
               </div>
-              <p className="text-muted-foreground font-medium">
-                Loading image...
-              </p>
+              <motion.div
+                className="absolute inset-0 bg-gradient-to-t from-black/70 to-transparent"
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                transition={{ delay: 0.3, duration: 0.5 }}
+              ></motion.div>
+            </>
+          ) : recipe?.error ? (
+            <div className="relative w-full h-[400px] md:h-[500px]">
+              <div className="absolute inset-0 flex flex-col items-center justify-center bg-muted"></div>
               <div className="absolute inset-0 bg-gradient-to-t from-black/70 to-transparent"></div>
             </div>
-          </div>
-        )}
-
-        <div className="absolute bottom-0 left-0 right-0 p-6 text-white">
-          <div className="flex flex-wrap gap-2 mb-2">
-            {recipe?.categories?.map((category, index) => (
-              <Badge
-                key={index}
-                variant="outline"
-                className="bg-black/40 backdrop-blur-sm border-white/20 text-white"
+          ) : (
+            <div className="relative w-full h-[400px] md:h-[500px]">
+              <motion.div
+                className="absolute inset-0 flex flex-col items-center bg-muted pt-20"
+                animate={{
+                  opacity: [0.7, 1, 0.7],
+                  transition: {
+                    repeat: Number.POSITIVE_INFINITY,
+                    duration: 1.5,
+                  },
+                }}
               >
-                {category}
-              </Badge>
-            ))}
-          </div>
-          <h2 className="text-3xl md:text-4xl font-bold tracking-tight mb-2">
-            {recipe?.title}
-          </h2>
-          <div className="flex flex-wrap items-center gap-4 text-sm">
-            <div className="flex items-center gap-1">
-              <Clock className="h-4 w-4" />
-              <span>{recipe?.readyInMinutes} min</span>
+                <div className="relative w-16 h-16 mb-3">
+                  <div className="absolute top-0 left-0 w-full h-full border-4 border-t-primary border-r-transparent border-b-transparent border-l-transparent rounded-full animate-spin"></div>
+                  <div
+                    className="absolute top-0 left-0 w-full h-full border-4 border-t-transparent border-r-transparent border-b-primary border-l-transparent rounded-full animate-spin"
+                    style={{
+                      animationDirection: "reverse",
+                      animationDuration: "1.5s",
+                    }}
+                  ></div>
+                </div>
+                <p className="text-muted-foreground font-medium">
+                  Loading image...
+                </p>
+                <div className="absolute inset-0 bg-gradient-to-t from-black/70 to-transparent"></div>
+              </motion.div>
             </div>
-            <div className="flex items-center gap-1">
-              <Users className="h-4 w-4" />
-              <span>{recipe?.servings} servings</span>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <CardContent className="p-4">
-        <div className="mb-6">
-          <p className="text-muted-foreground">{recipe?.summary}</p>
-        </div>
-
-        <div className="flex flex-wrap gap-3 mb-6">
-          <Button
-            onClick={handleSave}
-            disabled={
-              !!savedRecipeId || isSaving || !isImageLoaded || !!recipe?.error
-            }
-            className="gap-2"
-          >
-            {isSaving ? (
-              <Loader2 className="h-4 w-4 animate-spin" />
-            ) : savedRecipeId ? (
-              <BookmarkIcon className="h-4 w-4 fill-current" />
-            ) : (
-              <BookmarkIcon className="h-4 w-4" />
-            )}
-            {isSaving ? "Saving..." : savedRecipeId ? "Saved" : "Save Recipe"}
-          </Button>
-
-          {onClear && (
-            <Button
-              variant="outline"
-              onClick={handleClear}
-              disabled={isSaving}
-              className="gap-2"
-            >
-              <Trash2 className="h-4 w-4" />
-              Clear
-            </Button>
           )}
-        </div>
 
-        <Tabs defaultValue="ingredients" className="w-full">
-          <TabsList className="grid grid-cols-2 mb-6">
-            <TabsTrigger value="ingredients">Ingredients</TabsTrigger>
-            <TabsTrigger value="instructions">Instructions</TabsTrigger>
-          </TabsList>
+          <motion.div
+            className="absolute bottom-0 left-0 right-0 p-6 text-white"
+            variants={titleVariants}
+            initial="hidden"
+            animate="visible"
+          >
+            <motion.div
+              className="flex flex-wrap gap-2 mb-2"
+              variants={staggerContainer}
+              initial="hidden"
+              animate="visible"
+            >
+              {recipe?.categories?.map((category, index) => (
+                <motion.div key={index} variants={itemVariants}>
+                  <Badge
+                    variant="outline"
+                    className="bg-black/40 backdrop-blur-sm border-white/20 text-white"
+                  >
+                    {category}
+                  </Badge>
+                </motion.div>
+              ))}
+            </motion.div>
+            <motion.h2
+              className="text-3xl md:text-4xl font-bold tracking-tight mb-2"
+              variants={titleVariants}
+            >
+              {recipe?.title}
+            </motion.h2>
+            <motion.div
+              className="flex flex-wrap items-center gap-4 text-sm"
+              variants={staggerContainer}
+              initial="hidden"
+              animate="visible"
+            >
+              <motion.div
+                className="flex items-center gap-1"
+                variants={itemVariants}
+              >
+                <Clock className="h-4 w-4" />
+                <span>{recipe?.readyInMinutes} min</span>
+              </motion.div>
+              <motion.div
+                className="flex items-center gap-1"
+                variants={itemVariants}
+              >
+                <Users className="h-4 w-4" />
+                <span>{recipe?.servings} servings</span>
+              </motion.div>
+            </motion.div>
+          </motion.div>
+        </motion.div>
 
-          <TabsContent value="ingredients" className="space-y-4">
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              {recipe?.ingredients?.map((ingredient, index) => (
-                <div
-                  key={`${ingredient.name}-${index}`}
-                  className="flex items-start gap-3 p-3 rounded-lg border bg-background/50"
+        <CardContent className="p-4">
+          <motion.div
+            className="mb-6"
+            initial={{ opacity: 0, y: 10 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.5, duration: 0.5 }}
+          >
+            <p className="text-muted-foreground">{recipe?.summary}</p>
+          </motion.div>
+
+          <motion.div
+            className="flex flex-wrap gap-3 mb-6"
+            initial={{ opacity: 0, y: 10 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.6, duration: 0.5 }}
+          >
+            <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
+              <Button
+                onClick={handleSave}
+                disabled={
+                  !!savedRecipeId ||
+                  isSaving ||
+                  !isImageLoaded ||
+                  !!recipe?.error
+                }
+                className="gap-2"
+              >
+                {isSaving ? (
+                  <Loader2 className="h-4 w-4 animate-spin" />
+                ) : savedRecipeId ? (
+                  <BookmarkIcon className="h-4 w-4 fill-current" />
+                ) : (
+                  <BookmarkIcon className="h-4 w-4" />
+                )}
+                {isSaving
+                  ? "Saving..."
+                  : savedRecipeId
+                    ? "Saved"
+                    : "Save Recipe"}
+              </Button>
+            </motion.div>
+
+            {onClear && (
+              <motion.div
+                whileHover={{ scale: 1.05 }}
+                whileTap={{ scale: 0.95 }}
+              >
+                <Button
+                  variant="outline"
+                  onClick={handleClear}
+                  disabled={isSaving}
+                  className="gap-2"
                 >
-                  <div>
-                    <p className="font-medium">
-                      {ingredient.name?.charAt(0).toUpperCase() +
-                        ingredient.name?.slice(1)}
-                    </p>
-                    <p className="text-sm text-muted-foreground">
-                      {ingredient.measures?.amount === 0
-                        ? "to taste"
-                        : `${ingredient.measures?.amount} ${ingredient.measures?.unit || ""}`}
-                    </p>
-                  </div>
-                </div>
-              ))}
-            </div>
-          </TabsContent>
+                  <Trash2 className="h-4 w-4" />
+                  Clear
+                </Button>
+              </motion.div>
+            )}
+          </motion.div>
 
-          <TabsContent value="instructions">
-            <div className="space-y-6">
-              {recipe?.instructions?.steps?.map((step) => (
-                <div key={step.number} className="flex gap-4">
-                  <div className="size-6 bg-muted text-muted-foreground rounded-full flex items-center justify-center text-sm font-medium">
-                    {step.number}
-                  </div>
-                  <p className="flex-1">{step.step}</p>
-                </div>
-              ))}
-            </div>
-          </TabsContent>
-        </Tabs>
-      </CardContent>
-    </Card>
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ delay: 0.7, duration: 0.5 }}
+          >
+            <Tabs
+              defaultValue="ingredients"
+              className="w-full"
+              value={activeTab}
+              onValueChange={setActiveTab}
+            >
+              <TabsList className="grid grid-cols-2 mb-6">
+                <TabsTrigger value="ingredients">Ingredients</TabsTrigger>
+                <TabsTrigger value="instructions">Instructions</TabsTrigger>
+              </TabsList>
+
+              <AnimatePresence mode="wait">
+                {activeTab === "ingredients" && (
+                  <TabsContent value="ingredients" className="space-y-4">
+                    <motion.div
+                      className="grid grid-cols-1 md:grid-cols-2 gap-4"
+                      variants={staggerContainer}
+                      initial="hidden"
+                      animate="visible"
+                    >
+                      {recipe?.ingredients?.map((ingredient, index) => (
+                        <motion.div
+                          key={`${ingredient.name}-${index}`}
+                          variants={itemVariants}
+                          whileHover={{
+                            scale: 1.02,
+                            boxShadow:
+                              "0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05)",
+                          }}
+                          className="flex items-start gap-3 p-3 rounded-lg border bg-background/50"
+                        >
+                          <div>
+                            <p className="font-medium">
+                              {ingredient.name?.charAt(0).toUpperCase() +
+                                ingredient.name?.slice(1)}
+                            </p>
+                            <p className="text-sm text-muted-foreground">
+                              {ingredient.measures?.amount === 0
+                                ? "to taste"
+                                : `${ingredient.measures?.amount} ${ingredient.measures?.unit || ""}`}
+                            </p>
+                          </div>
+                        </motion.div>
+                      ))}
+                    </motion.div>
+                  </TabsContent>
+                )}
+
+                {activeTab === "instructions" && (
+                  <TabsContent value="instructions">
+                    <motion.div
+                      className="space-y-6"
+                      variants={staggerContainer}
+                      initial="hidden"
+                      animate="visible"
+                    >
+                      {recipe?.instructions?.steps?.map((step) => (
+                        <motion.div
+                          key={step.number}
+                          className="flex gap-4"
+                          variants={itemVariants}
+                        >
+                          <motion.div
+                            className="size-6 bg-muted text-muted-foreground rounded-full flex items-center justify-center text-sm font-medium"
+                            whileHover={{
+                              scale: 1.2,
+                              backgroundColor: "var(--primary)",
+                            }}
+                            transition={{
+                              type: "spring",
+                              stiffness: 400,
+                              damping: 10,
+                            }}
+                          >
+                            {step.number}
+                          </motion.div>
+                          <p className="flex-1">{step.step}</p>
+                        </motion.div>
+                      ))}
+                    </motion.div>
+                  </TabsContent>
+                )}
+              </AnimatePresence>
+            </Tabs>
+          </motion.div>
+        </CardContent>
+      </Card>
+    </motion.div>
   );
 };
 

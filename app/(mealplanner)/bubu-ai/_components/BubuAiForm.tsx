@@ -1,5 +1,6 @@
 "use client";
 
+import { AnimatePresence, motion } from "framer-motion";
 import Image from "next/image";
 import type React from "react";
 
@@ -165,40 +166,61 @@ const BibiAiForm = ({
   };
 
   return (
-    <div className="w-full">
+    <motion.div
+      className="w-full"
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      transition={{ duration: 0.5 }}
+    >
       <Form {...form}>
         <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
           <div className="relative">
             <div className="flex items-start">
-              {selectedImage && imagePreview && (
-                <div className="relative inline-block mb-4">
-                  <div className="h-20 w-20 relative overflow-hidden rounded-sm">
-                    <Image
-                      src={imagePreview || "/placeholder.svg"}
-                      alt="Selected food"
-                      fill
-                      className="object-cover animate-fade-in"
-                      quality={50}
-                    />
-                  </div>
-                  <Button
-                    type="button"
-                    variant="ghost"
-                    size="icon"
-                    onClick={() => {
-                      setSelectedImage(null);
-                      setImagePreview(null);
-                      if (fileInputRef.current) {
-                        fileInputRef.current.value = "";
-                      }
-                    }}
-                    disabled={isGenerating}
-                    className="size-5 p-0 text-zinc-100 hover:text-white absolute -top-1.5 -right-1.5 bg-black/70 backdrop-blur-sm rounded-full"
+              <AnimatePresence>
+                {selectedImage && imagePreview && (
+                  <motion.div
+                    className="relative inline-block mb-4"
+                    initial={{ opacity: 0, scale: 0.8 }}
+                    animate={{ opacity: 1, scale: 1 }}
+                    exit={{ opacity: 0, scale: 0.8 }}
+                    transition={{ type: "spring", stiffness: 500, damping: 25 }}
                   >
-                    <X className="size-4" />
-                  </Button>
-                </div>
-              )}
+                    <motion.div
+                      className="h-20 w-20 relative overflow-hidden rounded-sm"
+                      whileHover={{ scale: 1.05 }}
+                      transition={{
+                        type: "spring",
+                        stiffness: 400,
+                        damping: 10,
+                      }}
+                    >
+                      <Image
+                        src={imagePreview || "/placeholder.svg"}
+                        alt="Selected food"
+                        fill
+                        className="object-cover"
+                        quality={50}
+                      />
+                    </motion.div>
+                    <Button
+                      type="button"
+                      variant="ghost"
+                      size="icon"
+                      onClick={() => {
+                        setSelectedImage(null);
+                        setImagePreview(null);
+                        if (fileInputRef.current) {
+                          fileInputRef.current.value = "";
+                        }
+                      }}
+                      disabled={isGenerating}
+                      className="size-5 p-0 text-zinc-100 hover:text-white absolute -top-1.5 -right-1.5 bg-black/70 backdrop-blur-sm rounded-full"
+                    >
+                      <X className="size-4" />
+                    </Button>
+                  </motion.div>
+                )}
+              </AnimatePresence>
             </div>
 
             <FormField
@@ -207,74 +229,104 @@ const BibiAiForm = ({
               render={({ field }) => (
                 <FormItem className="space-y-0">
                   <FormControl>
-                    <textarea
-                      {...field}
-                      ref={textareaRef}
-                      placeholder={
-                        selectedImage
-                          ? "Add any specific instructions for your food image (optional)"
-                          : "Type your recipe description here..."
-                      }
-                      disabled={isGenerating}
-                      onChange={handleTextareaChange}
-                      onKeyDown={(e) => {
-                        if (e.key === "Enter" && !e.shiftKey) {
-                          e.preventDefault();
-                          form.handleSubmit(onSubmit)();
+                    <motion.div
+                      initial={{ opacity: 0, y: 10 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      transition={{ duration: 0.4 }}
+                    >
+                      <textarea
+                        {...field}
+                        ref={textareaRef}
+                        placeholder={
+                          selectedImage
+                            ? "Add any specific instructions for your food image (optional)"
+                            : "Type your recipe description here..."
                         }
-                      }}
-                      className="flex-1 resize-none border-0 bg-transparent p-0 focus-visible:outline-none focus-visible:ring-0 disabled:opacity-50 min-h-[60px]overflow-y-auto w-full"
-                    />
+                        disabled={isGenerating}
+                        onChange={handleTextareaChange}
+                        onKeyDown={(e) => {
+                          if (e.key === "Enter" && !e.shiftKey) {
+                            e.preventDefault();
+                            form.handleSubmit(onSubmit)();
+                          }
+                        }}
+                        className="flex-1 resize-none border-0 bg-transparent p-0 focus-visible:outline-none focus-visible:ring-0 disabled:opacity-50 min-h-[60px]overflow-y-auto w-full"
+                      />
+                    </motion.div>
                   </FormControl>
                   <FormMessage />
                 </FormItem>
               )}
             />
 
-            <div className="flex items-center">
-              <label htmlFor="image-upload" className="cursor-pointer">
-                <Button
-                  type="button"
-                  variant="ghost"
-                  size="icon"
-                  onClick={() =>
-                    document.getElementById("image-upload")?.click()
-                  }
-                  className="rounded-full"
-                  disabled={isGenerating}
-                >
-                  <ImageIcon className="size" />
-                </Button>
-              </label>
+            <motion.div
+              className="flex items-center"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              transition={{ delay: 0.3, duration: 0.4 }}
+            >
+              <motion.div whileHover={{ scale: 1.1 }} whileTap={{ scale: 0.9 }}>
+                <label htmlFor="image-upload" className="cursor-pointer">
+                  <Button
+                    type="button"
+                    variant="ghost"
+                    size="icon"
+                    onClick={() =>
+                      document.getElementById("image-upload")?.click()
+                    }
+                    className="rounded-full"
+                    disabled={isGenerating}
+                  >
+                    <ImageIcon className="size" />
+                  </Button>
+                </label>
+              </motion.div>
 
-              <Button
-                disabled={
-                  isGenerating || (!description.trim() && !selectedImage)
-                }
-                type="submit"
-                size="icon"
-                variant="ghost"
-                className="rounded-full"
+              <motion.div
+                whileHover={{ scale: 1.1 }}
+                whileTap={{ scale: 0.9 }}
+                transition={{ type: "spring", stiffness: 400, damping: 10 }}
               >
-                {isGenerating ? (
-                  <Loader2Icon className="size-4 animate-spin" />
-                ) : (
-                  <SendHorizontal className="size-4" />
-                )}
-              </Button>
-
-              {isGenerating ? (
                 <Button
-                  type="button"
-                  variant="ghost"
+                  disabled={
+                    isGenerating || (!description.trim() && !selectedImage)
+                  }
+                  type="submit"
                   size="icon"
-                  onClick={handleCancel}
-                  className="rounded-full text-red-500 hover:text-red-600 hover:bg-red-50 dark:hover:bg-red-950/20"
+                  variant="ghost"
+                  className="rounded-full"
                 >
-                  <Square className="size-4" fill="currentColor" />
+                  {isGenerating ? (
+                    <Loader2Icon className="size-4 animate-spin" />
+                  ) : (
+                    <SendHorizontal className="size-4" />
+                  )}
                 </Button>
-              ) : null}
-            </div>
+              </motion.div>
+
+              <AnimatePresence>
+                {isGenerating && (
+                  <motion.div
+                    initial={{ opacity: 0, scale: 0.8 }}
+                    animate={{ opacity: 1, scale: 1 }}
+                    exit={{ opacity: 0, scale: 0.8 }}
+                    transition={{ type: "spring", stiffness: 500, damping: 25 }}
+                    whileHover={{ scale: 1.1 }}
+                    whileTap={{ scale: 0.9 }}
+                  >
+                    <Button
+                      type="button"
+                      variant="ghost"
+                      size="icon"
+                      onClick={handleCancel}
+                      className="rounded-full text-red-500 hover:text-red-600 hover:bg-red-50 dark:hover:bg-red-950/20"
+                    >
+                      <Square className="size-4" fill="currentColor" />
+                    </Button>
+                  </motion.div>
+                )}
+              </AnimatePresence>
+            </motion.div>
           </div>
 
           <input
@@ -288,7 +340,7 @@ const BibiAiForm = ({
           />
         </form>
       </Form>
-    </div>
+    </motion.div>
   );
 };
 
