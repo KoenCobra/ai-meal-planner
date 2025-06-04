@@ -177,7 +177,7 @@ const BibiAiForm = ({
                       src={imagePreview || "/placeholder.svg"}
                       alt="Selected food"
                       fill
-                      className="object-cover"
+                      className="object-cover animate-fade-in"
                       quality={50}
                     />
                   </div>

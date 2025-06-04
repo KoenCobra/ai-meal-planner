@@ -175,7 +175,7 @@ const BubuAiResponse = ({ recipe, image, onClear }: BubuAiResponseProps) => {
         </div>
       </div>
 
-      <CardContent className="p-6">
+      <CardContent className="p-4">
         <div className="mb-6">
           <p className="text-muted-foreground">{recipe?.summary}</p>
         </div>
@@ -244,7 +244,10 @@ const BubuAiResponse = ({ recipe, image, onClear }: BubuAiResponseProps) => {
             <div className="space-y-6">
               {recipe?.instructions?.steps?.map((step) => (
                 <div key={step.number} className="flex gap-4">
-                  <p>{step.step}</p>
+                  <div className="size-6 bg-muted text-muted-foreground rounded-full flex items-center justify-center text-sm font-medium">
+                    {step.number}
+                  </div>
+                  <p className="flex-1">{step.step}</p>
                 </div>
               ))}
             </div>
