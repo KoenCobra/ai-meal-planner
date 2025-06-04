@@ -1,9 +1,12 @@
 "use client";
 
+import type React from "react";
+
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { sanitizeInput } from "@/lib/utils";
-import { Loader2, Search, X } from "lucide-react";
+import { AnimatePresence, motion } from "framer-motion";
+import { ChefHat, Loader2, SearchIcon, X } from "lucide-react";
 import { useEffect, useRef } from "react";
 import DeleteRecipeDialog from "../_components/DeleteRecipeDialog";
 import { RecipeGrid } from "../recipes/_components/RecipeGrid";
@@ -26,12 +29,14 @@ const SearchPage = () => {
     executeSearch,
     executedQuery,
   } = useSearch();
+
   const inputRef = useRef<HTMLInputElement>(null);
   const loadMoreRef = useRef<HTMLDivElement>(null);
 
   const { recipes, fetchNextPage, hasNextPage, isFetchingNextPage, isLoading } =
     useInfiniteSearch({
       searchQuery: executedQuery || "",
+      // In a real app, you would pass sortBy and activeTab as parameters
     });
 
   useEffect(() => {
@@ -41,7 +46,7 @@ const SearchPage = () => {
           fetchNextPage();
         }
       },
-      { threshold: 0.5, rootMargin: "600px" },
+      { threshold: 0.5, rootMargin: "700px" },
     );
 
     if (loadMoreRef.current) {
@@ -69,15 +74,33 @@ const SearchPage = () => {
   };
 
   return (
-    <div className="space-y-6">
-      {/* Search Header */}
-      <div className="space-y-4">
-        <h1 className="text-2xl font-bold">Search Recipes</h1>
+    <div className="max-w-7xl mx-auto px-4 py-8">
+      {/* Hero Section */}
+      <div className="mb-8">
+        <motion.div
+          initial={{ opacity: 0, y: -20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.5 }}
+        >
+          <h1 className="text-3xl md:text-4xl font-bold mb-2">Recipe Search</h1>
+          <p className="text-muted-foreground">
+            Find the perfect recipe for any occasion
+          </p>
+        </motion.div>
+      </div>
 
-        {/* Search Input */}
-        <div className="flex gap-2">
+      {/* Search Bar */}
+      <motion.div
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.5, delay: 0.1 }}
+        className="mb-8"
+      >
+        <div className="flex  gap-3">
           <div className="relative flex-1">
-            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground h-4 w-4" />
+            <div className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground">
+              <SearchIcon className="size-4" />
+            </div>
             <Input
               ref={inputRef}
               type="text"
@@ -85,7 +108,7 @@ const SearchPage = () => {
               value={searchQuery}
               onChange={(e) => setSearchQuery(sanitizeInput(e.target.value))}
               onKeyPress={handleKeyPress}
-              className="pl-10 pr-10"
+              className="pl-10 pr-10 h-12 text-base"
             />
             {searchQuery && (
               <Button
@@ -94,79 +117,138 @@ const SearchPage = () => {
                 onClick={handleClearSearch}
                 className="absolute right-1 top-1/2 transform -translate-y-1/2 h-8 w-8 p-0"
               >
-                <X className="h-4 w-4" />
+                <X className="size-4" />
               </Button>
             )}
           </div>
-          <Button
-            onClick={handleSearchSubmit}
-            disabled={!searchQuery.trim() || isLoading}
-            className="px-6"
-          >
-            {isLoading ? (
-              <Loader2 className="h-4 w-4 animate-spin" />
-            ) : (
-              <Search className="h-4 w-4" />
-            )}
-          </Button>
-        </div>
 
-        {/* Search Info */}
-        {executedQuery && (
-          <p className="text-sm text-muted-foreground">
-            {isLoading
-              ? "Searching..."
-              : `Found ${recipes.length} recipe${recipes.length === 1 ? "" : "s"} for "${executedQuery}"`}
-          </p>
-        )}
-      </div>
+          <div className="flex gap-2">
+            <Button
+              onClick={handleSearchSubmit}
+              disabled={!searchQuery.trim() || isLoading}
+              className="h-12 px-6"
+            >
+              {isLoading ? (
+                <Loader2 className="size-4 animate-spin mr-2" />
+              ) : (
+                <SearchIcon className="size-5" />
+              )}
+            </Button>
+          </div>
+        </div>
+      </motion.div>
+
+      {/* Active Filters */}
+      {executedQuery && (
+        <motion.div
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ duration: 0.3 }}
+          className="flex items-center gap-2 mb-6"
+        >
+          <div className="text-sm font-medium">Results for:</div>
+          <div className="flex gap-2 flex-wrap">
+            <div className="bg-secondary text-secondary-foreground rounded-full px-3 py-1 text-sm flex items-center gap-1">
+              &quot;{executedQuery}&quot;
+            </div>
+          </div>
+        </motion.div>
+      )}
 
       {/* Results */}
-      <div>
+      <AnimatePresence mode="wait">
         {isLoading && executedQuery && !recipes.length ? (
-          <div className="flex items-center justify-center py-12">
-            <Loader2 className="h-8 w-8 animate-spin" />
-            <span className="ml-2">Searching recipes...</span>
-          </div>
+          <motion.div
+            key="loading"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="flex flex-col items-center justify-center py-16"
+          >
+            <div className="relative h-16 w-16 mb-4">
+              <div className="absolute inset-0 border-4 border-t-primary border-r-transparent border-b-transparent border-l-transparent rounded-full animate-spin"></div>
+              <div
+                className="absolute inset-0 border-4 border-t-transparent border-r-transparent border-b-primary border-l-transparent rounded-full animate-spin"
+                style={{
+                  animationDirection: "reverse",
+                  animationDuration: "1.5s",
+                }}
+              ></div>
+            </div>
+            <p className="text-lg font-medium">Searching recipes...</p>
+            <p className="text-sm text-muted-foreground">
+              This may take a moment
+            </p>
+          </motion.div>
         ) : executedQuery && recipes.length === 0 && !isLoading ? (
-          <div className="text-center py-12">
-            <Search className="h-16 w-16 mx-auto text-muted-foreground mb-4" />
-            <h3 className="text-lg font-semibold mb-2">No recipes found</h3>
-            <p className="text-muted-foreground">
-              Try searching with different keywords, ingredients, or categories
+          <motion.div
+            key="no-results"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="text-center py-16 max-w-md mx-auto"
+          >
+            <div className="bg-muted rounded-full p-4 inline-flex mb-4">
+              <SearchIcon className="h-8 w-8 text-muted-foreground" />
+            </div>
+            <h3 className="text-xl font-semibold mb-2">No recipes found</h3>
+            <p className="text-muted-foreground mb-6">
+              We couldn&apos;t find any recipes matching &quot;{executedQuery}
+              &quot;. Try different keywords or browse our recipe collections.
             </p>
-          </div>
+            <Button onClick={clearSearch}>Clear Search</Button>
+          </motion.div>
         ) : !executedQuery ? (
-          <div className="text-center py-12">
-            <Search className="h-16 w-16 mx-auto text-muted-foreground mb-4" />
-            <h3 className="text-lg font-semibold mb-2">Start searching</h3>
-            <p className="text-muted-foreground">
-              Type in the search box above and press Enter or click the search
-              button to find recipes
+          <motion.div
+            key="start-search"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="text-center py-16"
+          >
+            <div className="bg-primary/10 rounded-full p-6 inline-flex mb-6">
+              <ChefHat className="h-12 w-12 text-primary" />
+            </div>
+            <h3 className="text-2xl font-semibold mb-3">Find Your Next Meal</h3>
+            <p className="text-muted-foreground max-w-md mx-auto mb-8">
+              Search for recipes by name, ingredients, or categories. Try
+              searching for &quot;pasta&quot;, &quot;vegetarian&quot;, or
+              &quot;quick dinner&quot;.
             </p>
-          </div>
+          </motion.div>
         ) : (
-          <>
+          <motion.div
+            key="results"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+          >
+            <div className="mb-4 flex justify-between items-center">
+              <p className="text-sm text-muted-foreground">
+                Found {recipes.length} recipe{recipes.length === 1 ? "" : "s"}
+              </p>
+            </div>
+
             <RecipeGrid recipes={recipes} onDelete={handleDelete} />
 
             {/* Load more trigger */}
             <div ref={loadMoreRef} className="mt-8">
               {isFetchingNextPage && (
-                <div className="flex items-center justify-center py-4">
-                  <Loader2 className="h-6 w-6 animate-spin" />
-                  <span className="ml-2">Loading more recipes...</span>
+                <div className="flex items-center justify-center py-6">
+                  <Loader2 className="h-6 w-6 animate-spin mr-2" />
+                  <span>Loading more recipes...</span>
                 </div>
               )}
 
               {!hasNextPage && recipes.length > 0 && (
-                <div className="text-center py-4 text-muted-foreground">
-                  No more recipes to load
+                <div className="text-center py-6 text-muted-foreground">
+                  You&apos;ve reached the end of the results
                 </div>
               )}
             </div>
-          </>
+          </motion.div>
         )}
-      </div>
+      </AnimatePresence>
 
       <DeleteRecipeDialog
         open={!!recipeToDelete}
