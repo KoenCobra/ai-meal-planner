@@ -179,19 +179,20 @@ const BibiAiForm = ({
               <AnimatePresence>
                 {selectedImage && imagePreview && (
                   <motion.div
+                    key="image-preview"
                     className="relative inline-block mb-4"
                     initial={{ opacity: 0, scale: 0.8 }}
                     animate={{ opacity: 1, scale: 1 }}
                     exit={{ opacity: 0, scale: 0.8 }}
-                    transition={{ type: "spring", stiffness: 500, damping: 25 }}
+                    transition={{ type: "spring", stiffness: 400, damping: 25 }}
                   >
                     <motion.div
                       className="h-20 w-20 relative overflow-hidden rounded-sm"
-                      whileHover={{ scale: 1.05 }}
+                      whileHover={{ scale: 1.02 }}
                       transition={{
                         type: "spring",
                         stiffness: 400,
-                        damping: 10,
+                        damping: 25,
                       }}
                     >
                       <Image
@@ -265,7 +266,10 @@ const BibiAiForm = ({
               animate={{ opacity: 1 }}
               transition={{ delay: 0.3, duration: 0.4 }}
             >
-              <motion.div whileHover={{ scale: 1.1 }} whileTap={{ scale: 0.9 }}>
+              <motion.div
+                whileHover={{ scale: 1.05 }}
+                whileTap={{ scale: 0.95 }}
+              >
                 <label htmlFor="image-upload" className="cursor-pointer">
                   <Button
                     type="button"
@@ -283,9 +287,9 @@ const BibiAiForm = ({
               </motion.div>
 
               <motion.div
-                whileHover={{ scale: 1.1 }}
-                whileTap={{ scale: 0.9 }}
-                transition={{ type: "spring", stiffness: 400, damping: 10 }}
+                whileHover={{ scale: 1.05 }}
+                whileTap={{ scale: 0.95 }}
+                transition={{ type: "spring", stiffness: 400, damping: 20 }}
               >
                 <Button
                   disabled={
@@ -307,12 +311,13 @@ const BibiAiForm = ({
               <AnimatePresence>
                 {isGenerating && (
                   <motion.div
+                    key="cancel-button"
                     initial={{ opacity: 0, scale: 0.8 }}
                     animate={{ opacity: 1, scale: 1 }}
                     exit={{ opacity: 0, scale: 0.8 }}
-                    transition={{ type: "spring", stiffness: 500, damping: 25 }}
-                    whileHover={{ scale: 1.1 }}
-                    whileTap={{ scale: 0.9 }}
+                    transition={{ type: "spring", stiffness: 400, damping: 25 }}
+                    whileHover={{ scale: 1.05 }}
+                    whileTap={{ scale: 0.95 }}
                   >
                     <Button
                       type="button"

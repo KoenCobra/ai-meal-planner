@@ -1,5 +1,7 @@
 "use client";
 
+import type React from "react";
+
 import {
   AlertDialog,
   AlertDialogAction,
@@ -10,17 +12,26 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
+import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Input } from "@/components/ui/input";
 import { api } from "@/convex/_generated/api";
-import { Doc, Id } from "@/convex/_generated/dataModel";
+import type { Doc, Id } from "@/convex/_generated/dataModel";
 import { sanitizeInput } from "@/lib/utils";
 import { useUser } from "@clerk/clerk-react";
 import { convexQuery } from "@convex-dev/react-query";
 import { useQuery } from "@tanstack/react-query";
 import { useMutation } from "convex/react";
-import { Plus, X } from "lucide-react";
+import { AnimatePresence, motion } from "framer-motion";
+import {
+  CheckCircle2,
+  Circle,
+  Plus,
+  ShoppingCart,
+  Trash2,
+  X,
+} from "lucide-react";
 import { useState } from "react";
 
 export function GroceryList() {
@@ -144,136 +155,277 @@ export function GroceryList() {
     await clearAllItems({ userId: user?.id ?? "" });
   };
 
-  return (
-    <div className="w-full max-w-2xl mx-auto space-y-4 pb-6">
-      <h2 className="text-2xl font-bold">Grocery List</h2>
+  const activeItems = items?.filter((item) => !item.checked) || [];
+  const checkedItems = items?.filter((item) => item.checked) || [];
 
-      <div className="flex justify-between items-center">
-        <form onSubmit={handleAddItem} className="flex gap-2 flex-1">
+  const containerVariants = {
+    hidden: { opacity: 0 },
+    visible: {
+      opacity: 1,
+      transition: {
+        staggerChildren: 0.05,
+      },
+    },
+  };
+
+  const itemVariants = {
+    hidden: { opacity: 0, y: 10 },
+    visible: {
+      opacity: 1,
+      y: 0,
+      transition: { type: "spring", stiffness: 500, damping: 30 },
+    },
+    exit: {
+      opacity: 0,
+      x: -50,
+      transition: { duration: 0.15 },
+    },
+  };
+
+  return (
+    <div className="w-full max-w-2xl mx-auto space-y-6 px-4">
+      {/* Header */}
+      <motion.div
+        initial={{ opacity: 0, y: -20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.5 }}
+        className="text-center"
+      >
+        <div className="flex items-center justify-center gap-3 mb-2">
+          <div className="bg-gradient-to-r from-green-500 to-emerald-500 p-2 rounded-xl">
+            <ShoppingCart className="h-6 w-6 text-white" />
+          </div>
+          <h1 className="text-3xl font-bold tracking-tight">Grocery List</h1>
+        </div>
+        <p className="text-muted-foreground mb-3">
+          Keep track of your shopping needs
+        </p>
+      </motion.div>
+
+      {/* Add Item Form */}
+      <motion.div
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ delay: 0.2 }}
+      >
+        <form onSubmit={handleAddItem} className="flex gap-2">
           <Input
             type="text"
-            placeholder="Item name"
+            placeholder="Add new item to your list..."
             value={newItemName}
             onChange={(e) => setNewItemName(e.target.value)}
             className="flex-1"
           />
-          <Button type="submit">
-            <Plus className="h-4 w-4" />
-          </Button>
+          <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
+            <Button type="submit">
+              <Plus className="h-4 w-4 mr-2" />
+              Add
+            </Button>
+          </motion.div>
         </form>
-      </div>
+      </motion.div>
 
-      {items && items.length > 0 && (
-        <div>
-          {/* Active Items Section */}
-          <div className="flex justify-between items-center mb-2 mt-8">
-            <h3 className="text-lg font-semibold text-foreground ">
-              Active Items
-            </h3>
-            {items && items.length > 0 && (
+      {/* Active Items */}
+      {activeItems.length > 0 && (
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.4 }}
+        >
+          <div className="flex items-center justify-between mb-3">
+            <div className="flex items-center gap-2">
+              <Circle className="h-4 w-4 text-blue-500" />
+              <h2 className="text-lg font-semibold">Shopping List</h2>
+              <Badge variant="secondary" className="text-xs">
+                {activeItems.length}
+              </Badge>
+            </div>
+            <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
               <Button
                 variant="destructive"
+                size="sm"
                 onClick={() => setClearAllDialogOpen(true)}
-                className="ml-4"
               >
-                Clear All Items
+                <Trash2 className="h-4 w-4 mr-1" />
+                Clear All
               </Button>
-            )}
-          </div>
-          <div className="flex flex-col gap-2">
-            {items
-              .filter((item) => !item.checked)
-              .map((item) => (
-                <div
-                  key={item._id}
-                  className="flex items-center gap-2 bg-background rounded-lg border m-0"
-                >
-                  <Checkbox
-                    checked={item.checked}
-                    onCheckedChange={() => handleToggleItem(item._id)}
-                    className="ml-2"
-                  />
-                  <div
-                    className="flex-1 p-2"
-                    onClick={() => handleToggleItem(item._id)}
-                    style={{ cursor: "pointer" }}
-                  >
-                    <span>{item.name}</span>
-                    {item.quantity && (
-                      <span className="text-sm text-muted-foreground ml-2">
-                        ({item.quantity})
-                      </span>
-                    )}
-                  </div>
-                  <Button
-                    variant="ghost"
-                    size="sm"
-                    onClick={() => handleDeleteItem(item._id)}
-                    className="mr-2"
-                  >
-                    <X className="h-4 w-4" />
-                  </Button>
-                </div>
-              ))}
+            </motion.div>
           </div>
 
-          {/* Checked Items Section */}
-          {items.some((item) => item.checked) && (
-            <div className="mt-6">
-              <div className="flex justify-between items-center mb-2">
-                <h3 className="text-lg font-semibold text-foreground">
-                  Checked Items
-                </h3>
-                <Button
-                  variant="outline"
-                  size="sm"
-                  onClick={() => setClearCheckedDialogOpen(true)}
-                  className="text-sm"
+          <motion.div
+            variants={containerVariants}
+            initial="hidden"
+            animate="visible"
+            className="space-y-2"
+          >
+            <AnimatePresence>
+              {activeItems.map((item) => (
+                <motion.div
+                  key={item._id}
+                  variants={itemVariants}
+                  initial="hidden"
+                  animate="visible"
+                  exit="exit"
+                  layout
+                  whileHover={{ scale: 1.01 }}
+                  className="group"
                 >
-                  Clear Checked
-                </Button>
-              </div>
-              <div className="flex flex-col gap-2">
-                {items
-                  .filter((item) => item.checked)
-                  .map((item) => (
-                    <div
-                      key={item._id}
-                      className="flex items-center gap-2 bg-muted rounded-lg border m-0"
+                  <div className="flex items-center gap-3 p-3 rounded-lg border bg-background hover:bg-muted/50 transition-colors">
+                    <motion.div
+                      whileHover={{ scale: 1.2 }}
+                      whileTap={{ scale: 0.9 }}
                     >
                       <Checkbox
                         checked={item.checked}
                         onCheckedChange={() => handleToggleItem(item._id)}
-                        className="ml-2"
+                        className="h-4 w-4"
                       />
-                      <div
-                        className="flex-1 p-2"
-                        onClick={() => handleToggleItem(item._id)}
-                        style={{ cursor: "pointer" }}
-                      >
-                        <span className="line-through text-muted-foreground">
-                          {item.name}
+                    </motion.div>
+                    <div
+                      className="flex-1 cursor-pointer"
+                      onClick={() => handleToggleItem(item._id)}
+                    >
+                      <span className="font-medium">{item.name}</span>
+                      {item.quantity && (
+                        <span className="text-sm text-muted-foreground ml-2">
+                          ({item.quantity})
                         </span>
-                        {item.quantity && (
-                          <span className="text-sm text-muted-foreground ml-2 line-through">
-                            ({item.quantity})
-                          </span>
-                        )}
-                      </div>
+                      )}
+                    </div>
+                    <motion.div
+                      whileHover={{ scale: 1.1 }}
+                      whileTap={{ scale: 0.9 }}
+                      className="opacity-0 group-hover:opacity-100 transition-opacity"
+                    >
                       <Button
                         variant="ghost"
                         size="sm"
                         onClick={() => handleDeleteItem(item._id)}
-                        className="mr-2"
+                        className="h-7 w-7 p-0 text-muted-foreground hover:text-destructive"
                       >
-                        <X className="h-4 w-4" />
+                        <X className="h-3 w-3" />
                       </Button>
-                    </div>
-                  ))}
-              </div>
+                    </motion.div>
+                  </div>
+                </motion.div>
+              ))}
+            </AnimatePresence>
+          </motion.div>
+        </motion.div>
+      )}
+
+      {/* Checked Items */}
+      {checkedItems.length > 0 && (
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.5 }}
+        >
+          <div className="flex items-center justify-between mb-3">
+            <div className="flex items-center gap-2">
+              <CheckCircle2 className="h-4 w-4 text-green-500" />
+              <h2 className="text-lg font-semibold text-muted-foreground">
+                Completed Items
+              </h2>
+              <Badge variant="outline" className="text-xs">
+                {checkedItems.length}
+              </Badge>
             </div>
-          )}
-        </div>
+            <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => setClearCheckedDialogOpen(true)}
+              >
+                <Trash2 className="h-4 w-4 mr-1" />
+                Clear Completed
+              </Button>
+            </motion.div>
+          </div>
+
+          <motion.div
+            variants={containerVariants}
+            initial="hidden"
+            animate="visible"
+            className="space-y-2"
+          >
+            <AnimatePresence>
+              {checkedItems.map((item) => (
+                <motion.div
+                  key={item._id}
+                  variants={itemVariants}
+                  initial="hidden"
+                  animate="visible"
+                  exit="exit"
+                  layout
+                  whileHover={{ scale: 1.01 }}
+                  className="group"
+                >
+                  <div className="flex items-center gap-3 p-3 rounded-lg border bg-muted/30 hover:bg-muted/50 transition-colors">
+                    <motion.div
+                      whileHover={{ scale: 1.2 }}
+                      whileTap={{ scale: 0.9 }}
+                    >
+                      <Checkbox
+                        checked={item.checked}
+                        onCheckedChange={() => handleToggleItem(item._id)}
+                        className="h-4 w-4"
+                      />
+                    </motion.div>
+                    <div
+                      className="flex-1 cursor-pointer"
+                      onClick={() => handleToggleItem(item._id)}
+                    >
+                      <span className="line-through text-muted-foreground font-medium">
+                        {item.name}
+                      </span>
+                      {item.quantity && (
+                        <span className="text-sm text-muted-foreground ml-2 line-through">
+                          ({item.quantity})
+                        </span>
+                      )}
+                    </div>
+                    <motion.div
+                      whileHover={{ scale: 1.1 }}
+                      whileTap={{ scale: 0.9 }}
+                      className="opacity-0 group-hover:opacity-100 transition-opacity"
+                    >
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        onClick={() => handleDeleteItem(item._id)}
+                        className="h-7 w-7 p-0 text-muted-foreground hover:text-destructive"
+                      >
+                        <X className="h-3 w-3" />
+                      </Button>
+                    </motion.div>
+                  </div>
+                </motion.div>
+              ))}
+            </AnimatePresence>
+          </motion.div>
+        </motion.div>
+      )}
+
+      {/* Empty State */}
+      {(!items || items.length === 0) && (
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.4 }}
+          className="text-center py-12"
+        >
+          <div className="bg-muted rounded-full p-6 inline-flex mb-6">
+            <ShoppingCart className="h-12 w-12 text-muted-foreground" />
+          </div>
+          <h3 className="text-xl font-semibold mb-2">
+            Your grocery list is empty
+          </h3>
+          <p className="text-muted-foreground max-w-md mx-auto">
+            Start adding items to your grocery list to keep track of what you
+            need to buy.
+          </p>
+        </motion.div>
       )}
 
       {/* Alert Dialog for Clearing Checked Items */}
@@ -283,15 +435,16 @@ export function GroceryList() {
       >
         <AlertDialogContent>
           <AlertDialogHeader>
-            <AlertDialogTitle>Clear checked items?</AlertDialogTitle>
+            <AlertDialogTitle>Clear completed items?</AlertDialogTitle>
             <AlertDialogDescription>
-              This will remove all checked items from your grocery list.
+              This will remove all completed items from your grocery list. This
+              action cannot be undone.
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
             <AlertDialogCancel>Cancel</AlertDialogCancel>
             <AlertDialogAction onClick={handleClearChecked}>
-              Continue
+              Clear Completed
             </AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>
@@ -312,8 +465,11 @@ export function GroceryList() {
           </AlertDialogHeader>
           <AlertDialogFooter>
             <AlertDialogCancel>Cancel</AlertDialogCancel>
-            <AlertDialogAction onClick={handleClearAll}>
-              Continue
+            <AlertDialogAction
+              onClick={handleClearAll}
+              className="bg-destructive text-destructive-foreground"
+            >
+              Clear All Items
             </AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>
