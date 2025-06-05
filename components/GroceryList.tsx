@@ -40,7 +40,7 @@ export function GroceryList() {
   const [clearCheckedDialogOpen, setClearCheckedDialogOpen] = useState(false);
   const [clearAllDialogOpen, setClearAllDialogOpen] = useState(false);
 
-  const { data: items } = useQuery({
+  const { data: items, isLoading } = useQuery({
     ...convexQuery(api.groceryList.listItems, {
       userId: user?.id ?? "",
     }),
@@ -191,15 +191,7 @@ export function GroceryList() {
         transition={{ duration: 0.5 }}
         className="text-center"
       >
-        <div className="flex items-center justify-center gap-3 mb-2">
-          <div className="bg-gradient-to-r from-green-500 to-emerald-500 p-2 rounded-xl">
-            <ShoppingCart className="h-6 w-6 text-white" />
-          </div>
-          <h1 className="text-3xl font-bold tracking-tight">Grocery List</h1>
-        </div>
-        <p className="text-muted-foreground mb-3">
-          Keep track of your shopping needs
-        </p>
+        <h1 className="text-3xl font-bold tracking-tight mb-3">Grocery List</h1>
       </motion.div>
 
       {/* Add Item Form */}
@@ -408,7 +400,7 @@ export function GroceryList() {
       )}
 
       {/* Empty State */}
-      {(!items || items.length === 0) && (
+      {!isLoading && (!items || items.length === 0) && (
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}

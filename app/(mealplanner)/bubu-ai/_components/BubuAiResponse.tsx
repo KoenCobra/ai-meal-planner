@@ -156,7 +156,6 @@ const BubuAiResponse = ({ recipe, image, onClear }: BubuAiResponseProps) => {
                   sizes="(max-width: 768px) 100vw, 1200px"
                   placeholder="blur"
                   blurDataURL={createBlurDataURL()}
-                  priority
                   onLoad={handleImageLoad}
                   quality={50}
                 />
