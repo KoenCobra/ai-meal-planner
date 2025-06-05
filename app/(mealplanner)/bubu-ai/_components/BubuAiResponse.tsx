@@ -27,7 +27,6 @@ const BubuAiResponse = ({ recipe, image, onClear }: BubuAiResponseProps) => {
     React.useState<Id<"recipes"> | null>(null);
   const [isSaving, setIsSaving] = useState(false);
   const [isImageLoaded, setIsImageLoaded] = useState(false);
-  const [activeTab, setActiveTab] = useState("ingredients");
 
   const createRecipe = useMutation(api.recipes.createRecipe);
 
@@ -85,18 +84,6 @@ const BubuAiResponse = ({ recipe, image, onClear }: BubuAiResponseProps) => {
     setIsImageLoaded(true);
   };
 
-  // Handle tab change without scrolling
-  const handleTabChange = (value: string) => {
-    // Store current scroll position
-    const currentScrollY = window.scrollY;
-    setActiveTab(value);
-
-    // Prevent scroll jumping by maintaining position
-    requestAnimationFrame(() => {
-      window.scrollTo({ top: currentScrollY, behavior: "instant" });
-    });
-  };
-
   // Animation variants
   const cardVariants = {
     hidden: { opacity: 0, y: 20 },
@@ -142,7 +129,7 @@ const BubuAiResponse = ({ recipe, image, onClear }: BubuAiResponseProps) => {
       opacity: 1,
       x: 0,
       transition: {
-        duration: 0.3,
+        duration: 0.1,
         ease: "easeOut",
         staggerChildren: 0.05,
       },
@@ -320,8 +307,6 @@ const BubuAiResponse = ({ recipe, image, onClear }: BubuAiResponseProps) => {
             <Tabs
               defaultValue="ingredients"
               className="w-full"
-              value={activeTab}
-              onValueChange={handleTabChange}
               style={{ scrollMarginTop: "0px" }}
             >
               <TabsList className="grid grid-cols-2 mb-6">
@@ -331,79 +316,45 @@ const BubuAiResponse = ({ recipe, image, onClear }: BubuAiResponseProps) => {
 
               <AnimatePresence mode="wait">
                 <motion.div
-                  key={activeTab}
                   variants={tabContentVariants}
                   initial="hidden"
                   animate="visible"
-                  exit="exit"
-                  className="min-h-[400px]"
                 >
-                  {activeTab === "ingredients" && (
-                    <TabsContent value="ingredients" className="space-y-4">
-                      <motion.div
-                        className="grid grid-cols-1 md:grid-cols-2 gap-4"
-                        variants={containerVariants}
-                      >
-                        {recipe?.ingredients?.map((ingredient, index) => (
-                          <motion.div
-                            key={`ingredient-${index}`}
-                            variants={itemVariants}
-                            whileHover={{
-                              scale: 1.02,
-                              transition: { duration: 0.2 },
-                            }}
-                            className="flex items-start gap-3 p-3 rounded-lg border bg-background/50 hover:shadow-md transition-shadow"
-                          >
-                            <div>
-                              <p className="font-medium">
-                                {ingredient.name?.charAt(0).toUpperCase() +
-                                  ingredient.name?.slice(1)}
-                              </p>
-                              <p className="text-sm text-muted-foreground">
-                                {ingredient.measures?.amount === 0
-                                  ? "to taste"
-                                  : `${ingredient.measures?.amount} ${ingredient.measures?.unit || ""}`}
-                              </p>
-                            </div>
-                          </motion.div>
-                        ))}
-                      </motion.div>
-                    </TabsContent>
-                  )}
+                  <TabsContent value="ingredients" className="space-y-4">
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                      {recipe?.ingredients?.map((ingredient, index) => (
+                        <div
+                          key={`ingredient-${index}`}
+                          className="flex items-start gap-3 p-3 rounded-lg border bg-background/50 hover:shadow-md transition-shadow"
+                        >
+                          <div>
+                            <p className="font-medium">
+                              {ingredient.name?.charAt(0).toUpperCase() +
+                                ingredient.name?.slice(1)}
+                            </p>
+                            <p className="text-sm text-muted-foreground">
+                              {ingredient.measures?.amount === 0
+                                ? "to taste"
+                                : `${ingredient.measures?.amount} ${ingredient.measures?.unit || ""}`}
+                            </p>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  </TabsContent>
 
-                  {activeTab === "instructions" && (
-                    <TabsContent value="instructions">
-                      <motion.div
-                        className="space-y-6"
-                        variants={containerVariants}
-                      >
-                        {recipe?.instructions?.steps?.map((step) => (
-                          <motion.div
-                            key={`step-${step.number}`}
-                            className="flex gap-4"
-                            variants={itemVariants}
-                          >
-                            <motion.div
-                              className="size-6 bg-muted text-muted-foreground rounded-full flex items-center justify-center text-sm font-medium"
-                              whileHover={{
-                                scale: 1.1,
-                                backgroundColor: "hsl(var(--primary))",
-                                color: "hsl(var(--primary-foreground))",
-                              }}
-                              transition={{
-                                type: "spring",
-                                stiffness: 400,
-                                damping: 17,
-                              }}
-                            >
-                              {step.number}
-                            </motion.div>
-                            <p className="flex-1">{step.step}</p>
-                          </motion.div>
-                        ))}
-                      </motion.div>
-                    </TabsContent>
-                  )}
+                  <TabsContent value="instructions">
+                    <div className="space-y-6">
+                      {recipe?.instructions?.steps?.map((step) => (
+                        <div key={`step-${step.number}`} className="flex gap-4">
+                          <div className="size-6 bg-muted text-muted-foreground rounded-full flex items-center justify-center text-sm font-medium">
+                            {step.number}
+                          </div>
+                          <p className="flex-1">{step.step}</p>
+                        </div>
+                      ))}
+                    </div>
+                  </TabsContent>
                 </motion.div>
               </AnimatePresence>
             </Tabs>
