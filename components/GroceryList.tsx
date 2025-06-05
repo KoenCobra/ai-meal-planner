@@ -23,7 +23,6 @@ import { useUser } from "@clerk/clerk-react";
 import { convexQuery } from "@convex-dev/react-query";
 import { useQuery } from "@tanstack/react-query";
 import { useMutation } from "convex/react";
-import { AnimatePresence, motion } from "framer-motion";
 import {
   CheckCircle2,
   Circle,
@@ -158,48 +157,15 @@ export function GroceryList() {
   const activeItems = items?.filter((item) => !item.checked) || [];
   const checkedItems = items?.filter((item) => item.checked) || [];
 
-  const containerVariants = {
-    hidden: { opacity: 0 },
-    visible: {
-      opacity: 1,
-      transition: {
-        staggerChildren: 0.05,
-      },
-    },
-  };
-
-  const itemVariants = {
-    hidden: { opacity: 0, y: 10 },
-    visible: {
-      opacity: 1,
-      y: 0,
-      transition: { type: "spring", stiffness: 500, damping: 30 },
-    },
-    exit: {
-      opacity: 0,
-      x: -50,
-      transition: { duration: 0.15 },
-    },
-  };
-
   return (
-    <div className="w-full max-w-2xl mx-auto space-y-6 px-4">
+    <div className="w-full max-w-2xl mx-auto space-y-6 px-4 animate-in fade-in duration-500">
       {/* Header */}
-      <motion.div
-        initial={{ opacity: 0, y: -20 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.5 }}
-        className="text-center"
-      >
+      <div className="text-center">
         <h1 className="text-3xl font-bold tracking-tight mb-3">Grocery List</h1>
-      </motion.div>
+      </div>
 
       {/* Add Item Form */}
-      <motion.div
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ delay: 0.2 }}
-      >
+      <div>
         <form onSubmit={handleAddItem} className="flex gap-2">
           <Input
             type="text"
@@ -208,22 +174,16 @@ export function GroceryList() {
             onChange={(e) => setNewItemName(e.target.value)}
             className="flex-1"
           />
-          <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
-            <Button type="submit">
-              <Plus className="h-4 w-4 mr-2" />
-              Add
-            </Button>
-          </motion.div>
+          <Button type="submit">
+            <Plus className="h-4 w-4 mr-2" />
+            Add
+          </Button>
         </form>
-      </motion.div>
+      </div>
 
       {/* Active Items */}
       {activeItems.length > 0 && (
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.4 }}
-        >
+        <div>
           <div className="flex items-center justify-between mb-3">
             <div className="flex items-center gap-2">
               <Circle className="h-4 w-4 text-blue-500" />
@@ -232,87 +192,56 @@ export function GroceryList() {
                 {activeItems.length}
               </Badge>
             </div>
-            <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
-              <Button
-                variant="destructive"
-                size="sm"
-                onClick={() => setClearAllDialogOpen(true)}
-              >
-                <Trash2 className="h-4 w-4 mr-1" />
-                Clear All
-              </Button>
-            </motion.div>
+            <Button
+              variant="destructive"
+              size="sm"
+              onClick={() => setClearAllDialogOpen(true)}
+            >
+              <Trash2 className="h-4 w-4 mr-1" />
+              Clear All
+            </Button>
           </div>
 
-          <motion.div
-            variants={containerVariants}
-            initial="hidden"
-            animate="visible"
-            className="space-y-2"
-          >
-            <AnimatePresence>
-              {activeItems.map((item) => (
-                <motion.div
-                  key={item._id}
-                  variants={itemVariants}
-                  initial="hidden"
-                  animate="visible"
-                  exit="exit"
-                  layout
-                  whileHover={{ scale: 1.01 }}
-                  className="group"
-                >
-                  <div className="flex items-center gap-3 p-3 rounded-lg border bg-background hover:bg-muted/50 transition-colors">
-                    <motion.div
-                      whileHover={{ scale: 1.2 }}
-                      whileTap={{ scale: 0.9 }}
-                    >
-                      <Checkbox
-                        checked={item.checked}
-                        onCheckedChange={() => handleToggleItem(item._id)}
-                        className="h-4 w-4"
-                      />
-                    </motion.div>
-                    <div
-                      className="flex-1 cursor-pointer"
-                      onClick={() => handleToggleItem(item._id)}
-                    >
-                      <span className="font-medium">{item.name}</span>
-                      {item.quantity && (
-                        <span className="text-sm text-muted-foreground ml-2">
-                          ({item.quantity})
-                        </span>
-                      )}
-                    </div>
-                    <motion.div
-                      whileHover={{ scale: 1.1 }}
-                      whileTap={{ scale: 0.9 }}
-                      className="opacity-0 group-hover:opacity-100 transition-opacity"
-                    >
-                      <Button
-                        variant="ghost"
-                        size="sm"
-                        onClick={() => handleDeleteItem(item._id)}
-                        className="h-7 w-7 p-0 text-muted-foreground hover:text-destructive"
-                      >
-                        <X className="h-3 w-3" />
-                      </Button>
-                    </motion.div>
+          <div className="space-y-2">
+            {activeItems.map((item) => (
+              <div key={item._id} className="group">
+                <div className="flex items-center gap-3 p-3 rounded-lg border bg-background hover:bg-muted/50 transition-colors">
+                  <Checkbox
+                    checked={item.checked}
+                    onCheckedChange={() => handleToggleItem(item._id)}
+                    className="h-4 w-4"
+                  />
+                  <div
+                    className="flex-1 cursor-pointer"
+                    onClick={() => handleToggleItem(item._id)}
+                  >
+                    <span className="font-medium">{item.name}</span>
+                    {item.quantity && (
+                      <span className="text-sm text-muted-foreground ml-2">
+                        ({item.quantity})
+                      </span>
+                    )}
                   </div>
-                </motion.div>
-              ))}
-            </AnimatePresence>
-          </motion.div>
-        </motion.div>
+                  <div className="opacity-0 group-hover:opacity-100 transition-opacity">
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      onClick={() => handleDeleteItem(item._id)}
+                      className="h-7 w-7 p-0 text-muted-foreground hover:text-destructive"
+                    >
+                      <X className="h-3 w-3" />
+                    </Button>
+                  </div>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
       )}
 
       {/* Checked Items */}
       {checkedItems.length > 0 && (
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.5 }}
-        >
+        <div>
           <div className="flex items-center justify-between mb-3">
             <div className="flex items-center gap-2">
               <CheckCircle2 className="h-4 w-4 text-green-500" />
@@ -323,90 +252,58 @@ export function GroceryList() {
                 {checkedItems.length}
               </Badge>
             </div>
-            <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
-              <Button
-                variant="outline"
-                size="sm"
-                onClick={() => setClearCheckedDialogOpen(true)}
-              >
-                <Trash2 className="h-4 w-4 mr-1" />
-                Clear Completed
-              </Button>
-            </motion.div>
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => setClearCheckedDialogOpen(true)}
+            >
+              <Trash2 className="h-4 w-4 mr-1" />
+              Clear Completed
+            </Button>
           </div>
 
-          <motion.div
-            variants={containerVariants}
-            initial="hidden"
-            animate="visible"
-            className="space-y-2"
-          >
-            <AnimatePresence>
-              {checkedItems.map((item) => (
-                <motion.div
-                  key={item._id}
-                  variants={itemVariants}
-                  initial="hidden"
-                  animate="visible"
-                  exit="exit"
-                  layout
-                  whileHover={{ scale: 1.01 }}
-                  className="group"
-                >
-                  <div className="flex items-center gap-3 p-3 rounded-lg border bg-muted/30 hover:bg-muted/50 transition-colors">
-                    <motion.div
-                      whileHover={{ scale: 1.2 }}
-                      whileTap={{ scale: 0.9 }}
-                    >
-                      <Checkbox
-                        checked={item.checked}
-                        onCheckedChange={() => handleToggleItem(item._id)}
-                        className="h-4 w-4"
-                      />
-                    </motion.div>
-                    <div
-                      className="flex-1 cursor-pointer"
-                      onClick={() => handleToggleItem(item._id)}
-                    >
-                      <span className="line-through text-muted-foreground font-medium">
-                        {item.name}
+          <div className="space-y-2">
+            {checkedItems.map((item) => (
+              <div key={item._id} className="group">
+                <div className="flex items-center gap-3 p-3 rounded-lg border bg-muted/30 hover:bg-muted/50 transition-colors">
+                  <Checkbox
+                    checked={item.checked}
+                    onCheckedChange={() => handleToggleItem(item._id)}
+                    className="h-4 w-4"
+                  />
+                  <div
+                    className="flex-1 cursor-pointer"
+                    onClick={() => handleToggleItem(item._id)}
+                  >
+                    <span className="line-through text-muted-foreground font-medium">
+                      {item.name}
+                    </span>
+                    {item.quantity && (
+                      <span className="text-sm text-muted-foreground ml-2 line-through">
+                        ({item.quantity})
                       </span>
-                      {item.quantity && (
-                        <span className="text-sm text-muted-foreground ml-2 line-through">
-                          ({item.quantity})
-                        </span>
-                      )}
-                    </div>
-                    <motion.div
-                      whileHover={{ scale: 1.1 }}
-                      whileTap={{ scale: 0.9 }}
-                      className="opacity-0 group-hover:opacity-100 transition-opacity"
-                    >
-                      <Button
-                        variant="ghost"
-                        size="sm"
-                        onClick={() => handleDeleteItem(item._id)}
-                        className="h-7 w-7 p-0 text-muted-foreground hover:text-destructive"
-                      >
-                        <X className="h-3 w-3" />
-                      </Button>
-                    </motion.div>
+                    )}
                   </div>
-                </motion.div>
-              ))}
-            </AnimatePresence>
-          </motion.div>
-        </motion.div>
+                  <div className="opacity-0 group-hover:opacity-100 transition-opacity">
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      onClick={() => handleDeleteItem(item._id)}
+                      className="h-7 w-7 p-0 text-muted-foreground hover:text-destructive"
+                    >
+                      <X className="h-3 w-3" />
+                    </Button>
+                  </div>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
       )}
 
       {/* Empty State */}
       {!isLoading && (!items || items.length === 0) && (
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.4 }}
-          className="text-center py-12"
-        >
+        <div className="text-center py-12">
           <div className="bg-muted rounded-full p-6 inline-flex mb-6">
             <ShoppingCart className="h-12 w-12 text-muted-foreground" />
           </div>
@@ -417,7 +314,7 @@ export function GroceryList() {
             Start adding items to your grocery list to keep track of what you
             need to buy.
           </p>
-        </motion.div>
+        </div>
       )}
 
       {/* Alert Dialog for Clearing Checked Items */}
