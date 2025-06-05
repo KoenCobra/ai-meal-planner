@@ -91,7 +91,7 @@ const BubuAiResponse = ({ recipe, image, onClear }: BubuAiResponseProps) => {
       opacity: 1,
       y: 0,
       transition: {
-        duration: 0.6,
+        duration: 0.3,
         ease: "easeOut",
         staggerChildren: 0.15,
       },
