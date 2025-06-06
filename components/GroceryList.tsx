@@ -23,20 +23,12 @@ import { useUser } from "@clerk/clerk-react";
 import { convexQuery } from "@convex-dev/react-query";
 import { useQuery } from "@tanstack/react-query";
 import { useMutation } from "convex/react";
-import {
-  CheckCircle2,
-  Circle,
-  Plus,
-  ShoppingCart,
-  Trash2,
-  X,
-} from "lucide-react";
+import { Plus, ShoppingCart, Trash2 } from "lucide-react";
 import { useState } from "react";
 
 export function GroceryList() {
   const { user } = useUser();
   const [newItemName, setNewItemName] = useState("");
-  const [clearCheckedDialogOpen, setClearCheckedDialogOpen] = useState(false);
   const [clearAllDialogOpen, setClearAllDialogOpen] = useState(false);
 
   const { data: items, isLoading } = useQuery({
@@ -69,21 +61,6 @@ export function GroceryList() {
     },
   );
 
-  const deleteItem = useMutation(
-    api.groceryList.deleteItem,
-  ).withOptimisticUpdate((localStore, args) => {
-    const items = localStore.getQuery(api.groceryList.listItems, {
-      userId: args.userId,
-    });
-    if (items) {
-      localStore.setQuery(
-        api.groceryList.listItems,
-        { userId: args.userId },
-        items.filter((item) => item._id !== args.id),
-      );
-    }
-  });
-
   const toggleItem = useMutation(
     api.groceryList.toggleItem,
   ).withOptimisticUpdate((localStore, args) => {
@@ -97,21 +74,6 @@ export function GroceryList() {
         items.map((item) =>
           item._id === args.id ? { ...item, checked: !item.checked } : item,
         ),
-      );
-    }
-  });
-
-  const clearCheckedItems = useMutation(
-    api.groceryList.clearCheckedItems,
-  ).withOptimisticUpdate((localStore, args) => {
-    const items = localStore.getQuery(api.groceryList.listItems, {
-      userId: args.userId,
-    });
-    if (items) {
-      localStore.setQuery(
-        api.groceryList.listItems,
-        { userId: args.userId },
-        items.filter((item) => !item.checked),
       );
     }
   });
@@ -140,15 +102,6 @@ export function GroceryList() {
     await toggleItem({ userId: user?.id ?? "", id: itemId });
   };
 
-  const handleDeleteItem = async (itemId: Id<"groceryItems">) => {
-    await deleteItem({ userId: user?.id ?? "", id: itemId });
-  };
-
-  const handleClearChecked = async () => {
-    setClearCheckedDialogOpen(false);
-    await clearCheckedItems({ userId: user?.id ?? "" });
-  };
-
   const handleClearAll = async () => {
     setClearAllDialogOpen(false);
     await clearAllItems({ userId: user?.id ?? "" });
@@ -174,9 +127,8 @@ export function GroceryList() {
             onChange={(e) => setNewItemName(e.target.value)}
             className="flex-1"
           />
-          <Button type="submit">
-            <Plus className="h-4 w-4 mr-2" />
-            Add
+          <Button variant="outline" type="submit">
+            <Plus className="size-4" />
           </Button>
         </form>
       </div>
@@ -186,7 +138,6 @@ export function GroceryList() {
         <div>
           <div className="flex items-center justify-between mb-3">
             <div className="flex items-center gap-2">
-              <Circle className="h-4 w-4 text-blue-500" />
               <h2 className="text-lg font-semibold">Shopping List</h2>
               <Badge variant="secondary" className="text-xs">
                 {activeItems.length}
@@ -204,34 +155,22 @@ export function GroceryList() {
 
           <div className="space-y-2">
             {activeItems.map((item) => (
-              <div key={item._id} className="group">
-                <div className="flex items-center justify-between gap-3 rounded-lg border bg-background hover:bg-muted/50 transition-colors">
-                  <div
-                    onClick={() => handleToggleItem(item._id)}
-                    className="cursor-pointer flex items-center gap-3 p-3  flex-1"
-                  >
-                    <Checkbox
-                      checked={item.checked}
-                      className="h-4 w-4 cursor-pointer"
-                    />
-                    <div className="flex-1 cursor-pointer">
-                      <span className="font-medium">{item.name}</span>
-                      {item.quantity && (
-                        <span className="text-sm text-muted-foreground ml-2">
-                          ({item.quantity})
-                        </span>
-                      )}
-                    </div>
-                  </div>
-                  <div className="pr-3 pl-2">
-                    <Button
-                      variant="ghost"
-                      size="sm"
-                      onClick={() => handleDeleteItem(item._id)}
-                      className="h-7 w-7 p-0 text-muted-foreground hover:text-destructive"
-                    >
-                      <X className="h-3 w-3" />
-                    </Button>
+              <div key={item._id}>
+                <div
+                  onClick={() => handleToggleItem(item._id)}
+                  className="cursor-pointer flex items-center gap-3 p-3 rounded-lg border bg-background hover:bg-muted/50 transition-colors"
+                >
+                  <Checkbox
+                    checked={item.checked}
+                    className="h-4 w-4 cursor-pointer"
+                  />
+                  <div className="flex-1 cursor-pointer">
+                    <span className="font-medium">{item.name}</span>
+                    {item.quantity && (
+                      <span className="text-sm text-muted-foreground ml-2">
+                        ({item.quantity})
+                      </span>
+                    )}
                   </div>
                 </div>
               </div>
@@ -245,7 +184,6 @@ export function GroceryList() {
         <div>
           <div className="flex items-center justify-between mb-3">
             <div className="flex items-center gap-2">
-              <CheckCircle2 className="h-4 w-4 text-green-500" />
               <h2 className="text-lg font-semibold text-muted-foreground">
                 Completed Items
               </h2>
@@ -253,48 +191,39 @@ export function GroceryList() {
                 {checkedItems.length}
               </Badge>
             </div>
-            <Button
-              variant="outline"
-              size="sm"
-              onClick={() => setClearCheckedDialogOpen(true)}
-            >
-              <Trash2 className="h-4 w-4 mr-1" />
-              Clear Completed
-            </Button>
+            {/* Show Clear All button only when all items are checked */}
+            {activeItems.length === 0 && (
+              <Button
+                variant="destructive"
+                size="sm"
+                onClick={() => setClearAllDialogOpen(true)}
+              >
+                <Trash2 className="h-4 w-4 mr-1" />
+                Clear All
+              </Button>
+            )}
           </div>
 
           <div className="space-y-2">
             {checkedItems.map((item) => (
               <div key={item._id} className="group">
-                <div className="flex items-center gap-3 rounded-lg border bg-muted/30 hover:bg-muted/50 transition-colors">
-                  <div
-                    className="flex items-center gap-3 p-3 flex-1 cursor-pointer"
-                    onClick={() => handleToggleItem(item._id)}
-                  >
-                    <Checkbox
-                      checked={item.checked}
-                      className="h-4 w-4 cursor-pointer"
-                    />
-                    <div className="flex-1 cursor-pointer">
-                      <span className="line-through text-muted-foreground font-medium">
-                        {item.name}
+                <div
+                  className="flex items-center gap-3 p-3 cursor-pointer rounded-lg border bg-muted/30 hover:bg-muted/50 transition-colors"
+                  onClick={() => handleToggleItem(item._id)}
+                >
+                  <Checkbox
+                    checked={item.checked}
+                    className="h-4 w-4 cursor-pointer"
+                  />
+                  <div className="flex-1 cursor-pointer">
+                    <span className="line-through text-muted-foreground font-medium">
+                      {item.name}
+                    </span>
+                    {item.quantity && (
+                      <span className="text-sm text-muted-foreground ml-2 line-through">
+                        ({item.quantity})
                       </span>
-                      {item.quantity && (
-                        <span className="text-sm text-muted-foreground ml-2 line-through">
-                          ({item.quantity})
-                        </span>
-                      )}
-                    </div>
-                  </div>
-                  <div className="pr-3 pl-2">
-                    <Button
-                      variant="ghost"
-                      size="sm"
-                      onClick={() => handleDeleteItem(item._id)}
-                      className="h-7 w-7 p-0 text-muted-foreground hover:text-destructive"
-                    >
-                      <X className="h-3 w-3" />
-                    </Button>
+                    )}
                   </div>
                 </div>
               </div>
@@ -318,28 +247,6 @@ export function GroceryList() {
           </p>
         </div>
       )}
-
-      {/* Alert Dialog for Clearing Checked Items */}
-      <AlertDialog
-        open={clearCheckedDialogOpen}
-        onOpenChange={setClearCheckedDialogOpen}
-      >
-        <AlertDialogContent>
-          <AlertDialogHeader>
-            <AlertDialogTitle>Clear completed items?</AlertDialogTitle>
-            <AlertDialogDescription>
-              This will remove all completed items from your grocery list. This
-              action cannot be undone.
-            </AlertDialogDescription>
-          </AlertDialogHeader>
-          <AlertDialogFooter>
-            <AlertDialogCancel>Cancel</AlertDialogCancel>
-            <AlertDialogAction onClick={handleClearChecked}>
-              Clear Completed
-            </AlertDialogAction>
-          </AlertDialogFooter>
-        </AlertDialogContent>
-      </AlertDialog>
 
       {/* Alert Dialog for Clearing All Items */}
       <AlertDialog
