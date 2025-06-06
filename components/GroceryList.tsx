@@ -195,9 +195,10 @@ export function GroceryList() {
             {/* Show Clear All button only when all items are checked */}
             {activeItems.length === 0 && (
               <Button
-                variant="destructive"
+                variant="outline"
                 size="sm"
                 onClick={() => setClearAllDialogOpen(true)}
+                className="border-destructive text-destructive hover:text-destructive"
               >
                 <Trash2 className="h-4 w-4 mr-1" />
                 Clear All

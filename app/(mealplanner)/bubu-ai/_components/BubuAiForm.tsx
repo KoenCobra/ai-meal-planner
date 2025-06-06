@@ -201,58 +201,41 @@ const BibiAiForm = ({
       className="w-full"
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
-      transition={{ duration: 0.5 }}
+      transition={{ duration: 0.3 }}
     >
       <Form {...form}>
         <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
           <div className="relative">
             <div className="flex items-start">
-              <AnimatePresence>
-                {selectedImage && imagePreview && (
-                  <motion.div
-                    key="image-preview"
-                    className="relative inline-block mb-4"
-                    initial={{ opacity: 0, scale: 0.8 }}
-                    animate={{ opacity: 1, scale: 1 }}
-                    exit={{ opacity: 0, scale: 0.8 }}
-                    transition={{ type: "spring", stiffness: 400, damping: 25 }}
+              {selectedImage && imagePreview && (
+                <div className="relative inline-block mb-4">
+                  <div className="h-20 w-20 relative overflow-hidden rounded-sm">
+                    <Image
+                      src={imagePreview || "/placeholder.svg"}
+                      alt="Selected food"
+                      fill
+                      className="object-cover"
+                      quality={50}
+                    />
+                  </div>
+                  <Button
+                    type="button"
+                    variant="ghost"
+                    size="icon"
+                    onClick={() => {
+                      setSelectedImage(null);
+                      setImagePreview(null);
+                      if (fileInputRef.current) {
+                        fileInputRef.current.value = "";
+                      }
+                    }}
+                    disabled={isGenerating}
+                    className="size-5 p-0 text-zinc-100 hover:text-white absolute -top-1.5 -right-1.5 bg-black/70 hover:bg-black/80 backdrop-blur-sm rounded-full"
                   >
-                    <motion.div
-                      className="h-20 w-20 relative overflow-hidden rounded-sm"
-                      whileHover={{ scale: 1.02 }}
-                      transition={{
-                        type: "spring",
-                        stiffness: 400,
-                        damping: 25,
-                      }}
-                    >
-                      <Image
-                        src={imagePreview || "/placeholder.svg"}
-                        alt="Selected food"
-                        fill
-                        className="object-cover"
-                        quality={50}
-                      />
-                    </motion.div>
-                    <Button
-                      type="button"
-                      variant="ghost"
-                      size="icon"
-                      onClick={() => {
-                        setSelectedImage(null);
-                        setImagePreview(null);
-                        if (fileInputRef.current) {
-                          fileInputRef.current.value = "";
-                        }
-                      }}
-                      disabled={isGenerating}
-                      className="size-5 p-0 text-zinc-100 hover:text-white absolute -top-1.5 -right-1.5 bg-black/70 backdrop-blur-sm rounded-full"
-                    >
-                      <X className="size-4" />
-                    </Button>
-                  </motion.div>
-                )}
-              </AnimatePresence>
+                    <X className="size-4" />
+                  </Button>
+                </div>
+              )}
             </div>
 
             <FormField
