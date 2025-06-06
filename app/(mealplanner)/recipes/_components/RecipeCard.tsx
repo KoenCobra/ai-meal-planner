@@ -64,7 +64,7 @@ export const RecipeCard = ({ recipe, onDelete }: RecipeCardProps) => {
       >
         <Card
           className={cn(
-            "h-full overflow-hidden transition-all duration-300 border-none shadow-md pt-0",
+            "h-full overflow-hidden transition-all duration-300 shadow-md pt-0 dark:border-border/50",
             isHovered && "shadow-xl scale-[1.02]",
           )}
         >

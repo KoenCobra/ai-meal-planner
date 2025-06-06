@@ -41,7 +41,7 @@ const RecipeDetails = ({ menuId }: RecipeDetailsProps) => {
         {menuId ? "Menu Recipes" : "My Recipes"}
       </h1>
       <Tabs value={currentTab} onValueChange={setCurrentTab} className="w-full">
-        <TabsList className="grid w-full grid-cols-4">
+        <TabsList className="grid w-full grid-cols-4 dark:border dark:border-border/50">
           <TabsTrigger value="breakfast">Breakfast</TabsTrigger>
           <TabsTrigger value="lunch">Lunch</TabsTrigger>
           <TabsTrigger value="dinner">Dinner</TabsTrigger>
