@@ -95,7 +95,7 @@ export const RecipeCard = ({ recipe, onDelete }: RecipeCardProps) => {
                     variant="secondary"
                     className={cn(
                       "rounded-full h-8 w-8 bg-white/80 backdrop-blur-sm hover:bg-white shadow-sm",
-                      !isHovered && !dropdownOpen && "opacity-0",
+                      !isHovered && !dropdownOpen && "xl:opacity-0",
                     )}
                   >
                     <MoreHorizontal className="h-4 w-4" />

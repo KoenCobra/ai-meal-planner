@@ -205,24 +205,25 @@ export function GroceryList() {
           <div className="space-y-2">
             {activeItems.map((item) => (
               <div key={item._id} className="group">
-                <div className="flex items-center gap-3 p-3 rounded-lg border bg-background hover:bg-muted/50 transition-colors">
-                  <Checkbox
-                    checked={item.checked}
-                    onCheckedChange={() => handleToggleItem(item._id)}
-                    className="h-4 w-4"
-                  />
+                <div className="flex items-center justify-between gap-3 rounded-lg border bg-background hover:bg-muted/50 transition-colors">
                   <div
-                    className="flex-1 cursor-pointer"
                     onClick={() => handleToggleItem(item._id)}
+                    className="cursor-pointer flex items-center gap-3 p-3  flex-1"
                   >
-                    <span className="font-medium">{item.name}</span>
-                    {item.quantity && (
-                      <span className="text-sm text-muted-foreground ml-2">
-                        ({item.quantity})
-                      </span>
-                    )}
+                    <Checkbox
+                      checked={item.checked}
+                      className="h-4 w-4 cursor-pointer"
+                    />
+                    <div className="flex-1 cursor-pointer">
+                      <span className="font-medium">{item.name}</span>
+                      {item.quantity && (
+                        <span className="text-sm text-muted-foreground ml-2">
+                          ({item.quantity})
+                        </span>
+                      )}
+                    </div>
                   </div>
-                  <div className="opacity-0 group-hover:opacity-100 transition-opacity">
+                  <div className="pr-3 pl-2">
                     <Button
                       variant="ghost"
                       size="sm"
@@ -265,26 +266,27 @@ export function GroceryList() {
           <div className="space-y-2">
             {checkedItems.map((item) => (
               <div key={item._id} className="group">
-                <div className="flex items-center gap-3 p-3 rounded-lg border bg-muted/30 hover:bg-muted/50 transition-colors">
-                  <Checkbox
-                    checked={item.checked}
-                    onCheckedChange={() => handleToggleItem(item._id)}
-                    className="h-4 w-4"
-                  />
+                <div className="flex items-center gap-3 rounded-lg border bg-muted/30 hover:bg-muted/50 transition-colors">
                   <div
-                    className="flex-1 cursor-pointer"
+                    className="flex items-center gap-3 p-3 flex-1 cursor-pointer"
                     onClick={() => handleToggleItem(item._id)}
                   >
-                    <span className="line-through text-muted-foreground font-medium">
-                      {item.name}
-                    </span>
-                    {item.quantity && (
-                      <span className="text-sm text-muted-foreground ml-2 line-through">
-                        ({item.quantity})
+                    <Checkbox
+                      checked={item.checked}
+                      className="h-4 w-4 cursor-pointer"
+                    />
+                    <div className="flex-1 cursor-pointer">
+                      <span className="line-through text-muted-foreground font-medium">
+                        {item.name}
                       </span>
-                    )}
+                      {item.quantity && (
+                        <span className="text-sm text-muted-foreground ml-2 line-through">
+                          ({item.quantity})
+                        </span>
+                      )}
+                    </div>
                   </div>
-                  <div className="opacity-0 group-hover:opacity-100 transition-opacity">
+                  <div className="pr-3 pl-2">
                     <Button
                       variant="ghost"
                       size="sm"
