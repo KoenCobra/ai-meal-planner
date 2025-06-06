@@ -144,9 +144,10 @@ export function GroceryList() {
               </Badge>
             </div>
             <Button
-              variant="destructive"
+              variant="outline"
               size="sm"
               onClick={() => setClearAllDialogOpen(true)}
+              className="border-destructive text-destructive hover:text-destructive"
             >
               <Trash2 className="h-4 w-4 mr-1" />
               Clear All
