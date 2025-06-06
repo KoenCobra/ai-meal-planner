@@ -2,7 +2,6 @@
 
 import LoginButton from "@/app/(main)/_components/LoginButton";
 import ThemeToggle from "@/components/ThemeToggle";
-import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import { SignedIn, SignedOut, UserButton } from "@clerk/clerk-react";
 import { Book, Calendar, Search, ShoppingBag, Sparkles } from "lucide-react";
@@ -18,13 +17,6 @@ const navItems = [
     ),
     mobileIcon: <Sparkles className="size-5 text-blue-500" />,
     mobileOnly: false,
-  },
-  {
-    href: "/search",
-    label: "Search",
-    icon: null,
-    mobileIcon: <Search className="size-5" />,
-    mobileOnly: true,
   },
   {
     href: "/recipes",
@@ -46,6 +38,12 @@ const navItems = [
     icon: null,
     mobileIcon: <ShoppingBag className="size-5" />,
     mobileOnly: false,
+  },
+  {
+    href: "/search",
+    label: "Search",
+    icon: null,
+    mobileIcon: <Search className="size-5" />,
   },
 ] as const;
 
@@ -72,43 +70,29 @@ const Navbar = () => {
           {/* Desktop Navigation */}
           <div className="hidden md:block">
             <ul className="flex items-center gap-8">
-              {navItems
-                .filter((item) => !item.mobileOnly)
-                .map((item) => (
-                  <li key={item.href}>
-                    <div className="relative">
-                      <Link
-                        href={item.href}
-                        className={cn(
-                          "relative px-3 py-2 rounded-lg text-sm font-medium transition-all duration-200 hover:bg-zinc-100 dark:hover:bg-zinc-800",
-                          pathname.startsWith(item.href)
-                            ? "text-blue-600 dark:text-blue-400 bg-blue-50 dark:bg-blue-950/30"
-                            : "text-zinc-600 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-zinc-100",
-                        )}
-                      >
-                        {item.label}
-                      </Link>
-                      {item.icon}
-                    </div>
-                  </li>
-                ))}
+              {navItems.map((item) => (
+                <li key={item.href}>
+                  <div className="relative">
+                    <Link
+                      href={item.href}
+                      className={cn(
+                        "relative px-3 py-2 rounded-lg text-sm font-medium transition-all duration-200 hover:bg-zinc-100 dark:hover:bg-zinc-800",
+                        pathname.startsWith(item.href)
+                          ? "text-blue-600 dark:text-blue-400 bg-blue-50 dark:bg-blue-950/30"
+                          : "text-zinc-600 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-zinc-100",
+                      )}
+                    >
+                      {item.label}
+                    </Link>
+                    {item.icon}
+                  </div>
+                </li>
+              ))}
             </ul>
           </div>
 
           {/* Right Side Actions */}
           <div className="flex items-center gap-3">
-            <Button
-              variant="outline"
-              size="sm"
-              asChild
-              className="hidden md:flex border-zinc-200 dark:border-zinc-700 hover:bg-zinc-50 dark:hover:bg-zinc-800"
-            >
-              <Link href="/search">
-                <Search className="h-4 w-4 mr-2" />
-                Search
-              </Link>
-            </Button>
-
             <div className="p-1 rounded-lg hover:bg-zinc-100 dark:hover:bg-zinc-800 transition-colors">
               <ThemeToggle />
             </div>
@@ -117,16 +101,7 @@ const Navbar = () => {
               <LoginButton />
             </SignedOut>
             <SignedIn>
-              <div className="relative">
-                <UserButton
-                  appearance={{
-                    elements: {
-                      avatarBox:
-                        "w-8 h-8 ring-2 ring-blue-500/20 hover:ring-blue-500/40 transition-all duration-200",
-                    },
-                  }}
-                />
-              </div>
+              <UserButton />
             </SignedIn>
           </div>
         </div>
