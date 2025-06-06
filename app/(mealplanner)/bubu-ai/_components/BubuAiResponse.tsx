@@ -5,15 +5,15 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { api } from "@/convex/_generated/api";
-import type { Id } from "@/convex/_generated/dataModel";
 import type { RecipeInput } from "@/lib/validation";
 import { useUser } from "@clerk/clerk-react";
 import { useMutation } from "convex/react";
 import { AnimatePresence, motion } from "framer-motion";
 import { BookmarkIcon, Clock, Loader2, Trash2, Users } from "lucide-react";
 import Image from "next/image";
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { toast } from "sonner";
+import { useBubuAi } from "../BubuAiContext";
 
 interface BubuAiResponseProps {
   recipe: RecipeInput;
@@ -23,8 +23,7 @@ interface BubuAiResponseProps {
 
 const BubuAiResponse = ({ recipe, image, onClear }: BubuAiResponseProps) => {
   const { user } = useUser();
-  const [savedRecipeId, setSavedRecipeId] =
-    React.useState<Id<"recipes"> | null>(null);
+  const { clearForm, savedRecipeId, setSavedRecipeId } = useBubuAi();
   const [isSaving, setIsSaving] = useState(false);
   const [isImageLoaded, setIsImageLoaded] = useState(false);
   const [activeTab, setActiveTab] = useState("ingredients");
@@ -36,11 +35,10 @@ const BubuAiResponse = ({ recipe, image, onClear }: BubuAiResponseProps) => {
     return "data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMTAiIGhlaWdodD0iMTAiIHZpZXdCb3g9IjAgMCAxMCAxMCIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPGRlZnM+CjxsaW5lYXJHcmFkaWVudCBpZD0iZ3JhZGllbnQiIHgxPSIwJSIgeTE9IjAlIiB4Mj0iMTAwJSIgeTI9IjEwMCUiPgo8c3RvcCBvZmZzZXQ9IjAlIiBzdHlsZT0ic3RvcC1jb2xvcjojZjNmNGY2O3N0b3Atb3BhY2l0eToxIiAvPgo8c3RvcCBvZmZzZXQ9IjEwMCUiIHN0eWxlPSJzdG9wLWNvbG9yOiNlNWU3ZWI7c3RvcC1vcGFjaXR5OjEiIC8+CjwvbGluZWFyR3JhZGllbnQ+CjwvZGVmcz4KPHJlY3Qgd2lkdGg9IjEwIiBoZWlnaHQ9IjEwIiBmaWxsPSJ1cmwoI2dyYWRpZW50KSIgLz4KPHN2Zz4K";
   };
 
-  // Reset state when recipe changes
+  // Only reset image loaded state when image changes
   useEffect(() => {
-    setSavedRecipeId(null);
     setIsImageLoaded(false);
-  }, [recipe, image]);
+  }, [image]);
 
   const handleSave = async () => {
     if (!user) return;
@@ -76,6 +74,7 @@ const BubuAiResponse = ({ recipe, image, onClear }: BubuAiResponseProps) => {
   };
 
   const handleClear = () => {
+    clearForm();
     if (onClear) {
       onClear();
     }

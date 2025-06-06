@@ -20,7 +20,7 @@ import {
   Square,
   X,
 } from "lucide-react";
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useForm } from "react-hook-form";
 import { toast } from "sonner";
 
@@ -29,6 +29,7 @@ import {
   generateRecipeSchema,
   type RecipeInput,
 } from "@/lib/validation";
+import { useBubuAi } from "../BubuAiContext";
 import {
   analyzeImageForRecipe,
   generateRecipe,
@@ -47,10 +48,17 @@ const BibiAiForm = ({
   onGenerationStart,
   onImageGenerationAborted,
 }: BibiAiFormProps) => {
+  const {
+    description,
+    setDescription,
+    selectedImage,
+    setSelectedImage,
+    imagePreview,
+    setImagePreview,
+    setSavedRecipeId,
+  } = useBubuAi();
   const [isGeneratingRecipe, setIsGeneratingRecipe] = useState(false);
   const [isGeneratingImage, setIsGeneratingImage] = useState(false);
-  const [selectedImage, setSelectedImage] = useState<File | null>(null);
-  const [imagePreview, setImagePreview] = useState<string | null>(null);
 
   const recipeControllerRef = useRef<AbortController | null>(null);
   const imageControllerRef = useRef<AbortController | null>(null);
@@ -61,11 +69,21 @@ const BibiAiForm = ({
   const form = useForm<GenerateRecipeInput>({
     resolver: zodResolver(generateRecipeSchema),
     defaultValues: {
-      description: "",
+      description: description,
     },
   });
 
-  const description = form.watch("description");
+  // Sync form with context when description changes
+  useEffect(() => {
+    form.setValue("description", description);
+  }, [description, form]);
+
+  // Clear file input when selectedImage is cleared
+  useEffect(() => {
+    if (!selectedImage && fileInputRef.current) {
+      fileInputRef.current.value = "";
+    }
+  }, [selectedImage]);
 
   const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files && e.target.files[0]) {
@@ -110,6 +128,8 @@ const BibiAiForm = ({
         onGenerationStart();
       }
 
+      // Clear saved recipe ID when generating a new recipe
+      setSavedRecipeId(null);
       setIsGeneratingRecipe(true);
 
       let recipe;
@@ -162,7 +182,9 @@ const BibiAiForm = ({
     const textarea = e.target;
     textarea.style.height = "auto";
     textarea.style.height = `${textarea.scrollHeight}px`;
-    form.setValue("description", textarea.value);
+    const value = textarea.value;
+    form.setValue("description", value);
+    setDescription(value);
   };
 
   return (
