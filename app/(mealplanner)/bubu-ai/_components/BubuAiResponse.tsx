@@ -89,7 +89,6 @@ const BubuAiResponse = ({ recipe, image, onClear }: BubuAiResponseProps) => {
       });
 
       setSavedRecipeId(newRecipeId);
-      toast.success("Recipe saved successfully!");
     } catch (error) {
       toast.error("Failed to save recipe");
       console.error(error);
@@ -115,7 +114,6 @@ const BubuAiResponse = ({ recipe, image, onClear }: BubuAiResponseProps) => {
         dishType: recipe.dishType,
       });
 
-      toast.success("Recipe deleted successfully!");
       handleClear(); // Clear the AI response after deletion
     } catch (error) {
       toast.error("Failed to delete recipe");
