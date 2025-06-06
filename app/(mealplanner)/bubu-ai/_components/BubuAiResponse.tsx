@@ -415,61 +415,56 @@ const BubuAiResponse = ({ recipe, image, onClear }: BubuAiResponseProps) => {
               </motion.div>
 
               {savedRecipeId && (
-                <motion.div
-                  whileHover={{ scale: 1.05 }}
-                  whileTap={{ scale: 0.95 }}
+                <DropdownMenu
+                  modal={false}
+                  open={dropdownOpen}
+                  onOpenChange={setDropdownOpen}
                 >
-                  <DropdownMenu
-                    modal={false}
-                    open={dropdownOpen}
-                    onOpenChange={setDropdownOpen}
-                  >
-                    <DropdownMenuTrigger asChild>
-                      <Button variant="outline" size="icon" className="gap-2">
-                        <MoreHorizontal className="h-4 w-4" />
-                      </Button>
-                    </DropdownMenuTrigger>
-                    <DropdownMenuContent align="end" className="w-56">
-                      <DropdownMenuItem
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          e.preventDefault();
-                          openDialog(savedRecipeId);
-                          setDropdownOpen(false);
-                        }}
-                        className="cursor-pointer"
-                      >
-                        <Plus className="h-4 w-4 mr-2" />
-                        Add to Menu
-                      </DropdownMenuItem>
-                      <DropdownMenuItem
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          e.preventDefault();
-                          handleSyncIngredients(savedRecipeId);
-                          setDropdownOpen(false);
-                        }}
-                        className="cursor-pointer"
-                      >
-                        <ShoppingCart className="h-4 w-4 mr-2" />
-                        Add to Grocery List
-                      </DropdownMenuItem>
-                      <DropdownMenuSeparator />
-                      <DropdownMenuItem
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          e.preventDefault();
-                          handleDelete();
-                          setDropdownOpen(false);
-                        }}
-                        className="text-destructive cursor-pointer"
-                      >
-                        <Trash className="h-4 w-4 mr-2" />
-                        Delete Recipe
-                      </DropdownMenuItem>
-                    </DropdownMenuContent>
-                  </DropdownMenu>
-                </motion.div>
+                  <DropdownMenuTrigger asChild>
+                    <Button variant="outline" size="icon" className="gap-2">
+                      <MoreHorizontal className="h-4 w-4" />
+                    </Button>
+                  </DropdownMenuTrigger>
+                  <DropdownMenuContent align="end" className="w-56">
+                    <DropdownMenuItem
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        e.preventDefault();
+                        openDialog(savedRecipeId);
+                        setDropdownOpen(false);
+                      }}
+                      className="cursor-pointer"
+                    >
+                      <Plus className="h-4 w-4 mr-2" />
+                      Add to Menu
+                    </DropdownMenuItem>
+                    <DropdownMenuItem
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        e.preventDefault();
+                        handleSyncIngredients(savedRecipeId);
+                        setDropdownOpen(false);
+                      }}
+                      className="cursor-pointer"
+                    >
+                      <ShoppingCart className="h-4 w-4 mr-2" />
+                      Add to Grocery List
+                    </DropdownMenuItem>
+                    <DropdownMenuSeparator />
+                    <DropdownMenuItem
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        e.preventDefault();
+                        handleDelete();
+                        setDropdownOpen(false);
+                      }}
+                      className="text-destructive cursor-pointer"
+                    >
+                      <Trash className="h-4 w-4 mr-2" />
+                      Delete Recipe
+                    </DropdownMenuItem>
+                  </DropdownMenuContent>
+                </DropdownMenu>
               )}
             </motion.div>
 
