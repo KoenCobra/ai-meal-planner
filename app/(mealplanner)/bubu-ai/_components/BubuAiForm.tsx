@@ -187,6 +187,15 @@ const BibiAiForm = ({
     setDescription(value);
   };
 
+  const clearTextarea = () => {
+    form.setValue("description", "");
+    setDescription("");
+    if (textareaRef.current) {
+      textareaRef.current.style.height = "auto";
+      textareaRef.current.focus();
+    }
+  };
+
   return (
     <motion.div
       className="w-full"
@@ -256,6 +265,7 @@ const BibiAiForm = ({
                       initial={{ opacity: 0, y: 10 }}
                       animate={{ opacity: 1, y: 0 }}
                       transition={{ duration: 0.4 }}
+                      className="relative"
                     >
                       <textarea
                         {...field}
@@ -273,8 +283,34 @@ const BibiAiForm = ({
                             form.handleSubmit(onSubmit)();
                           }
                         }}
-                        className="flex-1 resize-none border-0 bg-transparent p-0 focus-visible:outline-none focus-visible:ring-0 disabled:opacity-50 min-h-[60px]overflow-y-auto w-full"
+                        className="flex-1 resize-none border-0 bg-transparent p-0 focus-visible:outline-none focus-visible:ring-0 disabled:opacity-50 min-h-[60px] overflow-y-auto w-full pr-8"
                       />
+
+                      <AnimatePresence>
+                        {description.trim() && !isGenerating && (
+                          <motion.div
+                            initial={{ opacity: 0, scale: 0.8 }}
+                            animate={{ opacity: 1, scale: 1 }}
+                            exit={{ opacity: 0, scale: 0.8 }}
+                            transition={{
+                              type: "spring",
+                              stiffness: 400,
+                              damping: 25,
+                            }}
+                            className="absolute top-1 right-1"
+                          >
+                            <Button
+                              type="button"
+                              variant="ghost"
+                              size="icon"
+                              onClick={clearTextarea}
+                              className="size-6 p-0 text-zinc-600 hover:text-zinc-800 dark:text-zinc-400 dark:hover:text-zinc-400 rounded-full hover:bg-zinc-100 dark:hover:bg-zinc-800"
+                            >
+                              <X className="size-3" />
+                            </Button>
+                          </motion.div>
+                        )}
+                      </AnimatePresence>
                     </motion.div>
                   </FormControl>
                   <FormMessage />
