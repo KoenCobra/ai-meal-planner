@@ -119,6 +119,7 @@ const CreateMenuDialog = () => {
                 disabled={form.formState.isSubmitting}
                 type="submit"
                 className="w-full sm:w-auto"
+                variant="outline"
               >
                 {form.formState.isSubmitting ? (
                   <>

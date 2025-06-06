@@ -127,6 +127,7 @@ const SearchPage = () => {
               onClick={handleSearchSubmit}
               disabled={!searchQuery.trim() || isLoading}
               className="h-12 px-6"
+              variant="outline"
             >
               {isLoading ? (
                 <Loader2 className="size-4 animate-spin mr-2" />
@@ -196,7 +197,9 @@ const SearchPage = () => {
               We couldn&apos;t find any recipes matching &quot;{executedQuery}
               &quot;. Try different keywords or browse our recipe collections.
             </p>
-            <Button onClick={clearSearch}>Clear Search</Button>
+            <Button variant="outline" onClick={clearSearch}>
+              Clear Search
+            </Button>
           </motion.div>
         ) : !executedQuery ? (
           <motion.div
