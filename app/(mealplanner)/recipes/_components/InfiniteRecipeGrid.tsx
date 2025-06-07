@@ -90,7 +90,7 @@ export const InfiniteRecipeGrid = ({
           </div>
         )}
 
-        {!hasNextPage && recipes.length > 0 && (
+        {!hasNextPage && !isFetchingNextPage && (
           <div className="text-center py-4 text-muted-foreground">
             No more recipes to load
           </div>
