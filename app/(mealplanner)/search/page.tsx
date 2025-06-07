@@ -243,7 +243,7 @@ const SearchPage = () => {
                 </div>
               )}
 
-              {!hasNextPage && recipes.length > 0 && (
+              {!hasNextPage && recipes.length > 0 && !isFetchingNextPage && (
                 <div className="text-center py-6 text-muted-foreground">
                   You&apos;ve reached the end of the results
                 </div>

@@ -1,6 +1,7 @@
 "use client";
 
-import { Id } from "@/convex/_generated/dataModel";
+import { Skeleton } from "@/components/ui/skeleton";
+import type { Id } from "@/convex/_generated/dataModel";
 import { Loader2 } from "lucide-react";
 import { useEffect, useRef } from "react";
 import { useInfiniteRecipes } from "../_hooks/useInfiniteRecipes";
@@ -13,6 +14,38 @@ interface InfiniteRecipeGridProps {
   mealType: MealType;
   menuId?: Id<"menus">;
   onDelete: (recipeId: Id<"recipes">, title: string, dishType: string) => void;
+}
+
+function RecipeGridSkeleton() {
+  return (
+    <div className="animate-in fade-in duration-500">
+      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+        {Array.from({ length: 4 }).map((_, index) => (
+          <div key={index} className="border rounded-lg overflow-hidden">
+            {/* Image placeholder */}
+            <Skeleton className="w-full aspect-video" />
+
+            <div className="p-4 space-y-3">
+              {/* Title placeholder */}
+              <Skeleton className="h-6 w-3/4" />
+
+              {/* Description placeholder */}
+              <div className="space-y-2">
+                <Skeleton className="h-4 w-full" />
+                <Skeleton className="h-4 w-5/6" />
+              </div>
+
+              {/* Tags/metadata placeholder */}
+              <div className="flex gap-2 pt-2">
+                <Skeleton className="h-5 w-16 rounded-full" />
+                <Skeleton className="h-5 w-12 rounded-full" />
+              </div>
+            </div>
+          </div>
+        ))}
+      </div>
+    </div>
+  );
 }
 
 export const InfiniteRecipeGrid = ({
@@ -53,12 +86,7 @@ export const InfiniteRecipeGrid = ({
   }, [fetchNextPage, hasNextPage, isFetchingNextPage]);
 
   if (isLoading) {
-    return (
-      <div className="flex items-center justify-center py-8">
-        <Loader2 className="h-8 w-8 animate-spin" />
-        <span className="ml-2">Loading recipes...</span>
-      </div>
-    );
+    return <RecipeGridSkeleton />;
   }
 
   if (isError) {
@@ -78,7 +106,7 @@ export const InfiniteRecipeGrid = ({
   }
 
   return (
-    <div>
+    <div className="animate-in fade-in duration-500">
       <RecipeGrid recipes={recipes} onDelete={onDelete} />
 
       {/* Load more trigger */}
@@ -90,7 +118,7 @@ export const InfiniteRecipeGrid = ({
           </div>
         )}
 
-        {!hasNextPage && !isFetchingNextPage && (
+        {!hasNextPage && recipes.length > 0 && !isFetchingNextPage && (
           <div className="text-center py-4 text-muted-foreground">
             No more recipes to load
           </div>
