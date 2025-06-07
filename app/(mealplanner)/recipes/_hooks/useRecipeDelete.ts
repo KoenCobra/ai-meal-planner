@@ -87,7 +87,6 @@ export const useRecipeDelete = ({ menuId }: UseRecipeDeleteProps) => {
           menuId,
           recipeId: recipeToDelete.id,
         });
-        toast.success("Recipe removed from menu");
       } else {
         // Delete recipe completely
         await deleteRecipe({
@@ -95,7 +94,6 @@ export const useRecipeDelete = ({ menuId }: UseRecipeDeleteProps) => {
           id: recipeToDelete.id,
           dishType: recipeToDelete.dishType,
         });
-        toast.success("Recipe deleted successfully");
       }
     } catch (error) {
       const errorMessage =

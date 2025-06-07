@@ -11,7 +11,7 @@ import MenuList from "./MenuList";
 
 function MenusLoadingState() {
   return (
-    <>
+    <div className="animate-in fade-in duration-500">
       <div className="flex justify-center">
         <Skeleton className="h-10 w-32 mt-4 mb-6" />
       </div>
@@ -20,7 +20,7 @@ function MenusLoadingState() {
           <div key={i} className="border border-border rounded-md">
             <div className="flex items-center justify-between">
               <div className="p-4 grow">
-                <Skeleton className="h-6 md:w-48" />
+                <Skeleton className="h-6 w-48" />
               </div>
               <div className="pl-6 pr-2 md:px-6">
                 <Skeleton className="h-8 w-8 rounded-full" />
@@ -29,9 +29,10 @@ function MenusLoadingState() {
           </div>
         ))}
       </div>
-    </>
+    </div>
   );
 }
+
 const MenusOverview = () => {
   const { user } = useUser();
 
@@ -43,14 +44,14 @@ const MenusOverview = () => {
   if (!user) return null;
 
   return (
-    <>
+    <div className="animate-in fade-in duration-500">
       {menus?.page.length === 0 ? (
         <EmptyMenus />
       ) : (
         <MenuList menus={menus?.page || []} />
       )}
       <CreateMenuDialog />
-    </>
+    </div>
   );
 };
 

@@ -72,7 +72,6 @@ const UpdateMenuInput = ({
       });
 
       form.reset();
-      toast.success("Menu updated successfully");
     } catch (error) {
       const errorMessage =
         error instanceof ConvexError ? error.data : "Error updating menu";

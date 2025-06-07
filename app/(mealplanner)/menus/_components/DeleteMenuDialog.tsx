@@ -48,7 +48,6 @@ const DeleteMenuDialog = ({
     try {
       await deleteMenu({ id: menuId, userId: user?.id ?? "" });
       setOpenDeleteMenu(false);
-      toast.success("Menu deleted successfully");
     } catch (error) {
       const errorMessage =
         error instanceof ConvexError ? error.data : "Error deleting menu";

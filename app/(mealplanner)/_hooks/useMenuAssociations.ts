@@ -123,7 +123,6 @@ export const useMenuAssociations = ({
         );
 
       await Promise.all([...addPromises, ...removePromises]);
-      toast.success("Menu associations updated successfully");
       return true;
     } catch (e) {
       const errorMessage =

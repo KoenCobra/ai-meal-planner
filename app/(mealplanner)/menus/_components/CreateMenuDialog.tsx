@@ -79,7 +79,6 @@ const CreateMenuDialog = () => {
       });
 
       form.reset();
-      toast.success("Menu created successfully");
     } catch (error) {
       const errorMessage =
         error instanceof ConvexError ? error.data : "Error creating menu";
