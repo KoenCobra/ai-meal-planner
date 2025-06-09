@@ -233,25 +233,25 @@ const SearchPage = () => {
             </div>
 
             <RecipeGrid recipes={recipes} onDelete={handleDelete} />
-
-            {/* Load more trigger */}
-            <div ref={loadMoreRef} className="mt-8">
-              {isFetchingNextPage && (
-                <div className="flex items-center justify-center py-6">
-                  <Loader2 className="h-6 w-6 animate-spin mr-2" />
-                  <span>Loading more recipes...</span>
-                </div>
-              )}
-
-              {!hasNextPage && recipes.length > 0 && !isFetchingNextPage && (
-                <div className="text-center py-6 text-muted-foreground">
-                  You&apos;ve reached the end of the results
-                </div>
-              )}
-            </div>
           </motion.div>
         )}
       </AnimatePresence>
+
+      {/* Load more trigger */}
+      <div ref={loadMoreRef} className="mt-8">
+        {isFetchingNextPage && (
+          <div className="flex items-center justify-center py-6">
+            <Loader2 className="h-6 w-6 animate-spin mr-2" />
+            <span>Loading more recipes...</span>
+          </div>
+        )}
+
+        {!hasNextPage && recipes.length > 0 && !isFetchingNextPage && (
+          <div className="text-center py-6 text-muted-foreground">
+            You&apos;ve reached the end of the results
+          </div>
+        )}
+      </div>
 
       <DeleteRecipeDialog
         open={!!recipeToDelete}
