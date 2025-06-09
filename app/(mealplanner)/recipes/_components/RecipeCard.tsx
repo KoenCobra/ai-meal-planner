@@ -94,7 +94,7 @@ export const RecipeCard = ({ recipe, onDelete }: RecipeCardProps) => {
                     size="icon"
                     variant="secondary"
                     className={cn(
-                      "rounded-full h-8 w-8 bg-white/80 backdrop-blur-sm hover:bg-white shadow-sm",
+                      "rounded-full h-8 w-8 bg-white/80 dark:bg-black/80 backdrop-blur-sm hover:bg-white dark:hover:bg-black shadow-sm",
                       !isHovered && !dropdownOpen && "xl:opacity-0",
                     )}
                   >
