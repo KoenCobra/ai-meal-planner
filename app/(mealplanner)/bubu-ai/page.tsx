@@ -50,7 +50,7 @@ const BibiAi = () => {
             delay: 0.2,
           }}
         >
-          <Card className="border-none shadow-lg bg-white/80 backdrop-blur-sm dark:bg-zinc-900/80 p-0 pt-4">
+          <Card className="border-none  bg-white/80 backdrop-blur-sm dark:bg-zinc-900/80 p-0 pt-4">
             <CardContent className="p-0 px-4">
               <BubuAiForm
                 onRecipeGenerated={handleRecipeGenerated}

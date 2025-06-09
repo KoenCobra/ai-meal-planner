@@ -280,7 +280,7 @@ const BibiAiForm = ({
                               stiffness: 400,
                               damping: 25,
                             }}
-                            className="absolute top-1 right-1"
+                            className="absolute -top-1 -right-1"
                           >
                             <Button
                               type="button"
