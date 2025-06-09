@@ -65,7 +65,7 @@ export const RecipeCard = ({ recipe, onDelete }: RecipeCardProps) => {
         <Card
           className={cn(
             "h-full overflow-hidden transition-all duration-300 shadow-md pt-0 dark:border-border/50",
-            isHovered && "shadow-xl scale-[1.02]",
+            isHovered && "shadow-xl",
           )}
         >
           <div className="relative aspect-[4/3] overflow-hidden">
@@ -94,7 +94,7 @@ export const RecipeCard = ({ recipe, onDelete }: RecipeCardProps) => {
                     size="icon"
                     variant="secondary"
                     className={cn(
-                      "rounded-full h-8 w-8 bg-white/80 dark:bg-black/80 backdrop-blur-sm hover:bg-white dark:hover:bg-black shadow-sm",
+                      "rounded-full h-8 w-8 bg-white/80 dark:bg-black/50 backdrop-blur-sm hover:bg-white dark:hover:bg-black/60 shadow-sm",
                       !isHovered && !dropdownOpen && "xl:opacity-0",
                     )}
                   >
