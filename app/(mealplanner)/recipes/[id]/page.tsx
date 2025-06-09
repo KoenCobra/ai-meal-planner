@@ -3,6 +3,7 @@
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
+import { Skeleton } from "@/components/ui/skeleton";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { api } from "@/convex/_generated/api";
 import type { Id } from "@/convex/_generated/dataModel";
@@ -11,7 +12,6 @@ import { convexQuery } from "@convex-dev/react-query";
 import { useQuery } from "@tanstack/react-query";
 import { AnimatePresence, motion } from "framer-motion";
 import {
-  ArrowLeft,
   BookmarkPlus,
   Clock,
   Plus,
@@ -21,7 +21,6 @@ import {
   Users,
 } from "lucide-react";
 import Image from "next/image";
-import Link from "next/link";
 import { useParams } from "next/navigation";
 import { useEffect, useState } from "react";
 
@@ -115,54 +114,37 @@ const RecipeDetails = () => {
 
   if (isLoading) {
     return (
-      <div className="min-h-screen bg-gradient-to-b from-zinc-50 to-zinc-100 dark:from-zinc-900 dark:to-zinc-800">
-        <div className="container mx-auto px-4 py-8">
-          <div className="flex items-center justify-center py-20">
-            <motion.div
-              animate={{
-                opacity: [0.7, 1, 0.7],
-                transition: {
-                  repeat: Number.POSITIVE_INFINITY,
-                  duration: 1.5,
-                },
-              }}
-              className="text-center"
-            >
-              <div className="relative w-16 h-16 mb-4 mx-auto">
-                <div className="absolute top-0 left-0 w-full h-full border-4 border-t-primary border-r-transparent border-b-transparent border-l-transparent rounded-full animate-spin"></div>
-                <div
-                  className="absolute top-0 left-0 w-full h-full border-4 border-t-transparent border-r-transparent border-b-primary border-l-transparent rounded-full animate-spin"
-                  style={{
-                    animationDirection: "reverse",
-                    animationDuration: "1.5s",
-                  }}
-                ></div>
-              </div>
-              <p className="text-lg font-medium">Loading recipe...</p>
-            </motion.div>
-          </div>
-        </div>
-      </div>
-    );
-  }
+      <div className="min-h-screen mt-4 md:mt-10 animate-in fade-in duration-500">
+        <div className="container mx-auto max-w-4xl">
+          <Card className="border-none shadow-lg overflow-hidden bg-white/80 backdrop-blur-sm dark:bg-zinc-900/80 pt-0">
+            <div className="relative w-full h-[400px] md:h-[500px]">
+              <Skeleton className="w-full h-full" />
+            </div>
 
-  if (recipe === null || recipe === undefined) {
-    return (
-      <div className="min-h-screen bg-gradient-to-b from-zinc-50 to-zinc-100 dark:from-zinc-900 dark:to-zinc-800">
-        <div className="container mx-auto px-4 py-8">
-          <div className="text-center py-20">
-            <h2 className="text-2xl font-semibold mb-2">Recipe not found</h2>
-            <p className="text-muted-foreground mb-6">
-              The recipe you&apos;re looking for doesn&apos;t exist or has been
-              removed.
-            </p>
-            <Link href="/recipes">
-              <Button>
-                <ArrowLeft className="h-4 w-4 mr-2" />
-                Back to Recipes
-              </Button>
-            </Link>
-          </div>
+            <CardContent className="p-4 space-y-6">
+              <div className="space-y-2">
+                <Skeleton className="h-4 w-full" />
+                <Skeleton className="h-4 w-5/6" />
+                <Skeleton className="h-4 w-4/6" />
+              </div>
+
+              <div className="flex flex-wrap gap-3">
+                <Skeleton className="h-10 w-32" />
+                <Skeleton className="h-10 w-40" />
+                <Skeleton className="h-10 w-20" />
+                <Skeleton className="h-10 w-20" />
+              </div>
+
+              <div className="space-y-4">
+                <Skeleton className="h-10 w-full" />
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  {[1, 2, 3, 4, 5, 6].map((i) => (
+                    <Skeleton key={i} className="h-16 w-full" />
+                  ))}
+                </div>
+              </div>
+            </CardContent>
+          </Card>
         </div>
       </div>
     );
@@ -181,8 +163,8 @@ const RecipeDetails = () => {
             >
               <div className="relative w-full h-[400px] md:h-[500px]">
                 <Image
-                  src={recipe.imageUrl || "/placeholder.svg"}
-                  alt={recipe.title}
+                  src={recipe?.imageUrl || "/placeholder.svg"}
+                  alt={recipe?.title || "Recipe Image"}
                   className="object-cover"
                   fill
                   sizes="(max-width: 768px) 100vw, 1200px"
