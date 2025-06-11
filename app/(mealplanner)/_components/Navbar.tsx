@@ -11,7 +11,7 @@ import { usePathname } from "next/navigation";
 const navItems = [
   {
     href: "/bubu-ai",
-    label: "Bubu AI",
+    label: "Ask Bubu",
     icon: (
       <Sparkles className="size-4 absolute -top-1 -right-4 text-blue-500" />
     ),
@@ -53,7 +53,7 @@ const Navbar = () => {
   return (
     <>
       <nav className="sticky top-0 w-full z-50 bg-white/80 dark:bg-zinc-900/80 backdrop-blur-md border-b border-zinc-200/50 dark:border-zinc-800/50 shadow-sm">
-        <div className="container mx-auto px-4 py-4 flex items-center justify-between">
+        <div className="container mx-auto px-4 py-3 flex items-center justify-between">
           {/* Logo */}
           <div
             className="flex items-center gap-2 cursor-pointer group"
@@ -64,7 +64,16 @@ const Navbar = () => {
               });
             }}
           >
-            <h1 className="text-2xl font-bold">Bubu</h1>
+            <div className="relative flex items-baseline">
+              <h1 className="text-2xl font-medium tracking-tight text-zinc-900 dark:text-white transition-colors">
+                Bubu
+              </h1>
+              <span className="text-2xl font-semibold bg-gradient-to-r from-blue-600 to-blue-400 dark:from-blue-400 dark:to-blue-300 bg-clip-text text-transparent ml-2 transition-all">
+                AI
+              </span>
+              {/* Gradient underline */}
+              <div className="absolute -bottom-1.5 left-1/2 transform -translate-x-1/2 w-10 h-0.5 bg-gradient-to-r from-blue-600 to-blue-400 dark:from-blue-400 dark:to-blue-300 rounded-full"></div>
+            </div>
           </div>
 
           {/* Desktop Navigation */}
