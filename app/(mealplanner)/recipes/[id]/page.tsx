@@ -151,7 +151,7 @@ const RecipeDetails = () => {
   }
 
   return (
-    <div className="min-h-screen mt-4 md:mt-10">
+    <div className="min-h-screen mt-4 md:mt-10 pb-10">
       <div className="container mx-auto max-w-4xl">
         <motion.div variants={cardVariants} initial="hidden" animate="visible">
           <Card className="border-none shadow-lg overflow-hidden bg-white/80 backdrop-blur-sm dark:bg-zinc-900/80 pt-0">
