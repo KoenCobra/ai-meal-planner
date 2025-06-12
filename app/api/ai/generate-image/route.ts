@@ -55,7 +55,7 @@ export async function POST(req: NextRequest) {
     const result = await fal.subscribe("fal-ai/flux/schnell", {
       input: {
         prompt: `Professional food photography of ${recipeTitle}. ${recipeDescription}.Super high def 4K quality, and detailed.`,
-        image_size: "square_hd",
+        image_size: "square",
       },
     });
 
