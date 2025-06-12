@@ -52,14 +52,14 @@ const RecipeDetails = () => {
     setIsImageLoaded(true);
   };
 
-  // Animation variants - matching BubuAiResponse exactly
+  // Animation variants - snappy and quick
   const cardVariants = {
     hidden: { opacity: 0, y: 20 },
     visible: {
       opacity: 1,
       y: 0,
       transition: {
-        duration: 0.6,
+        duration: 0.2,
         ease: "easeOut",
       },
     },
@@ -70,7 +70,7 @@ const RecipeDetails = () => {
     visible: {
       opacity: 1,
       transition: {
-        duration: 0.8,
+        duration: 0.25,
         ease: "easeOut",
       },
     },
@@ -82,8 +82,8 @@ const RecipeDetails = () => {
       opacity: 1,
       y: 0,
       transition: {
-        delay: 0.3,
-        duration: 0.5,
+        delay: 0.1,
+        duration: 0.2,
       },
     },
   };
@@ -93,7 +93,7 @@ const RecipeDetails = () => {
     visible: {
       opacity: 1,
       transition: {
-        staggerChildren: 0.1,
+        staggerChildren: 0.03,
       },
     },
   };
@@ -103,7 +103,7 @@ const RecipeDetails = () => {
     visible: {
       opacity: 1,
       y: 0,
-      transition: { type: "spring", stiffness: 300, damping: 24 },
+      transition: { type: "spring", stiffness: 600, damping: 30 },
     },
   };
 
@@ -188,7 +188,7 @@ const RecipeDetails = () => {
                 className="absolute inset-0 bg-gradient-to-t from-black/70 to-transparent"
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
-                transition={{ delay: 0.3, duration: 0.5 }}
+                transition={{ delay: 0.1, duration: 0.2 }}
               ></motion.div>
 
               <motion.div
@@ -249,7 +249,7 @@ const RecipeDetails = () => {
                 className="mb-6"
                 initial={{ opacity: 0, y: 10 }}
                 animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 0.5, duration: 0.5 }}
+                transition={{ delay: 0.15, duration: 0.2 }}
               >
                 <p className="text-muted-foreground">{recipe?.summary}</p>
               </motion.div>
@@ -258,11 +258,12 @@ const RecipeDetails = () => {
                 className="flex flex-wrap gap-3 mb-6"
                 initial={{ opacity: 0, y: 10 }}
                 animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 0.6, duration: 0.5 }}
+                transition={{ delay: 0.2, duration: 0.2 }}
               >
                 <motion.div
                   whileHover={{ scale: 1.05 }}
                   whileTap={{ scale: 0.95 }}
+                  transition={{ duration: 0.1 }}
                 >
                   <Button
                     onClick={() => openDialog(params.id as Id<"recipes">)}
@@ -276,6 +277,7 @@ const RecipeDetails = () => {
                 <motion.div
                   whileHover={{ scale: 1.05 }}
                   whileTap={{ scale: 0.95 }}
+                  transition={{ duration: 0.1 }}
                 >
                   <Button
                     variant="outline"
@@ -292,6 +294,7 @@ const RecipeDetails = () => {
                 <motion.div
                   whileHover={{ scale: 1.05 }}
                   whileTap={{ scale: 0.95 }}
+                  transition={{ duration: 0.1 }}
                 >
                   <Button variant="outline" className="gap-2">
                     <Share2 className="h-4 w-4" />
@@ -302,6 +305,7 @@ const RecipeDetails = () => {
                 <motion.div
                   whileHover={{ scale: 1.05 }}
                   whileTap={{ scale: 0.95 }}
+                  transition={{ duration: 0.1 }}
                 >
                   <Button variant="outline" className="gap-2">
                     <Printer className="h-4 w-4" />
@@ -313,7 +317,7 @@ const RecipeDetails = () => {
               <motion.div
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
-                transition={{ delay: 0.7, duration: 0.5 }}
+                transition={{ delay: 0.25, duration: 0.2 }}
               >
                 <Tabs
                   value={activeTab}
@@ -343,6 +347,7 @@ const RecipeDetails = () => {
                                 scale: 1.02,
                                 boxShadow:
                                   "0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05)",
+                                transition: { duration: 0.1 },
                               }}
                               className="flex items-start gap-3 p-3 rounded-lg border bg-background/50"
                             >
@@ -385,8 +390,8 @@ const RecipeDetails = () => {
                                 }}
                                 transition={{
                                   type: "spring",
-                                  stiffness: 400,
-                                  damping: 10,
+                                  stiffness: 800,
+                                  damping: 20,
                                 }}
                               >
                                 {step.number}
