@@ -3,7 +3,6 @@
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
-import { Skeleton } from "@/components/ui/skeleton";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { api } from "@/convex/_generated/api";
 import type { Id } from "@/convex/_generated/dataModel";
@@ -14,6 +13,7 @@ import { AnimatePresence, motion } from "framer-motion";
 import {
   BookmarkPlus,
   Clock,
+  Loader2,
   Plus,
   Printer,
   Share2,
@@ -43,11 +43,6 @@ const RecipeDetails = () => {
     }),
   });
 
-  // Create a simple blur data URL
-  const createBlurDataURL = () => {
-    return "data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMTAiIGhlaWdodD0iMTAiIHZpZXdCb3g9IjAgMCAxMCAxMCIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPGRlZnM+CjxsaW5lYXJHcmFkaWVudCBpZD0iZ3JhZGllbnQiIHgxPSIwJSIgeTE9IjAlIiB4Mj0iMTAwJSIgeTI9IjEwMCUiPgo8c3RvcCBvZmZzZXQ9IjAlIiBzdHlsZT0ic3RvcC1jb2xvcjojZjNmNGY2O3N0b3Atb3BhY2l0eToxIiAvPgo8c3RvcCBvZmZzZXQ9IjEwMCUiIHN0eWxlPSJzdG9wLWNvbG9yOiNlNWU3ZWI7c3RvcC1vcGFjaXR5OjEiIC8+CjwvbGluZWFyR3JhZGllbnQ+CjwvZGVmcz4KPHJlY3Qgd2lkdGg9IjEwIiBoZWlnaHQ9IjEwIiBmaWxsPSJ1cmwoI2dyYWRpZW50KSIgLz4KPHN2Zz4K";
-  };
-
   // Reset image loaded state when recipe changes
   useEffect(() => {
     setIsImageLoaded(false);
@@ -64,7 +59,7 @@ const RecipeDetails = () => {
       opacity: 1,
       y: 0,
       transition: {
-        duration: 0.6,
+        duration: 0.2,
         ease: "easeOut",
       },
     },
@@ -75,7 +70,7 @@ const RecipeDetails = () => {
     visible: {
       opacity: 1,
       transition: {
-        duration: 0.8,
+        duration: 0.2,
         ease: "easeOut",
       },
     },
@@ -87,8 +82,8 @@ const RecipeDetails = () => {
       opacity: 1,
       y: 0,
       transition: {
-        delay: 0.3,
-        duration: 0.5,
+        delay: 0.1,
+        duration: 0.4,
       },
     },
   };
@@ -114,38 +109,8 @@ const RecipeDetails = () => {
 
   if (isLoading) {
     return (
-      <div className="min-h-screen mt-4 md:mt-10 animate-in fade-in duration-500">
-        <div className="container mx-auto max-w-4xl">
-          <Card className="border-none shadow-lg overflow-hidden bg-white/80 backdrop-blur-sm dark:bg-zinc-900/80 pt-0">
-            <div className="relative w-full h-[400px] md:h-[500px]">
-              <Skeleton className="w-full h-full" />
-            </div>
-
-            <CardContent className="p-4 space-y-6">
-              <div className="space-y-2">
-                <Skeleton className="h-4 w-full" />
-                <Skeleton className="h-4 w-5/6" />
-                <Skeleton className="h-4 w-4/6" />
-              </div>
-
-              <div className="flex flex-wrap gap-3">
-                <Skeleton className="h-10 w-32" />
-                <Skeleton className="h-10 w-40" />
-                <Skeleton className="h-10 w-20" />
-                <Skeleton className="h-10 w-20" />
-              </div>
-
-              <div className="space-y-4">
-                <Skeleton className="h-10 w-full" />
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  {[1, 2, 3, 4, 5, 6].map((i) => (
-                    <Skeleton key={i} className="h-16 w-full" />
-                  ))}
-                </div>
-              </div>
-            </CardContent>
-          </Card>
-        </div>
+      <div className="flex items-center justify-center py-8">
+        <Loader2 className="h-8 w-8 animate-spin text-muted-foreground" />
       </div>
     );
   }
@@ -168,8 +133,6 @@ const RecipeDetails = () => {
                   className="object-cover"
                   fill
                   sizes="(max-width: 768px) 100vw, 1200px"
-                  placeholder="blur"
-                  blurDataURL={createBlurDataURL()}
                   onLoad={handleImageLoad}
                   quality={50}
                   priority
