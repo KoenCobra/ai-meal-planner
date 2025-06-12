@@ -59,7 +59,9 @@ const applicationTables = {
     name: v.string(),
     quantity: v.optional(v.string()),
     checked: v.boolean(),
-  }).index("by_user", ["userId"]),
+  })
+    .index("by_user", ["userId"])
+    .index("by_user_and_name", ["userId", "name"]),
 };
 
 export default defineSchema(
