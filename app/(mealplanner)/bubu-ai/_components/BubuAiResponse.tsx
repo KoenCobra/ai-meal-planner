@@ -55,11 +55,6 @@ const BubuAiResponse = ({ recipe, image, onClear }: BubuAiResponseProps) => {
   const { open, recipeId, openDialog, closeDialog } = useAddToMenuDialogStore();
   const { handleSyncIngredients } = useSyncIngredients(user?.id || "");
 
-  // Create a simple blur data URL
-  const createBlurDataURL = () => {
-    return "data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMTAiIGhlaWdodD0iMTAiIHZpZXdCb3g9IjAgMCAxMCAxMCIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPGRlZnM+CjxsaW5lYXJHcmFkaWVudCBpZD0iZ3JhZGllbnQiIHgxPSIwJSIgeTE9IjAlIiB4Mj0iMTAwJSIgeTI9IjEwMCUiPgo8c3RvcCBvZmZzZXQ9IjAlIiBzdHlsZT0ic3RvcC1jb2xvcjojZjNmNGY2O3N0b3Atb3BhY2l0eToxIiAvPgo8c3RvcCBvZmZzZXQ9IjEwMCUiIHN0eWxlPSJzdG9wLWNvbG9yOiNlNWU3ZWI7c3RvcC1vcGFjaXR5OjEiIC8+CjwvbGluZWFyR3JhZGllbnQ+CjwvZGVmcz4KPHJlY3Qgd2lkdGg9IjEwIiBoZWlnaHQ9IjEwIiBmaWxsPSJ1cmwoI2dyYWRpZW50KSIgLz4KPHN2Zz4K";
-  };
-
   // Only reset image loaded state when image changes
   useEffect(() => {
     setIsImageLoaded(false);
@@ -199,8 +194,6 @@ const BubuAiResponse = ({ recipe, image, onClear }: BubuAiResponseProps) => {
                     className="object-cover"
                     fill
                     sizes="(max-width: 768px) 100vw, 1200px"
-                    placeholder="blur"
-                    blurDataURL={createBlurDataURL()}
                     onLoad={handleImageLoad}
                     quality={50}
                   />
