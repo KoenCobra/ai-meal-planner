@@ -32,7 +32,6 @@ const applicationTables = {
     dishType: v.string(),
   })
     .index("by_user", ["userId"])
-    .index("by_title", ["title"])
     .index("by_user_and_dish_type", ["userId", "dishType"])
     .searchIndex("search_recipes", {
       searchField: "searchText",
@@ -44,7 +43,6 @@ const applicationTables = {
     name: v.string(),
   })
     .index("by_user", ["userId"])
-    .index("by_name", ["name"])
     .index("by_user_and_name", ["userId", "name"]),
   menusOnRecipes: defineTable({
     menuId: v.id("menus"),
