@@ -8,9 +8,9 @@
  * @module
  */
 
+import type * as aiRateLimit from "../aiRateLimit.js";
 import type * as groceryList from "../groceryList.js";
 import type * as menus from "../menus.js";
-import type * as openaiRateLimit from "../openaiRateLimit.js";
 import type * as rateLimiter from "../rateLimiter.js";
 import type * as recipes from "../recipes.js";
 
@@ -29,9 +29,9 @@ import type {
  * ```
  */
 declare const fullApi: ApiFromModules<{
+  aiRateLimit: typeof aiRateLimit;
   groceryList: typeof groceryList;
   menus: typeof menus;
-  openaiRateLimit: typeof openaiRateLimit;
   rateLimiter: typeof rateLimiter;
   recipes: typeof recipes;
 }>;

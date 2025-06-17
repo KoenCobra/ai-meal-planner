@@ -1,9 +1,7 @@
 import { HOUR, MINUTE, RateLimiter } from "@convex-dev/rate-limiter";
 import { components } from "./_generated/api";
 
-// Centralized rate limiter configuration
 export const rateLimiter = new RateLimiter(components.rateLimiter, {
-  // Recipe operations - limit creation to prevent spam
   createRecipe: {
     kind: "token bucket",
     rate: 10,
@@ -23,7 +21,6 @@ export const rateLimiter = new RateLimiter(components.rateLimiter, {
     capacity: 25,
   },
 
-  // Menu operations - limit creation and sync operations
   createMenu: { kind: "token bucket", rate: 20, period: MINUTE, capacity: 25 },
   updateMenu: { kind: "token bucket", rate: 20, period: MINUTE, capacity: 25 },
   deleteMenu: { kind: "token bucket", rate: 15, period: MINUTE, capacity: 20 },
@@ -46,7 +43,6 @@ export const rateLimiter = new RateLimiter(components.rateLimiter, {
     capacity: 50,
   },
 
-  // Grocery list operations - prevent spam adding/clearing
   addGroceryItem: {
     kind: "token bucket",
     rate: 50,
@@ -78,47 +74,18 @@ export const rateLimiter = new RateLimiter(components.rateLimiter, {
     capacity: 25,
   },
 
-  // File operations - expensive operations that need tight control
-  generateUploadUrl: {
-    kind: "token bucket",
-    rate: 10,
-    period: MINUTE,
-    capacity: 15,
-  },
-
-  // Search operations - prevent expensive search spam
   searchRecipes: {
     kind: "token bucket",
     rate: 20,
     period: MINUTE,
     capacity: 50,
   },
-  searchIngredients: {
-    kind: "token bucket",
-    rate: 20,
-    period: MINUTE,
-    capacity: 50,
-  },
 
-  globalRecipeCreation: {
-    kind: "fixed window",
-    rate: 1000,
-    period: HOUR,
-    shards: 10,
-  },
-  globalMenuCreation: {
-    kind: "fixed window",
-    rate: 500,
-    period: HOUR,
-    shards: 5,
-  },
-
-  // OpenAI API calls - expensive operations that need tight control
   generateRecipeAI: {
     kind: "token bucket",
-    rate: 25,
+    rate: 0,
     period: HOUR,
-    capacity: 30,
+    capacity: 0,
   },
   generateImageAI: {
     kind: "token bucket",
@@ -131,26 +98,6 @@ export const rateLimiter = new RateLimiter(components.rateLimiter, {
     rate: 25,
     period: HOUR,
     capacity: 30,
-  },
-
-  // Global limits for OpenAI API usage
-  globalOpenAIRecipes: {
-    kind: "fixed window",
-    rate: 1000,
-    period: HOUR,
-    shards: 10,
-  },
-  globalOpenAIImages: {
-    kind: "fixed window",
-    rate: 500,
-    period: HOUR,
-    shards: 5,
-  },
-  globalOpenAIAnalysis: {
-    kind: "fixed window",
-    rate: 750,
-    period: HOUR,
-    shards: 8,
   },
 });
 

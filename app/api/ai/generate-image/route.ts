@@ -30,16 +30,16 @@ export async function POST(req: NextRequest) {
 
     // Check rate limits
     const rateLimitCheck = await convex.mutation(
-      api.openaiRateLimit.checkImageGenerationLimit,
+      api.aiRateLimit.checkImageGenerationLimit,
       {
         userId,
       },
     );
 
-    if (!rateLimitCheck.success) {
+    if (!rateLimitCheck?.success) {
       return NextResponse.json(
         {
-          error: rateLimitCheck.message || "Rate limit exceeded",
+          error: rateLimitCheck?.message || "Rate limit exceeded",
         },
         { status: 429 },
       );

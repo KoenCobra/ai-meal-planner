@@ -26,18 +26,17 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: "Image is required" }, { status: 400 });
     }
 
-    // Check rate limits
     const rateLimitCheck = await convex.mutation(
-      api.openaiRateLimit.checkImageAnalysisLimit,
+      api.aiRateLimit.checkImageAnalysisLimit,
       {
         userId,
       },
     );
 
-    if (!rateLimitCheck.success) {
+    if (!rateLimitCheck?.success) {
       return NextResponse.json(
         {
-          error: rateLimitCheck.message || "Rate limit exceeded",
+          error: rateLimitCheck?.message || "Rate limit exceeded",
         },
         { status: 429 },
       );

@@ -168,7 +168,13 @@ const BibiAiForm = ({
         }
       }
     } catch (error) {
-      return console.log(error);
+      if (error instanceof Error && error.message.includes("aborted")) {
+        return console.log(error);
+      } else {
+        toast.error(
+          error instanceof Error ? error.message : "Failed to generate recipe",
+        );
+      }
     } finally {
       setIsGeneratingRecipe(false);
       setIsGeneratingImage(false);

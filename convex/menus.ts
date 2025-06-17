@@ -10,14 +10,14 @@ export const createMenu = mutation({
     name: v.string(),
   },
   handler: async (ctx, args) => {
-    // Rate limit menu creation per user
+    const user = await ctx.auth.getUserIdentity();
+    if (!user) {
+      throw new Error("Unauthorized");
+    }
     await rateLimiter.limit(ctx, "createMenu", {
       key: args.userId,
       throws: true,
     });
-
-    // Also check global menu creation limit
-    await rateLimiter.limit(ctx, "globalMenuCreation", { throws: true });
 
     return await ctx.db.insert("menus", {
       userId: args.userId,
@@ -33,7 +33,10 @@ export const updateMenu = mutation({
     name: v.string(),
   },
   handler: async (ctx, args) => {
-    // Rate limit menu updates per user
+    const user = await ctx.auth.getUserIdentity();
+    if (!user) {
+      throw new Error("Unauthorized");
+    }
     await rateLimiter.limit(ctx, "updateMenu", {
       key: args.userId,
       throws: true,
@@ -55,7 +58,10 @@ export const deleteMenu = mutation({
     id: v.id("menus"),
   },
   handler: async (ctx, args) => {
-    // Rate limit menu deletion per user
+    const user = await ctx.auth.getUserIdentity();
+    if (!user) {
+      throw new Error("Unauthorized");
+    }
     await rateLimiter.limit(ctx, "deleteMenu", {
       key: args.userId,
       throws: true,
@@ -85,7 +91,10 @@ export const addRecipeToMenu = mutation({
     recipeId: v.id("recipes"),
   },
   handler: async (ctx, args) => {
-    // Rate limit adding recipes to menu per user
+    const user = await ctx.auth.getUserIdentity();
+    if (!user) {
+      throw new Error("Unauthorized");
+    }
     await rateLimiter.limit(ctx, "addRecipeToMenu", {
       key: args.userId,
       throws: true,
@@ -122,7 +131,10 @@ export const removeRecipeFromMenu = mutation({
     recipeId: v.id("recipes"),
   },
   handler: async (ctx, args) => {
-    // Rate limit removing recipes from menu per user
+    const user = await ctx.auth.getUserIdentity();
+    if (!user) {
+      throw new Error("Unauthorized");
+    }
     await rateLimiter.limit(ctx, "removeRecipeFromMenu", {
       key: args.userId,
       throws: true,
@@ -273,7 +285,10 @@ export const syncMenuIngredientsToGroceryList = mutation({
   },
   returns: v.null(),
   handler: async (ctx, args) => {
-    // Rate limit sync operations per user - these can be very expensive
+    const user = await ctx.auth.getUserIdentity();
+    if (!user) {
+      throw new Error("Unauthorized");
+    }
     await rateLimiter.limit(ctx, "syncMenuIngredients", {
       key: args.userId,
       throws: true,

@@ -22,6 +22,10 @@ export const addItem = mutation({
     quantity: v.optional(v.string()),
   },
   handler: async (ctx, args) => {
+    const user = await ctx.auth.getUserIdentity();
+    if (!user) {
+      throw new Error("Unauthorized");
+    }
     await rateLimiter.limit(ctx, "addGroceryItem", {
       key: args.userId,
       throws: true,
@@ -110,6 +114,10 @@ export const toggleItem = mutation({
     id: v.id("groceryItems"),
   },
   handler: async (ctx, args) => {
+    const user = await ctx.auth.getUserIdentity();
+    if (!user) {
+      throw new Error("Unauthorized");
+    }
     await rateLimiter.limit(ctx, "toggleGroceryItem", {
       key: args.userId,
       throws: true,
@@ -126,6 +134,10 @@ export const toggleItem = mutation({
 export const listItems = query({
   args: { userId: v.string() },
   handler: async (ctx, args) => {
+    const user = await ctx.auth.getUserIdentity();
+    if (!user) {
+      throw new Error("Unauthorized");
+    }
     return await ctx.db
       .query("groceryItems")
       .withIndex("by_user", (q) => q.eq("userId", args.userId))
@@ -139,6 +151,10 @@ export const clearAllItems = mutation({
     userId: v.string(),
   },
   handler: async (ctx, args) => {
+    const user = await ctx.auth.getUserIdentity();
+    if (!user) {
+      throw new Error("Unauthorized");
+    }
     await rateLimiter.limit(ctx, "clearAllGroceryItems", {
       key: args.userId,
       throws: true,

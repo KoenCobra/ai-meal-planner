@@ -11,6 +11,10 @@ export const getRecipesByDishType = query({
     paginationOpts: paginationOptsValidator,
   },
   handler: async (ctx, args) => {
+    const user = await ctx.auth.getUserIdentity();
+    if (!user) {
+      throw new Error("Unauthorized");
+    }
     return await ctx.db
       .query("recipes")
       .withIndex("by_user_and_dish_type", (q) =>
@@ -52,21 +56,14 @@ export const createRecipe = mutation({
   handler: async (ctx, args) => {
     const { userId, ...recipeData } = args;
 
-    // Rate limit recipe creation per user
     await rateLimiter.limit(ctx, "createRecipe", { key: userId, throws: true });
 
-    // Also check global recipe creation limit
-    await rateLimiter.limit(ctx, "globalRecipeCreation", { throws: true });
-
-    // Create searchable ingredients text
     const ingredientsText = recipeData.ingredients
       .map((ingredient) => ingredient.name)
       .join(" ");
 
-    // Create searchable categories text
     const categoriesText = recipeData.categories.join(" ");
 
-    // Create combined search text for title, ingredients, and categories
     const searchText = `${recipeData.title} ${ingredientsText} ${categoriesText}`;
 
     return await ctx.db.insert("recipes", {
@@ -85,7 +82,6 @@ export const deleteRecipe = mutation({
     dishType: v.string(),
   },
   handler: async (ctx, args) => {
-    // Rate limit recipe deletion per user
     await rateLimiter.limit(ctx, "deleteRecipe", {
       key: args.userId,
       throws: true,
@@ -127,6 +123,10 @@ export const listRecipes = query({
     paginationOpts: paginationOptsValidator,
   },
   handler: async (ctx, args) => {
+    const user = await ctx.auth.getUserIdentity();
+    if (!user) {
+      throw new Error("Unauthorized");
+    }
     return await ctx.db
       .query("recipes")
       .withIndex("by_user", (q) => q.eq("userId", args.userId))
@@ -142,8 +142,11 @@ export const searchRecipesByTitleIngredientsAndCategories = query({
     paginationOpts: paginationOptsValidator,
   },
   handler: async (ctx, args) => {
+    const user = await ctx.auth.getUserIdentity();
+    if (!user) {
+      throw new Error("Unauthorized");
+    }
     if (!args.query.trim()) {
-      // If no query, return all recipes paginated
       return await ctx.db
         .query("recipes")
         .withIndex("by_user", (q) => q.eq("userId", args.userId))
@@ -151,7 +154,6 @@ export const searchRecipesByTitleIngredientsAndCategories = query({
         .paginate(args.paginationOpts);
     }
 
-    // Search in combined title, ingredients, and categories text
     return await ctx.db
       .query("recipes")
       .withSearchIndex("search_recipes", (q) =>
@@ -168,7 +170,10 @@ export const syncIngredientsToGroceryList = mutation({
   },
   returns: v.null(),
   handler: async (ctx, args) => {
-    // Rate limit sync operations per user - these can be expensive
+    const user = await ctx.auth.getUserIdentity();
+    if (!user) {
+      throw new Error("Unauthorized");
+    }
     await rateLimiter.limit(ctx, "syncRecipeIngredients", {
       key: args.userId,
       throws: true,

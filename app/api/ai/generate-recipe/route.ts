@@ -19,16 +19,18 @@ export async function POST(req: NextRequest) {
     const { description } = input;
 
     const rateLimitCheck = await convex.mutation(
-      api.openaiRateLimit.checkRecipeGenerationLimit,
+      api.aiRateLimit.checkRecipeGenerationLimit,
       {
         userId,
       },
     );
 
-    if (!rateLimitCheck.success) {
+    console.log("rateLimitCheck", rateLimitCheck?.message);
+
+    if (!rateLimitCheck?.success) {
       return NextResponse.json(
         {
-          error: rateLimitCheck.message || "Rate limit exceeded",
+          error: rateLimitCheck?.message || "Rate limit exceeded",
         },
         { status: 429 },
       );
@@ -132,8 +134,8 @@ export async function POST(req: NextRequest) {
     };
 
     return NextResponse.json(recipe, { status: 200 });
-  } catch (error) {
-    console.error("Error generating recipe:", error);
+  } catch {
+    console.error("Error generating recipe");
     return NextResponse.json(
       { error: "Failed to generate recipe" },
       { status: 500 },
