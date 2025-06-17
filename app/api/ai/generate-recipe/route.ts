@@ -25,8 +25,6 @@ export async function POST(req: NextRequest) {
       },
     );
 
-    console.log("rateLimitCheck", rateLimitCheck?.message);
-
     if (!rateLimitCheck?.success) {
       return NextResponse.json(
         {
