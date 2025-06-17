@@ -1,118 +1,10 @@
 import { api } from "@/convex/_generated/api";
+import { recipeJsonSchema } from "@/lib/constants";
 import { auth } from "@clerk/nextjs/server";
 import { ConvexHttpClient } from "convex/browser";
 import { NextRequest, NextResponse } from "next/server";
 
 const convex = new ConvexHttpClient(process.env.NEXT_PUBLIC_CONVEX_URL!);
-
-// JSON Schema for structured output based on Recipe Zod schema
-const recipeJsonSchema = {
-  type: "object",
-  properties: {
-    title: {
-      type: "string",
-      description: "The title of the recipe",
-    },
-    summary: {
-      type: "string",
-      description: "A very short summary of the recipe",
-    },
-    servings: {
-      type: "number",
-      description: "The number of servings the recipe makes",
-    },
-    readyInMinutes: {
-      type: "number",
-      description: "The number of minutes it takes to prepare the recipe",
-    },
-    categories: {
-      type: "array",
-      items: {
-        type: "string",
-      },
-      description: "The categories the recipe is suitable for",
-    },
-    instructions: {
-      type: "object",
-      properties: {
-        steps: {
-          type: "array",
-          items: {
-            type: "object",
-            properties: {
-              number: {
-                type: "number",
-                description: "The step number",
-              },
-              step: {
-                type: "string",
-                description: "The step description",
-              },
-            },
-            required: ["number", "step"],
-            additionalProperties: false,
-          },
-        },
-      },
-      required: ["steps"],
-      additionalProperties: false,
-    },
-    ingredients: {
-      type: "array",
-      items: {
-        type: "object",
-        properties: {
-          name: {
-            type: "string",
-            description: "The name of the ingredient",
-          },
-          measures: {
-            type: "object",
-            properties: {
-              amount: {
-                type: "number",
-                description: "The amount of the ingredient",
-              },
-              unit: {
-                type: "string",
-                description:
-                  "The units of measurement will be based on the user's locale",
-              },
-            },
-            required: ["amount", "unit"],
-            additionalProperties: false,
-          },
-        },
-        required: ["name", "measures"],
-        additionalProperties: false,
-      },
-    },
-    dishType: {
-      type: "string",
-      description:
-        "This can only have 1 of the following values: 'breakfast', 'lunch', 'snacks' or 'dinner'",
-    },
-    error: {
-      type: ["string", "null"],
-      description: "The error message if the recipe is not generated",
-    },
-    image: {
-      type: ["string", "null"],
-      description: "The image of the recipe",
-    },
-  },
-  required: [
-    "title",
-    "summary",
-    "servings",
-    "readyInMinutes",
-    "categories",
-    "instructions",
-    "ingredients",
-    "dishType",
-  ],
-  additionalProperties: false,
-};
 
 export async function POST(req: NextRequest) {
   try {
@@ -171,7 +63,9 @@ export async function POST(req: NextRequest) {
           content: [
             {
               type: "text",
-              text: `You are a recipe generator AI. Your task is to analyze the food image and generate a recipe that could recreate this dish. Make sure to generate all the output in the language that is used in the image. ${
+              text: `You are a recipe generator AI. Your task is to analyze the food image and generate a recipe that could recreate this dish. Make sure to generate all the output in the language that is used in the image.
+              If the input has nothing to do with food, please return an error message. Be very detailed and elaborate with the output.
+              ${
                 additionalInstructions
                   ? `Additionally, consider these instructions from the user: ${additionalInstructions}`
                   : ""
