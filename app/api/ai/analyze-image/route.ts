@@ -15,7 +15,7 @@ const recipeJsonSchema = {
     },
     summary: {
       type: "string",
-      description: "A short summary of the recipe",
+      description: "A very short summary of the recipe",
     },
     servings: {
       type: "number",
