@@ -16,14 +16,6 @@ const BibiAi = () => {
     queryKey: ["generate-recipe"],
   });
 
-  const handleGenerationStart = () => {
-    clearRecipe();
-  };
-
-  const handleImageGenerationAborted = () => {
-    clearRecipe();
-  };
-
   return (
     <motion.div
       initial={{ opacity: 0 }}
@@ -44,10 +36,7 @@ const BibiAi = () => {
         >
           <Card className="border-none  bg-white/80 backdrop-blur-sm dark:bg-zinc-900/80 p-0 pt-4">
             <CardContent className="p-0 px-4">
-              <BubuAiForm
-                onGenerationStart={handleGenerationStart}
-                onImageGenerationAborted={handleImageGenerationAborted}
-              />
+              <BubuAiForm />
             </CardContent>
           </Card>
         </motion.div>

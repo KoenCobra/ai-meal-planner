@@ -19,11 +19,11 @@ export async function POST(req: NextRequest) {
     }
 
     // Parse request body
-    const { recipeTitle, recipeDescription } = await req.json();
+    const { recipeTitle, recipeSummary } = await req.json();
 
-    if (!recipeTitle || !recipeDescription) {
+    if (!recipeTitle || !recipeSummary) {
       return NextResponse.json(
-        { error: "Recipe title and description are required" },
+        { error: "Recipe title and summary are required" },
         { status: 400 },
       );
     }
@@ -54,7 +54,7 @@ export async function POST(req: NextRequest) {
     // Generate image
     const result = await fal.subscribe("fal-ai/flux/schnell", {
       input: {
-        prompt: `Professional food photography of ${recipeTitle}. ${recipeDescription}.Super high def 4K quality, and detailed.`,
+        prompt: `Professional food photography of ${recipeTitle}. ${recipeSummary}.Super high def 4K quality, and detailed.`,
         image_size: "square_hd",
       },
     });

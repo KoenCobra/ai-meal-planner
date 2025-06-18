@@ -1,28 +1,27 @@
-import { sanitizeInput } from "@/lib/utils";
-import { GenerateRecipeInput, RecipeInput } from "@/lib/validation";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useRef } from "react";
 
-export const useGenerateRecipe = () => {
+export const useGenerateImage = () => {
   const queryClient = useQueryClient();
   const abortControllerRef = useRef<AbortController | null>(null);
 
-  const generateRecipeMutation = useMutation({
-    mutationFn: async (input: GenerateRecipeInput) => {
+  const generateImageMutation = useMutation({
+    mutationFn: async ({
+      recipeTitle,
+      recipeSummary,
+    }: {
+      recipeTitle: string;
+      recipeSummary: string;
+    }) => {
       const abortController = new AbortController();
       abortControllerRef.current = abortController;
 
-      const sanitizedDescription = sanitizeInput(input.description);
-      const sanitizedInput = {
-        description: sanitizedDescription,
-      };
-
-      const response = await fetch("/api/ai/generate-recipe", {
+      const response = await fetch("/api/ai/generate-image", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify(sanitizedInput),
+        body: JSON.stringify({ recipeTitle, recipeSummary }),
         signal: abortController.signal,
       });
 
@@ -31,7 +30,7 @@ export const useGenerateRecipe = () => {
       return await response.json();
     },
     onSuccess: (data) => {
-      queryClient.setQueryData<RecipeInput>(["generate-recipe"], data);
+      queryClient.setQueryData(["generate-image"], data);
     },
   });
 
@@ -44,7 +43,7 @@ export const useGenerateRecipe = () => {
   };
 
   return {
-    generateRecipeMutation,
+    generateImageMutation,
     abort,
   };
 };

@@ -45,7 +45,7 @@ export async function POST(req: NextRequest) {
         {
           role: "user",
           content: `You will always answer in the language that the user is using. Smoothies are by default snacks. Please provide a recipe from this description: ${description}
-          If the input has nothing to do with food, please return an error message.Be very detailed and elaborate with the output.`,
+          If the input has nothing to do with food, please return an error message.Be very detailed and elaborate with the ingredients and steps.`,
         },
       ],
       response_format: {
