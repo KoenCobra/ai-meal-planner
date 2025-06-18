@@ -12,8 +12,9 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { api } from "@/convex/_generated/api";
-import type { RecipeInput } from "@/lib/validation";
+import { RecipeInput } from "@/lib/validation";
 import { useUser } from "@clerk/clerk-react";
+import { useQuery } from "@tanstack/react-query";
 import { useMutation } from "convex/react";
 import { AnimatePresence, motion } from "framer-motion";
 import {
@@ -35,18 +36,21 @@ import { useSyncIngredients } from "../../recipes/_hooks/useSyncIngredients";
 import { useBubuAi } from "../BubuAiContext";
 
 interface BubuAiResponseProps {
-  recipe: RecipeInput;
   image: string;
   onClear?: () => void;
 }
 
-const BubuAiResponse = ({ recipe, image, onClear }: BubuAiResponseProps) => {
+const BubuAiResponse = ({ image, onClear }: BubuAiResponseProps) => {
   const { user } = useUser();
   const { clearForm, savedRecipeId, setSavedRecipeId } = useBubuAi();
   const [isSaving, setIsSaving] = useState(false);
   const [isImageLoaded, setIsImageLoaded] = useState(false);
   const [activeTab, setActiveTab] = useState("ingredients");
   const [dropdownOpen, setDropdownOpen] = useState(false);
+
+  const { data: recipe } = useQuery<RecipeInput>({
+    queryKey: ["generate-recipe"],
+  });
 
   const createRecipe = useMutation(api.recipes.createRecipe);
   const deleteRecipe = useMutation(api.recipes.deleteRecipe);
@@ -106,7 +110,7 @@ const BubuAiResponse = ({ recipe, image, onClear }: BubuAiResponseProps) => {
       await deleteRecipe({
         userId: user.id,
         id: savedRecipeId,
-        dishType: recipe.dishType,
+        dishType: recipe?.dishType || "",
       });
 
       handleClear(); // Clear the AI response after deletion
@@ -190,7 +194,7 @@ const BubuAiResponse = ({ recipe, image, onClear }: BubuAiResponseProps) => {
                 <div className="relative w-full h-[400px] md:h-[500px]">
                   <Image
                     src={image || "/placeholder.svg"}
-                    alt={recipe.title}
+                    alt={recipe?.title || ""}
                     className="object-cover"
                     fill
                     sizes="(max-width: 768px) 100vw, 1200px"

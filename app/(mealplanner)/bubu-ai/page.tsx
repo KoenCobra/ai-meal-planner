@@ -1,7 +1,8 @@
 "use client";
 
 import { Card, CardContent } from "@/components/ui/card";
-import type { RecipeInput } from "@/lib/validation";
+import { RecipeInput } from "@/lib/validation";
+import { useQuery } from "@tanstack/react-query";
 import { AnimatePresence, motion } from "framer-motion";
 import BubuAiForm from "./_components/BubuAiForm";
 import BubuAiResponse from "./_components/BubuAiResponse";
@@ -9,20 +10,11 @@ import Header from "./_components/Header";
 import { useBubuAi } from "./BubuAiContext";
 
 const BibiAi = () => {
-  const {
-    recipeData,
-    recipeImage,
-    setRecipeData,
-    setRecipeImage,
-    clearRecipe,
-  } = useBubuAi();
+  const { recipeImage, clearRecipe } = useBubuAi();
 
-  const handleRecipeGenerated = (recipe: RecipeInput, image?: string) => {
-    setRecipeData(recipe);
-    if (image) {
-      setRecipeImage(image);
-    }
-  };
+  const { data: recipe } = useQuery<RecipeInput>({
+    queryKey: ["generate-recipe"],
+  });
 
   const handleGenerationStart = () => {
     clearRecipe();
@@ -53,7 +45,6 @@ const BibiAi = () => {
           <Card className="border-none  bg-white/80 backdrop-blur-sm dark:bg-zinc-900/80 p-0 pt-4">
             <CardContent className="p-0 px-4">
               <BubuAiForm
-                onRecipeGenerated={handleRecipeGenerated}
                 onGenerationStart={handleGenerationStart}
                 onImageGenerationAborted={handleImageGenerationAborted}
               />
@@ -62,7 +53,7 @@ const BibiAi = () => {
         </motion.div>
 
         <AnimatePresence mode="wait">
-          {recipeData && (
+          {recipe && (
             <motion.div
               key="recipe-response"
               initial={{ opacity: 0, y: 40 }}
@@ -75,11 +66,7 @@ const BibiAi = () => {
               }}
               className="mt-8 pb-6"
             >
-              <BubuAiResponse
-                recipe={recipeData}
-                image={recipeImage}
-                onClear={clearRecipe}
-              />
+              <BubuAiResponse image={recipeImage} onClear={clearRecipe} />
             </motion.div>
           )}
         </AnimatePresence>

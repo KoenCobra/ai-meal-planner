@@ -20,34 +20,24 @@ import {
   Square,
   X,
 } from "lucide-react";
-import { useEffect, useRef, useState } from "react";
+import { useRef, useState } from "react";
 import { useForm } from "react-hook-form";
 import { toast } from "sonner";
 
 import {
   type GenerateRecipeInput,
   generateRecipeSchema,
-  type RecipeInput,
 } from "@/lib/validation";
+import { useGenerateRecipe } from "../_hooks/useGenerateRecipe";
 import { useBubuAi } from "../BubuAiContext";
-import {
-  analyzeImageForRecipe,
-  generateRecipe,
-  generateRecipeImage,
-} from "../client-actions";
 
 interface BibiAiFormProps {
-  onRecipeGenerated: (recipe: RecipeInput, image?: string) => void;
   onGenerationStart?: () => void;
   onClear?: () => void;
   onImageGenerationAborted?: () => void;
 }
 
-const BibiAiForm = ({
-  onRecipeGenerated,
-  onGenerationStart,
-  onImageGenerationAborted,
-}: BibiAiFormProps) => {
+const BibiAiForm = ({ onImageGenerationAborted }: BibiAiFormProps) => {
   const {
     description,
     setDescription,
@@ -55,10 +45,11 @@ const BibiAiForm = ({
     setSelectedImage,
     imagePreview,
     setImagePreview,
-    setSavedRecipeId,
   } = useBubuAi();
   const [isGeneratingRecipe, setIsGeneratingRecipe] = useState(false);
   const [isGeneratingImage, setIsGeneratingImage] = useState(false);
+
+  const { mutateAsync, isPending, abort } = useGenerateRecipe();
 
   const recipeControllerRef = useRef<AbortController | null>(null);
   const imageControllerRef = useRef<AbortController | null>(null);
@@ -74,16 +65,16 @@ const BibiAiForm = ({
   });
 
   // Sync form with context when description changes
-  useEffect(() => {
-    form.setValue("description", description);
-  }, [description, form]);
+  // useEffect(() => {
+  //   form.setValue("description", description);
+  // }, [description, form]);
 
   // Clear file input when selectedImage is cleared
-  useEffect(() => {
-    if (!selectedImage && fileInputRef.current) {
-      fileInputRef.current.value = "";
-    }
-  }, [selectedImage]);
+  // useEffect(() => {
+  //   if (!selectedImage && fileInputRef.current) {
+  //     fileInputRef.current.value = "";
+  //   }
+  // }, [selectedImage]);
 
   const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files && e.target.files[0]) {
@@ -104,6 +95,8 @@ const BibiAiForm = ({
   };
 
   const handleCancel = () => {
+    abort();
+
     if (recipeControllerRef.current) {
       recipeControllerRef.current.abort();
       recipeControllerRef.current = null;
@@ -124,62 +117,77 @@ const BibiAiForm = ({
 
   const onSubmit = async (input: GenerateRecipeInput) => {
     try {
-      if (onGenerationStart) {
-        onGenerationStart();
-      }
-
-      // Clear saved recipe ID when generating a new recipe
-      setSavedRecipeId(null);
       setIsGeneratingRecipe(true);
-
-      let recipe;
-
-      if (selectedImage) {
-        const { response, controller } = analyzeImageForRecipe(
-          selectedImage,
-          input.description.trim() || undefined,
-        );
-        recipeControllerRef.current = controller;
-        recipe = await response;
-      } else {
-        const { response, controller } = generateRecipe(input);
-        recipeControllerRef.current = controller;
-        recipe = await response;
-      }
-
-      setIsGeneratingRecipe(false);
-      recipeControllerRef.current = null;
-
-      // First, send the recipe data (even if it has an error)
-      onRecipeGenerated(recipe);
-
-      // Only generate image if the recipe was successfully created (no error)
-      if (!recipe.error) {
-        setIsGeneratingImage(true);
-
-        const { response: imageResponse, controller: imageController } =
-          generateRecipeImage(recipe.title, recipe.summary);
-        imageControllerRef.current = imageController;
-
-        const image = await imageResponse;
-
-        if (image) {
-          onRecipeGenerated(recipe, image);
-        }
-      }
+      await mutateAsync(input);
     } catch (error) {
-      if (error instanceof Error && error.message.includes("aborted")) {
-        return console.log(error);
+      console.log(error);
+      if (error instanceof Error && error.name === "AbortError") {
+        // Request was aborted, don't show error toast
+        console.log("Recipe generation was cancelled");
       } else {
-        toast.error(
-          error instanceof Error ? error.message : "Failed to generate recipe",
-        );
+        toast.error("Failed to generate recipe");
       }
     } finally {
       setIsGeneratingRecipe(false);
-      setIsGeneratingImage(false);
     }
   };
+
+  // try {
+  //   if (onGenerationStart) {
+  //     onGenerationStart();
+  //   }
+
+  //   // Clear saved recipe ID when generating a new recipe
+  //   setSavedRecipeId(null);
+  //   setIsGeneratingRecipe(true);
+
+  //   let recipe;
+
+  //   if (selectedImage) {
+  //     const { response, controller } = analyzeImageForRecipe(
+  //       selectedImage,
+  //       input.description.trim() || undefined,
+  //     );
+  //     recipeControllerRef.current = controller;
+  //     recipe = await response;
+  //   } else {
+  //     const { response, controller } = generateRecipe(input);
+  //     recipeControllerRef.current = controller;
+  //     recipe = await response;
+  //   }
+
+  //   setIsGeneratingRecipe(false);
+  //   recipeControllerRef.current = null;
+
+  //   // First, send the recipe data (even if it has an error)
+  //   onRecipeGenerated(recipe);
+
+  //   // Only generate image if the recipe was successfully created (no error)
+  //   if (!recipe.error) {
+  //     setIsGeneratingImage(true);
+
+  //     const { response: imageResponse, controller: imageController } =
+  //       generateRecipeImage(recipe.title, recipe.summary);
+  //     imageControllerRef.current = imageController;
+
+  //     const image = await imageResponse;
+
+  //     if (image) {
+  //       onRecipeGenerated(recipe, image);
+  //     }
+  //   }
+  // } catch (error) {
+  //   if (error instanceof Error && error.message.includes("aborted")) {
+  //     return console.log(error);
+  //   } else {
+  //     toast.error(
+  //       error instanceof Error ? error.message : "Failed to generate recipe",
+  //     );
+  //   }
+  // } finally {
+  //   setIsGeneratingRecipe(false);
+  //   setIsGeneratingImage(false);
+  // }
 
   const isGenerating = isGeneratingRecipe || isGeneratingImage;
 
@@ -340,14 +348,14 @@ const BibiAiForm = ({
               >
                 <Button
                   disabled={
-                    isGenerating || (!description.trim() && !selectedImage)
+                    isPending || (!description.trim() && !selectedImage)
                   }
                   type="submit"
                   size="icon"
                   variant="ghost"
                   className="rounded-full"
                 >
-                  {isGenerating ? (
+                  {isPending ? (
                     <Loader2Icon className="size-4 animate-spin" />
                   ) : (
                     <SendHorizontal className="size-4" />
@@ -356,7 +364,7 @@ const BibiAiForm = ({
               </motion.div>
 
               <AnimatePresence>
-                {isGenerating && (
+                {isPending && (
                   <motion.div
                     key="cancel-button"
                     initial={{ opacity: 0, scale: 0.8 }}

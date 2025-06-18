@@ -1,11 +1,9 @@
-import { api } from "@/convex/_generated/api";
 import { recipeJsonSchema } from "@/lib/constants";
 import { generateRecipeSchema } from "@/lib/validation";
 import { auth } from "@clerk/nextjs/server";
-import { ConvexHttpClient } from "convex/browser";
 import { NextRequest, NextResponse } from "next/server";
 
-const convex = new ConvexHttpClient(process.env.NEXT_PUBLIC_CONVEX_URL!);
+// const convex = new ConvexHttpClient(process.env.NEXT_PUBLIC_CONVEX_URL!);
 
 export async function POST(req: NextRequest) {
   try {
@@ -18,21 +16,21 @@ export async function POST(req: NextRequest) {
     const input = generateRecipeSchema.parse(await req.json());
     const { description } = input;
 
-    const rateLimitCheck = await convex.mutation(
-      api.aiRateLimit.checkRecipeGenerationLimit,
-      {
-        userId,
-      },
-    );
+    // const rateLimitCheck = await convex.mutation(
+    //   api.aiRateLimit.checkRecipeGenerationLimit,
+    //   {
+    //     userId,
+    //   },
+    // );
 
-    if (!rateLimitCheck?.success) {
-      return NextResponse.json(
-        {
-          error: rateLimitCheck?.message || "Rate limit exceeded",
-        },
-        { status: 429 },
-      );
-    }
+    // if (!rateLimitCheck?.success) {
+    //   return NextResponse.json(
+    //     {
+    //       error: rateLimitCheck?.message || "Rate limit exceeded",
+    //     },
+    //     { status: 429 },
+    //   );
+    // }
 
     // OpenRouter API call with structured output
     const url = "https://openrouter.ai/api/v1/chat/completions";

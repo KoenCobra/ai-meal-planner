@@ -83,21 +83,21 @@ export const rateLimiter = new RateLimiter(components.rateLimiter, {
 
   generateRecipeAI: {
     kind: "token bucket",
-    rate: 0,
+    rate: 60,
     period: HOUR,
-    capacity: 0,
+    capacity: 120,
   },
   generateImageAI: {
     kind: "token bucket",
-    rate: 25,
+    rate: 60,
     period: HOUR,
-    capacity: 30,
+    capacity: 120,
   },
   analyzeImageAI: {
     kind: "token bucket",
-    rate: 25,
+    rate: 60,
     period: HOUR,
-    capacity: 30,
+    capacity: 120,
   },
 });
 
