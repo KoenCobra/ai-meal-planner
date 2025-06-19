@@ -7,11 +7,8 @@ import { AnimatePresence, motion } from "framer-motion";
 import BubuAiForm from "./_components/BubuAiForm";
 import BubuAiResponse from "./_components/BubuAiResponse";
 import Header from "./_components/Header";
-import { useBubuAi } from "./BubuAiContext";
 
 const BibiAi = () => {
-  const { clearRecipe } = useBubuAi();
-
   const { data: recipe } = useQuery<RecipeInput>({
     queryKey: ["generate-recipe"],
   });
@@ -55,7 +52,7 @@ const BibiAi = () => {
               }}
               className="mt-8 pb-6"
             >
-              <BubuAiResponse onClear={clearRecipe} />
+              <BubuAiResponse />
             </motion.div>
           )}
         </AnimatePresence>

@@ -41,18 +41,15 @@ import AddToMenuDialog from "../../_components/AddToMenuDialog";
 import { useAddToMenuDialogStore } from "../../_stores/useAddToMenuDialogStore";
 import { useSyncIngredients } from "../../recipes/_hooks/useSyncIngredients";
 import { useBubuAi } from "../BubuAiContext";
+import { useClearAiCache } from "../utils/clearAiCache";
 
-interface BubuAiResponseProps {
-  onClear?: () => void;
-}
-
-const BubuAiResponse = ({ onClear }: BubuAiResponseProps) => {
+const BubuAiResponse = () => {
   const { user } = useUser();
   const { clearForm, savedRecipeId, setSavedRecipeId } = useBubuAi();
   const [isSaving, setIsSaving] = useState(false);
-  const [isImageLoaded, setIsImageLoaded] = useState(false);
   const [activeTab, setActiveTab] = useState("ingredients");
   const [dropdownOpen, setDropdownOpen] = useState(false);
+  const { clearAiCache } = useClearAiCache();
 
   const { data: recipe } = useQuery<RecipeInput>({
     queryKey: ["generate-recipe"],
@@ -106,13 +103,6 @@ const BubuAiResponse = ({ onClear }: BubuAiResponseProps) => {
     }
   };
 
-  const handleClear = () => {
-    clearForm();
-    if (onClear) {
-      onClear();
-    }
-  };
-
   const handleDelete = async () => {
     if (!user || !savedRecipeId) return;
 
@@ -123,15 +113,13 @@ const BubuAiResponse = ({ onClear }: BubuAiResponseProps) => {
         dishType: recipe?.dishType || "",
       });
 
-      handleClear(); // Clear the AI response after deletion
+      clearAiCache();
+
+      clearForm();
     } catch (error) {
       toast.error("Failed to delete recipe");
       console.error(error);
     }
-  };
-
-  const handleImageLoad = () => {
-    setIsImageLoaded(true);
   };
 
   if (recipe?.error) {
@@ -160,27 +148,22 @@ const BubuAiResponse = ({ onClear }: BubuAiResponseProps) => {
             initial="hidden"
             animate="visible"
           >
-            {recipeImage && (
-              <>
-                <div className="relative w-full h-[400px] md:h-[500px]">
-                  <Image
-                    src={recipeImage || "/placeholder.svg"}
-                    alt={recipe?.title || ""}
-                    className="object-cover"
-                    fill
-                    sizes="(max-width: 768px) 100vw, 1200px"
-                    onLoad={handleImageLoad}
-                    quality={50}
-                  />
-                </div>
-                <motion.div
-                  className="absolute inset-0 bg-gradient-to-t from-black/70 to-transparent"
-                  initial={{ opacity: 0 }}
-                  animate={{ opacity: 1 }}
-                  transition={{ delay: 0.1, duration: 0.2 }}
-                ></motion.div>
-              </>
-            )}
+            <div className="relative w-full h-[400px] md:h-[500px]">
+              <Image
+                src={recipeImage || "/placeholder.svg"}
+                alt={recipe?.title || ""}
+                className="object-cover"
+                fill
+                sizes="(max-width: 768px) 100vw, 1200px"
+                quality={50}
+              />
+              <motion.div
+                className="absolute inset-0 bg-gradient-to-t from-black/70 to-transparent"
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                transition={{ delay: 0.1, duration: 0.2 }}
+              />
+            </div>
             <motion.div
               className="absolute bottom-0 left-0 right-0 p-6 text-white"
               variants={titleVariants}
@@ -260,7 +243,7 @@ const BubuAiResponse = ({ onClear }: BubuAiResponseProps) => {
                   disabled={
                     !!savedRecipeId ||
                     isSaving ||
-                    !isImageLoaded ||
+                    !recipeImage ||
                     !!recipe?.error
                   }
                   className="gap-2"
