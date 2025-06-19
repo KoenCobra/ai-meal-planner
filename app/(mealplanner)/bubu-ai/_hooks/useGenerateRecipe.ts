@@ -40,6 +40,7 @@ export const useGenerateRecipe = () => {
       abortControllerRef.current.abort();
       abortControllerRef.current = null;
       queryClient.setQueryData(["generate-recipe"], null);
+      queryClient.setQueryData(["generate-image"], null);
     }
   };
 

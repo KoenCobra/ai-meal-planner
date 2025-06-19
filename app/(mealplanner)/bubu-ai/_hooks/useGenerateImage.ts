@@ -30,7 +30,7 @@ export const useGenerateImage = () => {
       return await response.json();
     },
     onSuccess: (data) => {
-      queryClient.setQueryData(["generate-image"], data);
+      queryClient.setQueryData(["generate-image"], data.imageUrl);
     },
   });
 
@@ -39,6 +39,7 @@ export const useGenerateImage = () => {
       abortControllerRef.current.abort();
       abortControllerRef.current = null;
       queryClient.setQueryData(["generate-recipe"], null);
+      queryClient.setQueryData(["generate-image"], null);
     }
   };
 

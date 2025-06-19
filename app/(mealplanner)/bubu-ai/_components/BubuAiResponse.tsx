@@ -28,7 +28,7 @@ import {
   Users,
 } from "lucide-react";
 import Image from "next/image";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { toast } from "sonner";
 import AddToMenuDialog from "../../_components/AddToMenuDialog";
 import { useAddToMenuDialogStore } from "../../_stores/useAddToMenuDialogStore";
@@ -36,11 +36,10 @@ import { useSyncIngredients } from "../../recipes/_hooks/useSyncIngredients";
 import { useBubuAi } from "../BubuAiContext";
 
 interface BubuAiResponseProps {
-  image: string;
   onClear?: () => void;
 }
 
-const BubuAiResponse = ({ image, onClear }: BubuAiResponseProps) => {
+const BubuAiResponse = ({ onClear }: BubuAiResponseProps) => {
   const { user } = useUser();
   const { clearForm, savedRecipeId, setSavedRecipeId } = useBubuAi();
   const [isSaving, setIsSaving] = useState(false);
@@ -52,6 +51,10 @@ const BubuAiResponse = ({ image, onClear }: BubuAiResponseProps) => {
     queryKey: ["generate-recipe"],
   });
 
+  const { data: recipeImage, isPending: isImagePending } = useQuery<string>({
+    queryKey: ["generate-image"],
+  });
+
   const createRecipe = useMutation(api.recipes.createRecipe);
   const deleteRecipe = useMutation(api.recipes.deleteRecipe);
 
@@ -60,9 +63,9 @@ const BubuAiResponse = ({ image, onClear }: BubuAiResponseProps) => {
   const { handleSyncIngredients } = useSyncIngredients(user?.id || "");
 
   // Only reset image loaded state when image changes
-  useEffect(() => {
-    setIsImageLoaded(false);
-  }, [image]);
+  // useEffect(() => {
+  //   setIsImageLoaded(false);
+  // }, [image]);
 
   const handleSave = async () => {
     if (!user) return;
@@ -70,7 +73,7 @@ const BubuAiResponse = ({ image, onClear }: BubuAiResponseProps) => {
     try {
       setIsSaving(true);
 
-      if (!image || !recipe) return;
+      if (!recipeImage || !recipe) return;
 
       const newRecipeId = await createRecipe({
         userId: user.id,
@@ -84,7 +87,7 @@ const BubuAiResponse = ({ image, onClear }: BubuAiResponseProps) => {
         },
         ingredients: recipe.ingredients,
         dishType: recipe.dishType,
-        imageUrl: image,
+        imageUrl: recipeImage,
       });
 
       setSavedRecipeId(newRecipeId);
@@ -189,11 +192,11 @@ const BubuAiResponse = ({ image, onClear }: BubuAiResponseProps) => {
             initial="hidden"
             animate="visible"
           >
-            {image ? (
+            {recipeImage && !isImagePending ? (
               <>
                 <div className="relative w-full h-[400px] md:h-[500px]">
                   <Image
-                    src={image || "/placeholder.svg"}
+                    src={recipeImage || "/placeholder.svg"}
                     alt={recipe?.title || ""}
                     className="object-cover"
                     fill
@@ -262,7 +265,7 @@ const BubuAiResponse = ({ image, onClear }: BubuAiResponseProps) => {
               </div>
             ) : (
               <div className="relative w-full h-[400px] md:h-[500px]">
-                {!isImageLoaded && (
+                {!isImagePending && (
                   <motion.div
                     className="absolute inset-0 bg-gradient-to-br from-zinc-100 via-zinc-50 to-zinc-200 dark:from-zinc-800 dark:via-zinc-700 dark:to-zinc-900"
                     animate={{
