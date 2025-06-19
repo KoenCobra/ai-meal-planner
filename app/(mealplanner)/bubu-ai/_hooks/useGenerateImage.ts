@@ -32,7 +32,7 @@ export const useGenerateImage = () => {
       return await response.json();
     },
     onSuccess: (data) => {
-      queryClient.setQueryData(["generate-image"], data.imageUrl);
+      queryClient.setQueryData(["generate-image"], data);
     },
   });
 

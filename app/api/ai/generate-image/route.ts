@@ -3,6 +3,7 @@ import { auth } from "@clerk/nextjs/server";
 import { fal } from "@fal-ai/client";
 import { ConvexHttpClient } from "convex/browser";
 import { NextRequest, NextResponse } from "next/server";
+import { getPlaiceholder } from "plaiceholder";
 
 const convex = new ConvexHttpClient(process.env.NEXT_PUBLIC_CONVEX_URL!);
 
@@ -59,8 +60,22 @@ export async function POST(req: NextRequest) {
       },
     });
 
+    const imageUrl = result.data.images[0].url;
+
+    // Fetch the generated image to create a blurred placeholder
+    const imageResponse = await fetch(imageUrl);
+    const imageBuffer = Buffer.from(await imageResponse.arrayBuffer());
+
+    // Generate blurred placeholder using plaiceholder
+    const { base64: blurDataURL } = await getPlaiceholder(imageBuffer, {
+      size: 50, // Small size for a more blurred effect
+    });
+
     return NextResponse.json(
-      { imageUrl: result.data.images[0].url },
+      {
+        imageUrl,
+        blurDataURL,
+      },
       { status: 200 },
     );
   } catch (error) {

@@ -59,7 +59,10 @@ const BubuAiResponse = ({ isGeneratingImage }: BubuAiResponseProps) => {
     queryKey: ["generate-recipe"],
   });
 
-  const { data: recipeImage } = useQuery<string>({
+  const { data: recipeImageData } = useQuery<{
+    imageUrl: string;
+    blurDataURL: string;
+  }>({
     queryKey: ["generate-image"],
   });
 
@@ -75,7 +78,7 @@ const BubuAiResponse = ({ isGeneratingImage }: BubuAiResponseProps) => {
     try {
       setIsSaving(true);
 
-      if (!recipeImage || !recipe) return;
+      if (!recipeImageData?.imageUrl || !recipe) return;
 
       const newRecipeId = await createRecipe({
         userId: user.id,
@@ -89,7 +92,7 @@ const BubuAiResponse = ({ isGeneratingImage }: BubuAiResponseProps) => {
         },
         ingredients: recipe.ingredients,
         dishType: recipe.dishType,
-        imageUrl: recipeImage,
+        imageUrl: recipeImageData.imageUrl,
       });
 
       setSavedRecipeId(newRecipeId);
@@ -149,14 +152,16 @@ const BubuAiResponse = ({ isGeneratingImage }: BubuAiResponseProps) => {
             animate="visible"
           >
             <div className="relative w-full h-[400px] md:h-[500px]">
-              {recipeImage && (
+              {recipeImageData?.imageUrl && (
                 <Image
-                  src={recipeImage}
+                  src={recipeImageData.imageUrl}
                   alt="recipe image"
                   className="object-cover"
                   fill
                   sizes="(max-width: 768px) 100vw, 1200px"
                   quality={50}
+                  placeholder="blur"
+                  blurDataURL={recipeImageData.blurDataURL}
                 />
               )}
               {isGeneratingImage && (
