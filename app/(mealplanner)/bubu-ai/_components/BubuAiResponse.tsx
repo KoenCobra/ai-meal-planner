@@ -149,14 +149,16 @@ const BubuAiResponse = ({ isGeneratingImage }: BubuAiResponseProps) => {
             animate="visible"
           >
             <div className="relative w-full h-[400px] md:h-[500px]">
-              <Image
-                src={recipeImage || "/placeholder.svg"}
-                alt={recipe?.title || ""}
-                className="object-cover"
-                fill
-                sizes="(max-width: 768px) 100vw, 1200px"
-                quality={50}
-              />
+              {recipeImage && (
+                <Image
+                  src={recipeImage}
+                  alt="recipe image"
+                  className="object-cover"
+                  fill
+                  sizes="(max-width: 768px) 100vw, 1200px"
+                  quality={50}
+                />
+              )}
               {isGeneratingImage && (
                 <div className="absolute inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center">
                   <div className="flex flex-col items-center gap-2 text-white">
