@@ -6,6 +6,7 @@ export type Recipe = {
   readyInMinutes: number;
   servings: number;
   imageUrl: string;
+  blurDataURL?: string;
   categories: string[];
   dishType: string;
 };

@@ -68,7 +68,7 @@ export async function POST(req: NextRequest) {
 
     // Generate blurred placeholder using plaiceholder
     const { base64: blurDataURL } = await getPlaiceholder(imageBuffer, {
-      size: 50, // Small size for a more blurred effect
+      size: 10, // Small size for a more blurred effect
     });
 
     return NextResponse.json(

@@ -36,6 +36,7 @@ interface RecipeCardProps {
     readyInMinutes: number;
     servings: number;
     imageUrl: string;
+    blurDataURL?: string;
     categories: string[];
     dishType: string;
   };

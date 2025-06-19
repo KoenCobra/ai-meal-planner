@@ -93,6 +93,7 @@ const BubuAiResponse = ({ isGeneratingImage }: BubuAiResponseProps) => {
         ingredients: recipe.ingredients,
         dishType: recipe.dishType,
         imageUrl: recipeImageData.imageUrl,
+        blurDataURL: recipeImageData.blurDataURL,
       });
 
       setSavedRecipeId(newRecipeId);

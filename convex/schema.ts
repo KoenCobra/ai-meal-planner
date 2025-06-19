@@ -9,6 +9,7 @@ const applicationTables = {
     servings: v.number(),
     readyInMinutes: v.number(),
     imageUrl: v.string(),
+    blurDataURL: v.optional(v.string()),
     categories: v.array(v.string()),
     instructions: v.object({
       steps: v.array(

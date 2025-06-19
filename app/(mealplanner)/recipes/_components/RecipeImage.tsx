@@ -8,6 +8,7 @@ interface RecipeImageProps {
   recipe: {
     title: string;
     imageUrl: string;
+    blurDataURL?: string;
   };
   className?: string;
 }
@@ -25,6 +26,8 @@ export const RecipeImage = ({ recipe, className }: RecipeImageProps) => {
             className="object-cover rounded-t-lg"
             quality={50}
             priority
+            placeholder={recipe.blurDataURL ? "blur" : "empty"}
+            blurDataURL={recipe.blurDataURL}
           />
         </div>
       }

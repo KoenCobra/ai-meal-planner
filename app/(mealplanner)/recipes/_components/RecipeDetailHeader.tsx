@@ -6,6 +6,7 @@ interface RecipeDetailHeaderProps {
   recipe: {
     title: string;
     imageUrl: string;
+    blurDataURL?: string;
   };
 }
 
