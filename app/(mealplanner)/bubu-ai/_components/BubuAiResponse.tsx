@@ -168,8 +168,12 @@ const BubuAiResponse = ({ isGeneratingImage }: BubuAiResponseProps) => {
               {isGeneratingImage && (
                 <div className="absolute inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center">
                   <div className="flex flex-col items-center gap-2 text-white">
-                    <Loader2 className="h-8 w-8 animate-spin" />
-                    <p className="text-sm">Generating image...</p>
+                    <div className="flex space-x-1">
+                      <div className="size-1.5 bg-white rounded-full animate-bounce [animation-delay:-0.3s]"></div>
+                      <div className="size-1.5 bg-white rounded-full animate-bounce [animation-delay:-0.15s]"></div>
+                      <div className="size-1.5 bg-white rounded-full animate-bounce"></div>
+                    </div>
+                    <p className="text-sm">Generating image</p>
                   </div>
                 </div>
               )}

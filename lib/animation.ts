@@ -52,3 +52,15 @@ export const itemVariants = {
     transition: { type: "spring", stiffness: 600, damping: 30 },
   },
 };
+
+export const cardVariants2 = {
+  hidden: { opacity: 0, y: 20 },
+  visible: {
+    opacity: 1,
+    y: 0,
+    transition: {
+      duration: 0.2,
+      ease: "easeOut",
+    },
+  },
+};
