@@ -36,7 +36,6 @@ const SearchPage = () => {
   const { recipes, fetchNextPage, hasNextPage, isFetchingNextPage, isLoading } =
     useInfiniteSearch({
       searchQuery: executedQuery || "",
-      // In a real app, you would pass sortBy and activeTab as parameters
     });
 
   useEffect(() => {
