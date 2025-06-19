@@ -1,4 +1,5 @@
 import ConvexClientProvider from "@/components/ConvexClientProvider";
+import { ReactScan } from "@/components/ReactScanComponent";
 import { Toaster } from "@/components/ui/sonner";
 import { ClerkProvider } from "@clerk/nextjs";
 import type { Metadata } from "next";
@@ -31,7 +32,7 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en" suppressHydrationWarning>
-      {/* <ReactScan /> */}
+      <ReactScan />
       <body
         suppressHydrationWarning
         className={`${geistSans.variable} ${geistMono.variable} antialiased min-h-svh`}

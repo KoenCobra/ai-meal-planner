@@ -62,14 +62,8 @@ const BubuAiResponse = () => {
   const createRecipe = useMutation(api.recipes.createRecipe);
   const deleteRecipe = useMutation(api.recipes.deleteRecipe);
 
-  // Add the necessary stores and hooks for the dropdown menu
   const { open, recipeId, openDialog, closeDialog } = useAddToMenuDialogStore();
   const { handleSyncIngredients } = useSyncIngredients(user?.id || "");
-
-  // Only reset image loaded state when image changes
-  // useEffect(() => {
-  //   setIsImageLoaded(false);
-  // }, [image]);
 
   const handleSave = async () => {
     if (!user) return;
@@ -122,7 +116,9 @@ const BubuAiResponse = () => {
     }
   };
 
-  if (recipe?.error) {
+  if (!recipe) return null;
+
+  if (recipe.error) {
     return (
       <motion.div
         initial={{ opacity: 0, y: 10 }}

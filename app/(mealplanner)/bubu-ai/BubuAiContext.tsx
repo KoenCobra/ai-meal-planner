@@ -12,7 +12,6 @@ type BubuAiContextType = {
   setSelectedImage: (image: File | null) => void;
   setImagePreview: (preview: string | null) => void;
   setSavedRecipeId: (id: Id<"recipes"> | null) => void;
-  clearRecipe: () => void;
   clearForm: () => void;
 };
 
@@ -26,14 +25,11 @@ export const BubuAiProvider = ({ children }: { children: ReactNode }) => {
     null,
   );
 
-  const clearRecipe = () => {
-    setSavedRecipeId(null);
-  };
-
   const clearForm = () => {
     setDescription("");
     setSelectedImage(null);
     setImagePreview(null);
+    setSavedRecipeId(null);
   };
 
   return (
@@ -47,7 +43,6 @@ export const BubuAiProvider = ({ children }: { children: ReactNode }) => {
         setSelectedImage,
         setImagePreview,
         setSavedRecipeId,
-        clearRecipe,
         clearForm,
       }}
     >

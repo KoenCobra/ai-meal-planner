@@ -20,7 +20,7 @@ import {
   Square,
   X,
 } from "lucide-react";
-import { useRef } from "react";
+import { useEffect, useRef } from "react";
 import { useForm } from "react-hook-form";
 import { toast } from "sonner";
 
@@ -41,6 +41,7 @@ const BibiAiForm = () => {
     setSelectedImage,
     imagePreview,
     setImagePreview,
+    setSavedRecipeId,
   } = useBubuAi();
 
   const { generateRecipeMutation, abort } = useGenerateRecipe();
@@ -77,6 +78,7 @@ const BibiAiForm = () => {
 
   const onSubmit = async (input: GenerateRecipeInput) => {
     clearAiCache();
+    setSavedRecipeId(null);
 
     try {
       const response = await generateRecipeMutation.mutateAsync(input);
@@ -95,6 +97,10 @@ const BibiAiForm = () => {
       }
     }
   };
+
+  useEffect(() => {
+    form.setValue("description", description);
+  }, [description, form]);
 
   // Auto-resize textarea
   const handleTextareaChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
