@@ -57,6 +57,14 @@ const RecipeDetails = () => {
     );
   }
 
+  if (!recipe) {
+    return (
+      <div className="flex items-center justify-center py-8">
+        <p>Recipe not found</p>
+      </div>
+    );
+  }
+
   return (
     <div className="min-h-screen mt-4 md:mt-10 pb-10">
       <div className="container mx-auto max-w-4xl">
