@@ -7,11 +7,14 @@ import { AnimatePresence, motion } from "framer-motion";
 import BubuAiForm from "./_components/BubuAiForm";
 import BubuAiResponse from "./_components/BubuAiResponse";
 import Header from "./_components/Header";
+import { useGenerateImage } from "./_hooks/useGenerateImage";
 
 const BibiAi = () => {
   const { data: recipe } = useQuery<RecipeInput>({
     queryKey: ["generate-recipe"],
   });
+
+  const { generateImageMutation, abort: abortImage } = useGenerateImage();
 
   return (
     <motion.div
@@ -33,7 +36,11 @@ const BibiAi = () => {
         >
           <Card className="border-none  bg-white/80 backdrop-blur-sm dark:bg-zinc-900/80 p-0 pt-4">
             <CardContent className="p-0 px-4">
-              <BubuAiForm />
+              <BubuAiForm
+                isGeneratingImage={generateImageMutation.isPending}
+                generateImage={generateImageMutation.mutateAsync}
+                abortImage={abortImage}
+              />
             </CardContent>
           </Card>
         </motion.div>
@@ -52,7 +59,9 @@ const BibiAi = () => {
               }}
               className="mt-8 pb-6"
             >
-              <BubuAiResponse />
+              <BubuAiResponse
+                isGeneratingImage={generateImageMutation.isPending}
+              />
             </motion.div>
           )}
         </AnimatePresence>
