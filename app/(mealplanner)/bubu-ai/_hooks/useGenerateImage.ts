@@ -1,7 +1,9 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useRef } from "react";
+import { useClearAiCache } from "../utils/clearAiCache";
 
 export const useGenerateImage = () => {
+  const { clearAiCache } = useClearAiCache();
   const queryClient = useQueryClient();
   const abortControllerRef = useRef<AbortController | null>(null);
 
@@ -38,8 +40,7 @@ export const useGenerateImage = () => {
     if (abortControllerRef.current) {
       abortControllerRef.current.abort();
       abortControllerRef.current = null;
-      queryClient.setQueryData(["generate-recipe"], null);
-      queryClient.setQueryData(["generate-image"], null);
+      clearAiCache();
     }
   };
 

@@ -10,7 +10,7 @@ import Header from "./_components/Header";
 import { useBubuAi } from "./BubuAiContext";
 
 const BibiAi = () => {
-  const { recipeImage, clearRecipe } = useBubuAi();
+  const { clearRecipe } = useBubuAi();
 
   const { data: recipe } = useQuery<RecipeInput>({
     queryKey: ["generate-recipe"],
@@ -55,7 +55,7 @@ const BibiAi = () => {
               }}
               className="mt-8 pb-6"
             >
-              <BubuAiResponse image={recipeImage} onClear={clearRecipe} />
+              <BubuAiResponse onClear={clearRecipe} />
             </motion.div>
           )}
         </AnimatePresence>

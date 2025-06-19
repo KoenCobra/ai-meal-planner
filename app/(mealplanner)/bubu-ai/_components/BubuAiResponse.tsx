@@ -12,6 +12,13 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { api } from "@/convex/_generated/api";
+import {
+  cardVariants,
+  imageContainerVariants,
+  itemVariants,
+  staggerContainer,
+  titleVariants,
+} from "@/lib/animation";
 import { RecipeInput } from "@/lib/validation";
 import { useUser } from "@clerk/clerk-react";
 import { useQuery } from "@tanstack/react-query";
@@ -51,7 +58,7 @@ const BubuAiResponse = ({ onClear }: BubuAiResponseProps) => {
     queryKey: ["generate-recipe"],
   });
 
-  const { data: recipeImage, isPending: isImagePending } = useQuery<string>({
+  const { data: recipeImage } = useQuery<string>({
     queryKey: ["generate-image"],
   });
 
@@ -127,60 +134,21 @@ const BubuAiResponse = ({ onClear }: BubuAiResponseProps) => {
     setIsImageLoaded(true);
   };
 
-  // Animation variants - snappy and quick
-  const cardVariants = {
-    hidden: { opacity: 0, y: 20 },
-    visible: {
-      opacity: 1,
-      y: 0,
-      transition: {
-        duration: 0.2,
-        ease: "easeOut",
-      },
-    },
-  };
-
-  const imageContainerVariants = {
-    hidden: { opacity: 0 },
-    visible: {
-      opacity: 1,
-      transition: {
-        duration: 0.25,
-        ease: "easeOut",
-      },
-    },
-  };
-
-  const titleVariants = {
-    hidden: { opacity: 0, y: 20 },
-    visible: {
-      opacity: 1,
-      y: 0,
-      transition: {
-        delay: 0.1,
-        duration: 0.2,
-      },
-    },
-  };
-
-  const staggerContainer = {
-    hidden: { opacity: 0 },
-    visible: {
-      opacity: 1,
-      transition: {
-        staggerChildren: 0.03,
-      },
-    },
-  };
-
-  const itemVariants = {
-    hidden: { opacity: 0, y: 20 },
-    visible: {
-      opacity: 1,
-      y: 0,
-      transition: { type: "spring", stiffness: 600, damping: 30 },
-    },
-  };
+  if (recipe?.error) {
+    return (
+      <motion.div
+        initial={{ opacity: 0, y: 10 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ delay: 0.15, duration: 0.2 }}
+      >
+        <Card className="border-none bg-white/80 backdrop-blur-sm dark:bg-zinc-900/80 p-0">
+          <CardContent className="p-6 flex items-center gap-6">
+            <p className="text-muted-foreground">{recipe.error}</p>
+          </CardContent>
+        </Card>
+      </motion.div>
+    );
+  }
 
   return (
     <>
@@ -192,7 +160,7 @@ const BubuAiResponse = ({ onClear }: BubuAiResponseProps) => {
             initial="hidden"
             animate="visible"
           >
-            {recipeImage && !isImagePending ? (
+            {recipeImage && (
               <>
                 <div className="relative w-full h-[400px] md:h-[500px]">
                   <Image
@@ -204,52 +172,6 @@ const BubuAiResponse = ({ onClear }: BubuAiResponseProps) => {
                     onLoad={handleImageLoad}
                     quality={50}
                   />
-                  {!isImageLoaded && (
-                    <motion.div
-                      className="absolute inset-0 bg-gradient-to-br from-zinc-100 via-zinc-50 to-zinc-200 dark:from-zinc-800 dark:via-zinc-700 dark:to-zinc-900"
-                      animate={{
-                        background: [
-                          "linear-gradient(45deg, #f4f4f5, #e4e4e7, #d4d4d8)",
-                          "linear-gradient(45deg, #e4e4e7, #d4d4d8, #f4f4f5)",
-                          "linear-gradient(45deg, #d4d4d8, #f4f4f5, #e4e4e7)",
-                        ],
-                      }}
-                      transition={{
-                        duration: 2,
-                        repeat: Number.POSITIVE_INFINITY,
-                        ease: "easeInOut",
-                      }}
-                    >
-                      <div className="absolute inset-0 backdrop-blur-sm bg-white/20 dark:bg-black/20" />
-                      <motion.div
-                        className="absolute inset-0"
-                        animate={{
-                          background: [
-                            "radial-gradient(circle at 20% 50%, rgba(255,255,255,0.3) 0%, transparent 50%)",
-                            "radial-gradient(circle at 80% 50%, rgba(255,255,255,0.3) 0%, transparent 50%)",
-                            "radial-gradient(circle at 50% 20%, rgba(255,255,255,0.3) 0%, transparent 50%)",
-                            "radial-gradient(circle at 50% 80%, rgba(255,255,255,0.3) 0%, transparent 50%)",
-                          ],
-                        }}
-                        transition={{
-                          duration: 3,
-                          repeat: Number.POSITIVE_INFINITY,
-                          ease: "easeInOut",
-                        }}
-                      />
-                      <motion.div
-                        className="absolute bottom-0 left-0 right-0 h-1/3 bg-gradient-to-t from-black/30 to-transparent"
-                        animate={{
-                          opacity: [0.3, 0.6, 0.3],
-                        }}
-                        transition={{
-                          duration: 2,
-                          repeat: Number.POSITIVE_INFINITY,
-                          ease: "easeInOut",
-                        }}
-                      />
-                    </motion.div>
-                  )}
                 </div>
                 <motion.div
                   className="absolute inset-0 bg-gradient-to-t from-black/70 to-transparent"
@@ -258,62 +180,7 @@ const BubuAiResponse = ({ onClear }: BubuAiResponseProps) => {
                   transition={{ delay: 0.1, duration: 0.2 }}
                 ></motion.div>
               </>
-            ) : recipe?.error ? (
-              <div className="relative w-full h-[400px] md:h-[500px]">
-                <div className="absolute inset-0 flex flex-col items-center justify-center bg-muted"></div>
-                <div className="absolute inset-0 bg-gradient-to-t from-black/70 to-transparent"></div>
-              </div>
-            ) : (
-              <div className="relative w-full h-[400px] md:h-[500px]">
-                {!isImagePending && (
-                  <motion.div
-                    className="absolute inset-0 bg-gradient-to-br from-zinc-100 via-zinc-50 to-zinc-200 dark:from-zinc-800 dark:via-zinc-700 dark:to-zinc-900"
-                    animate={{
-                      background: [
-                        "linear-gradient(45deg, #f4f4f5, #e4e4e7, #d4d4d8)",
-                        "linear-gradient(45deg, #e4e4e7, #d4d4d8, #f4f4f5)",
-                        "linear-gradient(45deg, #d4d4d8, #f4f4f5, #e4e4e7)",
-                      ],
-                    }}
-                    transition={{
-                      duration: 2,
-                      repeat: Number.POSITIVE_INFINITY,
-                      ease: "easeInOut",
-                    }}
-                  >
-                    <div className="absolute inset-0 backdrop-blur-sm bg-white/20 dark:bg-black/20" />
-                    <motion.div
-                      className="absolute inset-0"
-                      animate={{
-                        background: [
-                          "radial-gradient(circle at 20% 50%, rgba(255,255,255,0.3) 0%, transparent 50%)",
-                          "radial-gradient(circle at 80% 50%, rgba(255,255,255,0.3) 0%, transparent 50%)",
-                          "radial-gradient(circle at 50% 20%, rgba(255,255,255,0.3) 0%, transparent 50%)",
-                          "radial-gradient(circle at 50% 80%, rgba(255,255,255,0.3) 0%, transparent 50%)",
-                        ],
-                      }}
-                      transition={{
-                        duration: 3,
-                        repeat: Number.POSITIVE_INFINITY,
-                        ease: "easeInOut",
-                      }}
-                    />
-                    <motion.div
-                      className="absolute bottom-0 left-0 right-0 h-1/3 bg-gradient-to-t from-black/30 to-transparent"
-                      animate={{
-                        opacity: [0.3, 0.6, 0.3],
-                      }}
-                      transition={{
-                        duration: 2,
-                        repeat: Number.POSITIVE_INFINITY,
-                        ease: "easeInOut",
-                      }}
-                    />
-                  </motion.div>
-                )}
-              </div>
             )}
-
             <motion.div
               className="absolute bottom-0 left-0 right-0 p-6 text-white"
               variants={titleVariants}

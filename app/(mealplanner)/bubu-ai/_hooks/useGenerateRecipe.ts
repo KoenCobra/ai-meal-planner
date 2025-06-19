@@ -2,10 +2,12 @@ import { sanitizeInput } from "@/lib/utils";
 import { GenerateRecipeInput, RecipeInput } from "@/lib/validation";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useRef } from "react";
+import { useClearAiCache } from "../utils/clearAiCache";
 
 export const useGenerateRecipe = () => {
   const queryClient = useQueryClient();
   const abortControllerRef = useRef<AbortController | null>(null);
+  const { clearAiCache } = useClearAiCache();
 
   const generateRecipeMutation = useMutation({
     mutationFn: async (input: GenerateRecipeInput) => {
@@ -39,8 +41,7 @@ export const useGenerateRecipe = () => {
     if (abortControllerRef.current) {
       abortControllerRef.current.abort();
       abortControllerRef.current = null;
-      queryClient.setQueryData(["generate-recipe"], null);
-      queryClient.setQueryData(["generate-image"], null);
+      clearAiCache();
     }
   };
 

@@ -31,6 +31,7 @@ import {
 import { useGenerateImage } from "../_hooks/useGenerateImage";
 import { useGenerateRecipe } from "../_hooks/useGenerateRecipe";
 import { useBubuAi } from "../BubuAiContext";
+import { useClearAiCache } from "../utils/clearAiCache";
 
 const BibiAiForm = () => {
   const {
@@ -44,6 +45,7 @@ const BibiAiForm = () => {
 
   const { generateRecipeMutation, abort } = useGenerateRecipe();
   const { generateImageMutation, abort: abortImage } = useGenerateImage();
+  const { clearAiCache } = useClearAiCache();
 
   const textareaRef = useRef<HTMLTextAreaElement>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
@@ -74,6 +76,8 @@ const BibiAiForm = () => {
   };
 
   const onSubmit = async (input: GenerateRecipeInput) => {
+    clearAiCache();
+
     try {
       const response = await generateRecipeMutation.mutateAsync(input);
 
