@@ -28,6 +28,7 @@ import {
   type GenerateRecipeInput,
   generateRecipeSchema,
 } from "@/lib/validation";
+import { useAnalyzeImage } from "../_hooks/useAnylizeImage";
 import { useGenerateRecipe } from "../_hooks/useGenerateRecipe";
 import { useBubuAi } from "../BubuAiContext";
 import { useClearAiCache } from "../utils/clearAiCache";
@@ -57,6 +58,7 @@ const BibiAiForm = ({
   } = useBubuAi();
 
   const { generateRecipeMutation, abort } = useGenerateRecipe();
+  const { analyzeImageMutation, abort: abortAnalyzeImage } = useAnalyzeImage();
   const { clearAiCache } = useClearAiCache();
 
   const textareaRef = useRef<HTMLTextAreaElement>(null);
@@ -92,12 +94,21 @@ const BibiAiForm = ({
     setSavedRecipeId(null);
 
     try {
-      const response = await generateRecipeMutation.mutateAsync(input);
+      let recipe;
 
-      if (!response.error) {
+      if (selectedImage) {
+        recipe = await analyzeImageMutation.mutateAsync({
+          image: selectedImage,
+          additionalInstructions: input.description,
+        });
+      } else {
+        recipe = await generateRecipeMutation.mutateAsync(input);
+      }
+
+      if (!recipe.error) {
         await generateImage({
-          recipeTitle: response.title,
-          recipeSummary: response.summary,
+          recipeTitle: recipe.title,
+          recipeSummary: recipe.summary,
         });
       }
     } catch (error) {
@@ -166,7 +177,9 @@ const BibiAiForm = ({
                       }
                     }}
                     disabled={
-                      generateRecipeMutation.isPending || isGeneratingImage
+                      generateRecipeMutation.isPending ||
+                      isGeneratingImage ||
+                      analyzeImageMutation.isPending
                     }
                     className="size-5 p-0 text-zinc-100 hover:text-white absolute -top-1.5 -right-1.5 bg-black/70 hover:bg-black/80 backdrop-blur-sm rounded-full"
                   >
@@ -197,7 +210,9 @@ const BibiAiForm = ({
                             : "Type your recipe description here..."
                         }
                         disabled={
-                          generateRecipeMutation.isPending || isGeneratingImage
+                          generateRecipeMutation.isPending ||
+                          isGeneratingImage ||
+                          analyzeImageMutation.isPending
                         }
                         onChange={handleTextareaChange}
                         onKeyDown={(e) => {
@@ -212,6 +227,7 @@ const BibiAiForm = ({
                       <AnimatePresence>
                         {description.trim() &&
                           !generateRecipeMutation.isPending &&
+                          !analyzeImageMutation.isPending &&
                           !isGeneratingImage && (
                             <motion.div
                               initial={{ opacity: 0, scale: 0.8 }}
@@ -253,22 +269,22 @@ const BibiAiForm = ({
                 whileHover={{ scale: 1.05 }}
                 whileTap={{ scale: 0.95 }}
               >
-                <label htmlFor="image-upload" className="cursor-pointer">
-                  <Button
-                    type="button"
-                    variant="ghost"
-                    size="icon"
-                    onClick={() =>
-                      document.getElementById("image-upload")?.click()
-                    }
-                    className="rounded-full"
-                    disabled={
-                      generateRecipeMutation.isPending || isGeneratingImage
-                    }
-                  >
-                    <ImageIcon className="size" />
-                  </Button>
-                </label>
+                <Button
+                  type="button"
+                  variant="ghost"
+                  size="icon"
+                  onClick={() =>
+                    document.getElementById("image-upload")?.click()
+                  }
+                  className="rounded-full"
+                  disabled={
+                    generateRecipeMutation.isPending ||
+                    isGeneratingImage ||
+                    analyzeImageMutation.isPending
+                  }
+                >
+                  <ImageIcon />
+                </Button>
               </motion.div>
 
               <motion.div
@@ -280,6 +296,7 @@ const BibiAiForm = ({
                   disabled={
                     generateRecipeMutation.isPending ||
                     isGeneratingImage ||
+                    analyzeImageMutation.isPending ||
                     (!description.trim() && !selectedImage)
                   }
                   type="submit"
@@ -287,7 +304,9 @@ const BibiAiForm = ({
                   variant="ghost"
                   className="rounded-full"
                 >
-                  {generateRecipeMutation.isPending || isGeneratingImage ? (
+                  {generateRecipeMutation.isPending ||
+                  isGeneratingImage ||
+                  analyzeImageMutation.isPending ? (
                     <Loader2Icon className="size-4 animate-spin" />
                   ) : (
                     <SendHorizontal className="size-4" />
@@ -296,7 +315,9 @@ const BibiAiForm = ({
               </motion.div>
 
               <AnimatePresence>
-                {(generateRecipeMutation.isPending || isGeneratingImage) && (
+                {(generateRecipeMutation.isPending ||
+                  isGeneratingImage ||
+                  analyzeImageMutation.isPending) && (
                   <motion.div
                     key="cancel-button"
                     initial={{ opacity: 0, scale: 0.8 }}
@@ -312,6 +333,7 @@ const BibiAiForm = ({
                       size="icon"
                       onClick={() => {
                         abort();
+                        abortAnalyzeImage();
                         abortImage();
                       }}
                       className="rounded-full text-red-500 hover:text-red-600 hover:bg-red-50 dark:hover:bg-red-950/20"
@@ -331,7 +353,11 @@ const BibiAiForm = ({
             onChange={handleImageChange}
             className="hidden"
             id="image-upload"
-            disabled={generateRecipeMutation.isPending || isGeneratingImage}
+            disabled={
+              generateRecipeMutation.isPending ||
+              isGeneratingImage ||
+              analyzeImageMutation.isPending
+            }
           />
         </form>
       </Form>

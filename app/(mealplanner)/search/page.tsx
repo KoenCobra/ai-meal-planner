@@ -237,7 +237,7 @@ const SearchPage = () => {
       </AnimatePresence>
 
       {/* Load more trigger */}
-      <div ref={loadMoreRef} className="mt-8">
+      <div ref={loadMoreRef} className="mt-5">
         {isFetchingNextPage && (
           <div className="flex items-center justify-center py-6">
             <Loader2 className="h-6 w-6 animate-spin mr-2" />
