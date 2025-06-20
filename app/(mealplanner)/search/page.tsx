@@ -45,7 +45,7 @@ const SearchPage = () => {
           fetchNextPage();
         }
       },
-      { threshold: 0.5, rootMargin: "700px" },
+      { threshold: 0.2, rootMargin: "600px" },
     );
 
     if (loadMoreRef.current) {
