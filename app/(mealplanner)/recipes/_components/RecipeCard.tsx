@@ -25,7 +25,6 @@ import Link from "next/link";
 import { useSearchParams } from "next/navigation";
 import React from "react";
 import AddToMenuDialog from "../../_components/AddToMenuDialog";
-import { useAddToMenuDialogStore } from "../../_stores/useAddToMenuDialogStore";
 import { useSyncIngredients } from "../_hooks/useSyncIngredients";
 import { RecipeImage } from "./RecipeImage";
 
@@ -51,9 +50,18 @@ export const RecipeCard = ({ recipe, onDelete }: RecipeCardProps) => {
   if (!user) throw new Error("User not found");
 
   const [dropdownOpen, setDropdownOpen] = React.useState(false);
-  const { open, recipeId, openDialog, closeDialog } = useAddToMenuDialogStore();
+  const [dialogOpen, setDialogOpen] = React.useState(false);
   const { handleSyncIngredients } = useSyncIngredients(user.id);
   const [isHovered, setIsHovered] = React.useState(false);
+
+  const handleOpenDialog = () => {
+    setDialogOpen(true);
+    setDropdownOpen(false);
+  };
+
+  const handleCloseDialog = () => {
+    setDialogOpen(false);
+  };
 
   return (
     <>
@@ -107,8 +115,7 @@ export const RecipeCard = ({ recipe, onDelete }: RecipeCardProps) => {
                     onClick={(e) => {
                       e.stopPropagation();
                       e.preventDefault();
-                      openDialog(recipe._id);
-                      setDropdownOpen(false);
+                      handleOpenDialog();
                     }}
                     className="cursor-pointer"
                   >
@@ -179,9 +186,9 @@ export const RecipeCard = ({ recipe, onDelete }: RecipeCardProps) => {
       </Link>
 
       <AddToMenuDialog
-        open={open}
-        onOpenChange={closeDialog}
-        recipeId={recipeId}
+        open={dialogOpen}
+        onOpenChange={handleCloseDialog}
+        recipeId={recipe._id}
       />
     </>
   );
