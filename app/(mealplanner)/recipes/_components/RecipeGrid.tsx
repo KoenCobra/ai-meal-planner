@@ -1,7 +1,6 @@
 "use client";
 
 import type { Id } from "@/convex/_generated/dataModel";
-import { motion } from "framer-motion";
 import { RecipeCard } from "./RecipeCard";
 
 interface RecipeGridProps {
@@ -20,15 +19,8 @@ interface RecipeGridProps {
 export const RecipeGrid = ({ recipes, onDelete }: RecipeGridProps) => {
   return (
     <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
-      {recipes.map((recipe, index) => (
-        <motion.div
-          key={recipe._id}
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.2, delay: index * 0.02 }}
-        >
-          <RecipeCard recipe={recipe} onDelete={onDelete} />
-        </motion.div>
+      {recipes.map((recipe) => (
+        <RecipeCard key={recipe._id} recipe={recipe} onDelete={onDelete} />
       ))}
     </div>
   );

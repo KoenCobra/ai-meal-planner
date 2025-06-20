@@ -5,7 +5,7 @@ import type React from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { sanitizeInput } from "@/lib/utils";
-import { AnimatePresence, motion } from "framer-motion";
+import { motion } from "framer-motion";
 import { ChefHat, Loader2, SearchIcon, X } from "lucide-react";
 import { useEffect, useRef } from "react";
 import DeleteRecipeDialog from "../_components/DeleteRecipeDialog";
@@ -156,85 +156,60 @@ const SearchPage = () => {
       )}
 
       {/* Results */}
-      <AnimatePresence mode="wait">
-        {isLoading && executedQuery && !recipes.length ? (
-          <motion.div
-            key="loading"
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            className="flex flex-col items-center justify-center py-16"
-          >
-            <div className="relative h-16 w-16 mb-4">
-              <div className="absolute inset-0 border-4 border-t-primary border-r-transparent border-b-transparent border-l-transparent rounded-full animate-spin"></div>
-              <div
-                className="absolute inset-0 border-4 border-t-transparent border-r-transparent border-b-primary border-l-transparent rounded-full animate-spin"
-                style={{
-                  animationDirection: "reverse",
-                  animationDuration: "1.5s",
-                }}
-              ></div>
-            </div>
-            <p className="text-lg font-medium">Searching recipes...</p>
+      {isLoading && executedQuery && !recipes.length ? (
+        <div className="flex flex-col items-center justify-center py-16">
+          <div className="relative h-16 w-16 mb-4">
+            <div className="absolute inset-0 border-4 border-t-primary border-r-transparent border-b-transparent border-l-transparent rounded-full animate-spin"></div>
+            <div
+              className="absolute inset-0 border-4 border-t-transparent border-r-transparent border-b-primary border-l-transparent rounded-full animate-spin"
+              style={{
+                animationDirection: "reverse",
+                animationDuration: "1.5s",
+              }}
+            ></div>
+          </div>
+          <p className="text-lg font-medium">Searching recipes...</p>
+          <p className="text-sm text-muted-foreground">
+            This may take a moment
+          </p>
+        </div>
+      ) : executedQuery && recipes.length === 0 && !isLoading ? (
+        <div className="text-center py-16 max-w-md mx-auto">
+          <div className="bg-muted rounded-full p-4 inline-flex mb-4">
+            <SearchIcon className="h-8 w-8 text-muted-foreground" />
+          </div>
+          <h3 className="text-xl font-semibold mb-2">No recipes found</h3>
+          <p className="text-muted-foreground mb-6">
+            We couldn&apos;t find any recipes matching &quot;{executedQuery}
+            &quot;. Try different keywords or browse our recipe collections.
+          </p>
+          <Button variant="outline" onClick={clearSearch}>
+            Clear Search
+          </Button>
+        </div>
+      ) : !executedQuery ? (
+        <div className="text-center py-16">
+          <div className="bg-primary/10 rounded-full p-6 inline-flex mb-6">
+            <ChefHat className="h-12 w-12 text-primary" />
+          </div>
+          <h3 className="text-2xl font-semibold mb-3">Find Your Next Meal</h3>
+          <p className="text-muted-foreground max-w-md mx-auto mb-8">
+            Search for recipes by name, ingredients, or categories. Try
+            searching for &quot;pasta&quot;, &quot;vegetarian&quot;, or
+            &quot;quick dinner&quot;.
+          </p>
+        </div>
+      ) : (
+        <div>
+          <div className="mb-4 flex justify-between items-center">
             <p className="text-sm text-muted-foreground">
-              This may take a moment
+              Found {recipes.length} recipe{recipes.length === 1 ? "" : "s"}
             </p>
-          </motion.div>
-        ) : executedQuery && recipes.length === 0 && !isLoading ? (
-          <motion.div
-            key="no-results"
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            className="text-center py-16 max-w-md mx-auto"
-          >
-            <div className="bg-muted rounded-full p-4 inline-flex mb-4">
-              <SearchIcon className="h-8 w-8 text-muted-foreground" />
-            </div>
-            <h3 className="text-xl font-semibold mb-2">No recipes found</h3>
-            <p className="text-muted-foreground mb-6">
-              We couldn&apos;t find any recipes matching &quot;{executedQuery}
-              &quot;. Try different keywords or browse our recipe collections.
-            </p>
-            <Button variant="outline" onClick={clearSearch}>
-              Clear Search
-            </Button>
-          </motion.div>
-        ) : !executedQuery ? (
-          <motion.div
-            key="start-search"
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            className="text-center py-16"
-          >
-            <div className="bg-primary/10 rounded-full p-6 inline-flex mb-6">
-              <ChefHat className="h-12 w-12 text-primary" />
-            </div>
-            <h3 className="text-2xl font-semibold mb-3">Find Your Next Meal</h3>
-            <p className="text-muted-foreground max-w-md mx-auto mb-8">
-              Search for recipes by name, ingredients, or categories. Try
-              searching for &quot;pasta&quot;, &quot;vegetarian&quot;, or
-              &quot;quick dinner&quot;.
-            </p>
-          </motion.div>
-        ) : (
-          <motion.div
-            key="results"
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-          >
-            <div className="mb-4 flex justify-between items-center">
-              <p className="text-sm text-muted-foreground">
-                Found {recipes.length} recipe{recipes.length === 1 ? "" : "s"}
-              </p>
-            </div>
+          </div>
 
-            <RecipeGrid recipes={recipes} onDelete={handleDelete} />
-          </motion.div>
-        )}
-      </AnimatePresence>
+          <RecipeGrid recipes={recipes} onDelete={handleDelete} />
+        </div>
+      )}
 
       {/* Load more trigger */}
       <div ref={loadMoreRef} className="mt-5">

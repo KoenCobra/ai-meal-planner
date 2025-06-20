@@ -160,7 +160,7 @@ const BubuAiResponse = ({ isGeneratingImage }: BubuAiResponseProps) => {
                   className="object-cover"
                   fill
                   sizes="(max-width: 768px) 100vw, 1200px"
-                  quality={50}
+                  quality={20} // Reduced quality to match allowlist and reduce costs
                   placeholder="blur"
                   blurDataURL={recipeImageData.blurDataURL}
                 />
