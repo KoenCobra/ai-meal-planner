@@ -4,7 +4,7 @@ import { MAX_FILE_SIZE } from "./lib/constants";
 const nextConfig: NextConfig = {
   images: {
     minimumCacheTTL: 31536000, // 1 year in seconds (365 * 24 * 60 * 60)
-    formats: ["image/webp"], // Only use WebP to reduce transformations
+    formats: ["image/webp"],
     remotePatterns: [
       {
         protocol: "https",
