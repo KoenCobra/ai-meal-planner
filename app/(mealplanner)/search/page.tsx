@@ -138,23 +138,6 @@ const SearchPage = () => {
         </div>
       </motion.div>
 
-      {/* Active Filters */}
-      {executedQuery && (
-        <motion.div
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ duration: 0.3 }}
-          className="flex items-center gap-2 mb-6"
-        >
-          <div className="text-sm font-medium">Results for:</div>
-          <div className="flex gap-2 flex-wrap">
-            <div className="bg-secondary text-secondary-foreground rounded-full px-3 py-1 text-sm flex items-center gap-1">
-              &quot;{executedQuery}&quot;
-            </div>
-          </div>
-        </motion.div>
-      )}
-
       {/* Results */}
       {isLoading && executedQuery && !recipes.length ? (
         <div className="flex flex-col items-center justify-center py-16">
@@ -201,12 +184,6 @@ const SearchPage = () => {
         </div>
       ) : (
         <div>
-          <div className="mb-4 flex justify-between items-center">
-            <p className="text-sm text-muted-foreground">
-              Found {recipes.length} recipe{recipes.length === 1 ? "" : "s"}
-            </p>
-          </div>
-
           <RecipeGrid recipes={recipes} onDelete={handleDelete} />
         </div>
       )}
