@@ -56,7 +56,7 @@ export async function POST(req: NextRequest) {
     const result = await fal.subscribe("fal-ai/flux/schnell", {
       input: {
         prompt: `Professional food photography of ${recipeTitle}. ${recipeSummary}.Super high def 4K quality, and detailed.`,
-        image_size: "square",
+        image_size: "square-hd",
       },
     });
 
@@ -68,7 +68,7 @@ export async function POST(req: NextRequest) {
 
     // Generate blurred placeholder using plaiceholder
     const { base64: blurDataURL } = await getPlaiceholder(imageBuffer, {
-      size: 10, // Small size for a more blurred effect
+      size: 20, // Small size for a more blurred effect
     });
 
     return NextResponse.json(
