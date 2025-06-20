@@ -34,7 +34,6 @@ const AddToMenuDialog: React.FC<AddToMenuDialogProps> = ({
     menus,
     selectedMenus,
     loading,
-    error,
     handleCheckboxChange,
     saveMenuAssociations,
   } = useMenuAssociations({
@@ -82,7 +81,6 @@ const AddToMenuDialog: React.FC<AddToMenuDialogProps> = ({
             ))
           )}
         </div>
-        {error && <div className="text-red-500 text-sm mb-2">{error}</div>}
         <DialogFooter>
           <Button onClick={handleSave} disabled={loading}>
             {loading ? "Saving..." : "Save changes"}

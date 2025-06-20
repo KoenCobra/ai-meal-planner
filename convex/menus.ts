@@ -84,46 +84,6 @@ export const deleteMenu = mutation({
   },
 });
 
-export const addRecipeToMenu = mutation({
-  args: {
-    userId: v.string(),
-    menuId: v.id("menus"),
-    recipeId: v.id("recipes"),
-  },
-  handler: async (ctx, args) => {
-    const user = await ctx.auth.getUserIdentity();
-    if (!user) {
-      throw new Error("Unauthorized");
-    }
-    await rateLimiter.limit(ctx, "addRecipeToMenu", {
-      key: args.userId,
-      throws: true,
-    });
-
-    const menu = await ctx.db.get(args.menuId);
-    if (!menu) throw new ConvexError("Menu not found");
-    if (menu.userId !== args.userId) throw new ConvexError("Not authorized");
-
-    const recipe = await ctx.db.get(args.recipeId);
-    if (!recipe) throw new ConvexError("Recipe not found");
-    if (recipe.userId !== args.userId) throw new ConvexError("Not authorized");
-
-    const existing = await ctx.db
-      .query("menusOnRecipes")
-      .withIndex("by_menu_and_recipe", (q) =>
-        q.eq("menuId", args.menuId).eq("recipeId", args.recipeId),
-      )
-      .first();
-
-    if (existing) return existing._id;
-
-    return await ctx.db.insert("menusOnRecipes", {
-      menuId: args.menuId,
-      recipeId: args.recipeId,
-    });
-  },
-});
-
 export const removeRecipeFromMenu = mutation({
   args: {
     userId: v.string(),
@@ -318,6 +278,75 @@ export const syncMenuIngredientsToGroceryList = mutation({
             quantity,
           );
         }
+      }
+    }
+
+    return null;
+  },
+});
+
+export const setRecipeMenuAssociations = mutation({
+  args: {
+    userId: v.string(),
+    recipeId: v.id("recipes"),
+    menuIds: v.array(v.id("menus")),
+  },
+  handler: async (ctx, args) => {
+    const user = await ctx.auth.getUserIdentity();
+    if (!user) {
+      throw new Error("Unauthorized");
+    }
+    await rateLimiter.limit(ctx, "addRecipeToMenu", {
+      key: args.userId,
+      throws: true,
+    });
+
+    // Verify recipe ownership
+    const recipe = await ctx.db.get(args.recipeId);
+    if (!recipe) throw new ConvexError("Recipe not found");
+    if (recipe.userId !== args.userId) throw new ConvexError("Not authorized");
+
+    // Verify menu ownership for all provided menuIds
+    for (const menuId of args.menuIds) {
+      const menu = await ctx.db.get(menuId);
+      if (!menu) throw new ConvexError(`Menu ${menuId} not found`);
+      if (menu.userId !== args.userId) throw new ConvexError("Not authorized");
+    }
+
+    // Get all existing associations for this recipe
+    const existingAssociations = await ctx.db
+      .query("menusOnRecipes")
+      .withIndex("by_recipe", (q) => q.eq("recipeId", args.recipeId))
+      .collect();
+
+    // Filter to only user's menus
+    const userMenuAssociations = [];
+    for (const assoc of existingAssociations) {
+      const menu = await ctx.db.get(assoc.menuId);
+      if (menu && menu.userId === args.userId) {
+        userMenuAssociations.push(assoc);
+      }
+    }
+
+    const existingMenuIds = new Set(
+      userMenuAssociations.map((assoc) => assoc.menuId),
+    );
+    const newMenuIds = new Set(args.menuIds);
+
+    // Remove associations that are no longer needed
+    for (const assoc of userMenuAssociations) {
+      if (!newMenuIds.has(assoc.menuId)) {
+        await ctx.db.delete(assoc._id);
+      }
+    }
+
+    // Add new associations
+    for (const menuId of args.menuIds) {
+      if (!existingMenuIds.has(menuId)) {
+        await ctx.db.insert("menusOnRecipes", {
+          menuId,
+          recipeId: args.recipeId,
+        });
       }
     }
 

@@ -17,7 +17,6 @@ export const useMenuAssociations = ({
 }: UseMenuAssociationsProps) => {
   const [selectedMenus, setSelectedMenus] = useState<Id<"menus">[]>([]);
   const [loading, setLoading] = useState(false);
-  const [error, setError] = useState<string | null>(null);
 
   // Get all available menus
   const { data: menus } = useQuery({
@@ -32,52 +31,10 @@ export const useMenuAssociations = ({
     ),
   });
 
-  // Mutations
-  const addRecipeToMenu = useMutation(
-    api.menus.addRecipeToMenu,
-  ).withOptimisticUpdate((localStore, args) => {
-    const existingMenus = localStore.getQuery(
-      api.menus.getMenusContainingRecipe,
-      {
-        userId: args.userId,
-        recipeId: args.recipeId,
-      },
-    );
-    if (existingMenus) {
-      const menuToAdd = localStore.getQuery(api.menus.getMenu, {
-        userId: args.userId,
-        id: args.menuId,
-      });
-      if (menuToAdd) {
-        localStore.setQuery(
-          api.menus.getMenusContainingRecipe,
-          { userId: args.userId, recipeId: args.recipeId },
-          [...existingMenus, menuToAdd],
-        );
-      }
-    }
-  });
+  // Mutation
+  const setMenuAssociations = useMutation(api.menus.setRecipeMenuAssociations);
 
-  const removeRecipeFromMenu = useMutation(
-    api.menus.removeRecipeFromMenu,
-  ).withOptimisticUpdate((localStore, args) => {
-    const existingMenus = localStore.getQuery(
-      api.menus.getMenusContainingRecipe,
-      {
-        userId: args.userId,
-        recipeId: args.recipeId,
-      },
-    );
-    if (existingMenus) {
-      localStore.setQuery(
-        api.menus.getMenusContainingRecipe,
-        { userId: args.userId, recipeId: args.recipeId },
-        existingMenus.filter((menu) => menu._id !== args.menuId),
-      );
-    }
-  });
-
-  // Initialize selected menus when data is loaded or dialog opens
+  // Initialize selected menus when data is loaded
   useEffect(() => {
     if (menuRecipes) {
       setSelectedMenus(menuRecipes.map((menu) => menu._id));
@@ -93,41 +50,20 @@ export const useMenuAssociations = ({
   };
 
   const saveMenuAssociations = async () => {
-    if (!recipeId || !menuRecipes) return false;
+    if (!recipeId) return false;
+
     setLoading(true);
-    setError(null);
-
     try {
-      const initialMenuIds = new Set(menuRecipes.map((menu) => menu._id));
-
-      // Add recipe to newly selected menus
-      const addPromises = selectedMenus
-        .filter((menuId) => !initialMenuIds.has(menuId))
-        .map((menuId) =>
-          addRecipeToMenu({
-            userId,
-            menuId,
-            recipeId,
-          }),
-        );
-
-      // Remove recipe from unselected menus
-      const removePromises = menuRecipes
-        .filter((menu) => !selectedMenus.includes(menu._id))
-        .map((menu) =>
-          removeRecipeFromMenu({
-            userId,
-            menuId: menu._id,
-            recipeId,
-          }),
-        );
-
-      await Promise.all([...addPromises, ...removePromises]);
+      await setMenuAssociations({
+        userId,
+        recipeId,
+        menuIds: selectedMenus,
+      });
+      toast.success("Menu updated successfully");
       return true;
-    } catch (e) {
+    } catch (error) {
       const errorMessage =
-        e instanceof Error ? e.message : "Failed to update menu associations";
-      setError(errorMessage);
+        error instanceof Error ? error.message : "Failed to update menu";
       toast.error(errorMessage);
       return false;
     } finally {
@@ -139,7 +75,6 @@ export const useMenuAssociations = ({
     menus,
     selectedMenus,
     loading,
-    error,
     handleCheckboxChange,
     saveMenuAssociations,
   };
