@@ -155,7 +155,12 @@ const BubuAiResponse = ({ isGeneratingImage }: BubuAiResponseProps) => {
           >
             <div className="relative w-full h-[400px] md:h-[500px]">
               {isGeneratingImage ? (
-                <Skeleton className="w-full h-full" />
+                <div className="relative w-full h-full">
+                  <Skeleton className="w-full h-full" />
+                  <div className="absolute top-2 right-2 bg-black/30 text-white text-xs px-2 py-1 rounded-md">
+                    Generating image...
+                  </div>
+                </div>
               ) : (
                 recipeImageData?.imageUrl && (
                   <Image
@@ -164,7 +169,7 @@ const BubuAiResponse = ({ isGeneratingImage }: BubuAiResponseProps) => {
                     className="object-cover"
                     fill
                     sizes="(max-width: 768px) 100vw, 1200px"
-                    quality={20}
+                    quality={50}
                     placeholder="blur"
                     blurDataURL={recipeImageData.blurDataURL}
                   />

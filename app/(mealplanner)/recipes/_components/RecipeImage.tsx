@@ -24,7 +24,7 @@ export const RecipeImage = ({ recipe, className }: RecipeImageProps) => {
             fill
             sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
             className="object-cover rounded-t-lg"
-            quality={20}
+            quality={50}
             priority
             placeholder={recipe.blurDataURL ? "blur" : "empty"}
             blurDataURL={recipe.blurDataURL}
