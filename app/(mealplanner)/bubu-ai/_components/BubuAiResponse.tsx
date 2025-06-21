@@ -10,6 +10,7 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import { Skeleton } from "@/components/ui/skeleton";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { api } from "@/convex/_generated/api";
 import {
@@ -153,29 +154,21 @@ const BubuAiResponse = ({ isGeneratingImage }: BubuAiResponseProps) => {
             animate="visible"
           >
             <div className="relative w-full h-[400px] md:h-[500px]">
-              {recipeImageData?.imageUrl && (
-                <Image
-                  src={recipeImageData.imageUrl}
-                  alt="recipe image"
-                  className="object-cover"
-                  fill
-                  sizes="(max-width: 768px) 100vw, 1200px"
-                  quality={20} // Reduced quality to match allowlist and reduce costs
-                  placeholder="blur"
-                  blurDataURL={recipeImageData.blurDataURL}
-                />
-              )}
-              {isGeneratingImage && (
-                <div className="absolute inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center">
-                  <div className="flex flex-col items-center gap-2 text-white">
-                    <div className="flex space-x-1">
-                      <div className="size-1.5 bg-white rounded-full animate-bounce [animation-delay:-0.3s]"></div>
-                      <div className="size-1.5 bg-white rounded-full animate-bounce [animation-delay:-0.15s]"></div>
-                      <div className="size-1.5 bg-white rounded-full animate-bounce"></div>
-                    </div>
-                    <p className="text-sm">Generating image</p>
-                  </div>
-                </div>
+              {isGeneratingImage ? (
+                <Skeleton className="w-full h-full" />
+              ) : (
+                recipeImageData?.imageUrl && (
+                  <Image
+                    src={recipeImageData.imageUrl}
+                    alt="recipe image"
+                    className="object-cover"
+                    fill
+                    sizes="(max-width: 768px) 100vw, 1200px"
+                    quality={20}
+                    placeholder="blur"
+                    blurDataURL={recipeImageData.blurDataURL}
+                  />
+                )
               )}
               <motion.div
                 className="absolute inset-0 bg-gradient-to-t from-black/70 to-transparent"
