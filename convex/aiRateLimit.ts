@@ -8,11 +8,6 @@ export const checkRecipeGenerationLimit = mutation({
   },
   handler: async (ctx, args) => {
     try {
-      const user = (await ctx.auth.getUserIdentity())?.tokenIdentifier;
-      if (!user) {
-        throw new Error("Unauthorized");
-      }
-
       await rateLimiter.limit(ctx, "generateRecipeAI", {
         key: args.userId,
         throws: true,
@@ -35,11 +30,6 @@ export const checkImageGenerationLimit = mutation({
   },
   handler: async (ctx, args) => {
     try {
-      const user = (await ctx.auth.getUserIdentity())?.tokenIdentifier;
-      if (!user) {
-        throw new Error("Unauthorized");
-      }
-
       await rateLimiter.limit(ctx, "generateImageAI", {
         key: args.userId,
         throws: true,
@@ -65,11 +55,6 @@ export const checkImageAnalysisLimit = mutation({
   },
   handler: async (ctx, args) => {
     try {
-      const user = (await ctx.auth.getUserIdentity())?.tokenIdentifier;
-      if (!user) {
-        throw new Error("Unauthorized");
-      }
-
       await rateLimiter.limit(ctx, "analyzeImageAI", {
         key: args.userId,
         throws: true,
