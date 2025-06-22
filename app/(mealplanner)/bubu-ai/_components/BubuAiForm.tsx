@@ -28,6 +28,7 @@ import {
   type GenerateRecipeInput,
   generateRecipeSchema,
 } from "@/lib/validation";
+import { useUser } from "@clerk/clerk-react";
 import { useAnalyzeImage } from "../_hooks/useAnylizeImage";
 import { useGenerateRecipe } from "../_hooks/useGenerateRecipe";
 import { useBubuAi } from "../BubuAiContext";
@@ -60,6 +61,7 @@ const BibiAiForm = ({
   const { generateRecipeMutation, abort } = useGenerateRecipe();
   const { analyzeImageMutation, abort: abortAnalyzeImage } = useAnalyzeImage();
   const { clearAiCache } = useClearAiCache();
+  const { user } = useUser();
 
   const textareaRef = useRef<HTMLTextAreaElement>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
@@ -207,7 +209,7 @@ const BibiAiForm = ({
                         placeholder={
                           selectedImage
                             ? "Add any specific instructions for your food image (optional)"
-                            : "Type your recipe description here..."
+                            : `Hey ${user?.username}, Type your recipe description here (in your preferred language)...`
                         }
                         disabled={
                           generateRecipeMutation.isPending ||

@@ -10,10 +10,11 @@ export const createMenu = mutation({
     name: v.string(),
   },
   handler: async (ctx, args) => {
-    const user = await ctx.auth.getUserIdentity();
+    const user = (await ctx.auth.getUserIdentity())?.tokenIdentifier;
     if (!user) {
       throw new Error("Unauthorized");
     }
+
     await rateLimiter.limit(ctx, "createMenu", {
       key: args.userId,
       throws: true,
@@ -33,7 +34,7 @@ export const updateMenu = mutation({
     name: v.string(),
   },
   handler: async (ctx, args) => {
-    const user = await ctx.auth.getUserIdentity();
+    const user = (await ctx.auth.getUserIdentity())?.tokenIdentifier;
     if (!user) {
       throw new Error("Unauthorized");
     }
@@ -58,7 +59,7 @@ export const deleteMenu = mutation({
     id: v.id("menus"),
   },
   handler: async (ctx, args) => {
-    const user = await ctx.auth.getUserIdentity();
+    const user = (await ctx.auth.getUserIdentity())?.tokenIdentifier;
     if (!user) {
       throw new Error("Unauthorized");
     }
@@ -91,7 +92,7 @@ export const removeRecipeFromMenu = mutation({
     recipeId: v.id("recipes"),
   },
   handler: async (ctx, args) => {
-    const user = await ctx.auth.getUserIdentity();
+    const user = (await ctx.auth.getUserIdentity())?.tokenIdentifier;
     if (!user) {
       throw new Error("Unauthorized");
     }
@@ -123,6 +124,11 @@ export const getMenu = query({
     id: v.id("menus"),
   },
   handler: async (ctx, args) => {
+    const user = (await ctx.auth.getUserIdentity())?.tokenIdentifier;
+    if (!user) {
+      throw new Error("Unauthorized");
+    }
+
     const menu = await ctx.db.get(args.id);
 
     if (!menu) throw new ConvexError("Menu not found");
@@ -139,6 +145,11 @@ export const getMenus = query({
     paginationOpts: v.optional(paginationOptsValidator),
   },
   handler: async (ctx, args) => {
+    const user = (await ctx.auth.getUserIdentity())?.tokenIdentifier;
+    if (!user) {
+      throw new Error("Unauthorized");
+    }
+
     return await ctx.db
       .query("menus")
       .withIndex("by_user", (q) => q.eq("userId", args.userId))
@@ -153,6 +164,11 @@ export const getMenuRecipes = query({
     menuId: v.id("menus"),
   },
   handler: async (ctx, args) => {
+    const user = (await ctx.auth.getUserIdentity())?.tokenIdentifier;
+    if (!user) {
+      throw new Error("Unauthorized");
+    }
+
     const menu = await ctx.db.get(args.menuId);
     if (!menu) throw new ConvexError("Menu not found");
     if (menu.userId !== args.userId) throw new ConvexError("Not authorized");
@@ -182,6 +198,11 @@ export const getMenuRecipesByDishType = query({
     paginationOpts: paginationOptsValidator,
   },
   handler: async (ctx, args) => {
+    const user = (await ctx.auth.getUserIdentity())?.tokenIdentifier;
+    if (!user) {
+      throw new Error("Unauthorized");
+    }
+
     const menu = await ctx.db.get(args.menuId);
     if (!menu) throw new ConvexError("Menu not found");
     if (menu.userId !== args.userId) throw new ConvexError("Not authorized");
@@ -215,6 +236,11 @@ export const getMenusContainingRecipe = query({
     recipeId: v.id("recipes"),
   },
   handler: async (ctx, args) => {
+    const user = (await ctx.auth.getUserIdentity())?.tokenIdentifier;
+    if (!user) {
+      throw new Error("Unauthorized");
+    }
+
     const associations = await ctx.db
       .query("menusOnRecipes")
       .withIndex("by_recipe", (q) => q.eq("recipeId", args.recipeId))
@@ -245,7 +271,7 @@ export const syncMenuIngredientsToGroceryList = mutation({
   },
   returns: v.null(),
   handler: async (ctx, args) => {
-    const user = await ctx.auth.getUserIdentity();
+    const user = (await ctx.auth.getUserIdentity())?.tokenIdentifier;
     if (!user) {
       throw new Error("Unauthorized");
     }
@@ -292,7 +318,7 @@ export const setRecipeMenuAssociations = mutation({
     menuIds: v.array(v.id("menus")),
   },
   handler: async (ctx, args) => {
-    const user = await ctx.auth.getUserIdentity();
+    const user = (await ctx.auth.getUserIdentity())?.tokenIdentifier;
     if (!user) {
       throw new Error("Unauthorized");
     }

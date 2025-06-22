@@ -22,7 +22,7 @@ export const addItem = mutation({
     quantity: v.optional(v.string()),
   },
   handler: async (ctx, args) => {
-    const user = await ctx.auth.getUserIdentity();
+    const user = (await ctx.auth.getUserIdentity())?.tokenIdentifier;
     if (!user) {
       throw new Error("Unauthorized");
     }
@@ -73,6 +73,11 @@ export const addOrUpdateGroceryItem = async (
   name: string,
   quantity: string,
 ) => {
+  const user = (await ctx.auth.getUserIdentity())?.tokenIdentifier;
+  if (!user) {
+    throw new Error("Unauthorized");
+  }
+
   const existingItem = await ctx.db
     .query("groceryItems")
     .withIndex("by_user_and_name", (q) =>
@@ -114,10 +119,11 @@ export const toggleItem = mutation({
     id: v.id("groceryItems"),
   },
   handler: async (ctx, args) => {
-    const user = await ctx.auth.getUserIdentity();
+    const user = (await ctx.auth.getUserIdentity())?.tokenIdentifier;
     if (!user) {
       throw new Error("Unauthorized");
     }
+
     await rateLimiter.limit(ctx, "toggleGroceryItem", {
       key: args.userId,
       throws: true,
@@ -134,7 +140,7 @@ export const toggleItem = mutation({
 export const listItems = query({
   args: { userId: v.string() },
   handler: async (ctx, args) => {
-    const user = await ctx.auth.getUserIdentity();
+    const user = (await ctx.auth.getUserIdentity())?.tokenIdentifier;
     if (!user) {
       throw new Error("Unauthorized");
     }
@@ -151,7 +157,7 @@ export const clearAllItems = mutation({
     userId: v.string(),
   },
   handler: async (ctx, args) => {
-    const user = await ctx.auth.getUserIdentity();
+    const user = (await ctx.auth.getUserIdentity())?.tokenIdentifier;
     if (!user) {
       throw new Error("Unauthorized");
     }

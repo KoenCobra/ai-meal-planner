@@ -11,10 +11,11 @@ export const getRecipesByDishType = query({
     paginationOpts: paginationOptsValidator,
   },
   handler: async (ctx, args) => {
-    const user = await ctx.auth.getUserIdentity();
+    const user = (await ctx.auth.getUserIdentity())?.tokenIdentifier;
     if (!user) {
       throw new Error("Unauthorized");
     }
+
     return await ctx.db
       .query("recipes")
       .withIndex("by_user_and_dish_type", (q) =>
@@ -57,6 +58,11 @@ export const createRecipe = mutation({
   handler: async (ctx, args) => {
     const { userId, ...recipeData } = args;
 
+    const user = (await ctx.auth.getUserIdentity())?.tokenIdentifier;
+    if (!user) {
+      throw new Error("Unauthorized");
+    }
+
     await rateLimiter.limit(ctx, "createRecipe", { key: userId, throws: true });
 
     const ingredientsText = recipeData.ingredients
@@ -83,6 +89,11 @@ export const deleteRecipe = mutation({
     dishType: v.string(),
   },
   handler: async (ctx, args) => {
+    const user = (await ctx.auth.getUserIdentity())?.tokenIdentifier;
+    if (!user) {
+      throw new Error("Unauthorized");
+    }
+
     await rateLimiter.limit(ctx, "deleteRecipe", {
       key: args.userId,
       throws: true,
@@ -111,6 +122,10 @@ export const getRecipe = query({
     id: v.id("recipes"),
   },
   handler: async (ctx, args) => {
+    const user = (await ctx.auth.getUserIdentity())?.tokenIdentifier;
+    if (!user) {
+      throw new Error("Unauthorized");
+    }
     const recipe = await ctx.db.get(args.id);
     if (!recipe) return null;
     if (recipe.userId !== args.userId) throw new ConvexError("Not authorized");
@@ -147,6 +162,7 @@ export const searchRecipesByTitleIngredientsAndCategories = query({
     if (!user) {
       throw new Error("Unauthorized");
     }
+
     if (!args.query.trim()) {
       return await ctx.db
         .query("recipes")
