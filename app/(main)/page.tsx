@@ -5,7 +5,7 @@ export const metadata: Metadata = {
 };
 
 const Home = async () => {
-  return <div>Home</div>;
+  return <div>Content coming soon...</div>;
 };
 
 export default Home;

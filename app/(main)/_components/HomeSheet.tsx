@@ -20,12 +20,6 @@ const HomeSheet = ({ open, setOpen }: Props) => {
           <SheetTitle className="text-left text-2xl">Bubu</SheetTitle>
         </SheetHeader>
         <div className="mt-6 grid text-left gap-3 px-5">
-          <Link className="py-2" onClick={() => setOpen(false)} href="/detox">
-            Detox
-          </Link>
-          <Link className="py-2" onClick={() => setOpen(false)} href="/blog">
-            Blog
-          </Link>
           <Link className="py-2" onClick={() => setOpen(false)} href="/bubu-ai">
             Meal Planner
           </Link>

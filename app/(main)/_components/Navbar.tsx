@@ -18,14 +18,13 @@ const Navbar = () => {
         <Link className="text-2xl font-bold" href="/">
           Bubu
         </Link>
-        <div className="hidden md:block">
-          <ul className="flex gap-5">
-            <li>
-              <Link href="/bubu-ai">Meal Planner</Link>
-            </li>
-          </ul>
-        </div>
+
         <div className="flex items-center gap-3">
+          <div className="hidden md:block mr-8">
+            <Link href="/bubu-ai" className="underline">
+              Meal Planner
+            </Link>
+          </div>
           <div className="flex items-center gap-3">
             <ThemeToggle />
             <SignedOut>
