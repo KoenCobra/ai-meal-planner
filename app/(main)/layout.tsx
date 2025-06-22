@@ -11,7 +11,7 @@ const layout = async ({ children }: { children: React.ReactNode }) => {
   return (
     <div>
       <Navbar />
-      <div className="container">{children}</div>
+      <div className="container px-2">{children}</div>
     </div>
   );
 };
