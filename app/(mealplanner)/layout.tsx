@@ -1,23 +1,9 @@
-import { auth } from "@clerk/nextjs/server";
-import { redirect } from "next/navigation";
 import React from "react";
 import Navbar from "./_components/Navbar";
 import { BubuAiProvider } from "./bubu-ai/BubuAiContext";
 import { SearchProvider } from "./search/_context/SearchProvider";
 
 const layout = async ({ children }: { children: React.ReactNode }) => {
-  const { has, userId } = await auth();
-
-  if (!userId) {
-    throw new Error("User not found");
-  }
-
-  const hasActiveSubscription = has({ plan: "active_subscription" });
-
-  if (!hasActiveSubscription) {
-    redirect("/billing");
-  }
-
   return (
     <BubuAiProvider>
       <SearchProvider>
