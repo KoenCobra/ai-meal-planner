@@ -4,7 +4,6 @@ import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
 import { api } from "@/convex/_generated/api";
 import { Id } from "@/convex/_generated/dataModel";
-import { useUser } from "@clerk/clerk-react";
 import { convexQuery } from "@convex-dev/react-query";
 import { useQuery } from "@tanstack/react-query";
 import { ShoppingCart } from "lucide-react";
@@ -16,10 +15,8 @@ import { useSyncMenuIngredients } from "../_hooks/useSyncMenuIngredients";
 const MenuPage = () => {
   const params = useParams();
   const searchParams = useSearchParams();
-  const { user } = useUser();
-  const { handleSyncMenuIngredients } = useSyncMenuIngredients(user?.id || "");
+  const { handleSyncMenuIngredients } = useSyncMenuIngredients();
 
-  // Set default tab if not specified
   useEffect(() => {
     if (!searchParams.has("type")) {
       const newSearchParams = new URLSearchParams(searchParams);
@@ -30,7 +27,6 @@ const MenuPage = () => {
 
   const { data: menu, isLoading } = useQuery({
     ...convexQuery(api.menus.getMenu, {
-      userId: user?.id || "",
       id: params.id as Id<"menus">,
     }),
   });
@@ -43,7 +39,6 @@ const MenuPage = () => {
           <Skeleton className="h-12 w-80 mx-auto" />
         </div>
 
-        {/* Recipe grid skeleton */}
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
           {Array.from({ length: 4 }).map((_, index) => (
             <div key={index} className="border-0 rounded-lg overflow-hidden">

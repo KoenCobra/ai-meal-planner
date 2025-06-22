@@ -11,7 +11,6 @@ import { api } from "@/convex/_generated/api";
 import { Id } from "@/convex/_generated/dataModel";
 import { sanitizeInput } from "@/lib/utils";
 import { CreateMenuInput, createMenuSchema } from "@/lib/validation";
-import { useUser } from "@clerk/clerk-react";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useMutation } from "convex/react";
 import { ConvexError } from "convex/values";
@@ -30,7 +29,6 @@ const UpdateMenuInput = ({
   menuId,
   setOpenUpdateMenu,
 }: UpdateMenuInputProps) => {
-  const { user } = useUser();
   const form = useForm<CreateMenuInput>({
     resolver: zodResolver(createMenuSchema),
     defaultValues: {
@@ -40,19 +38,14 @@ const UpdateMenuInput = ({
 
   const updateMenu = useMutation(api.menus.updateMenu).withOptimisticUpdate(
     (localStore, args) => {
-      const menus = localStore.getQuery(api.menus.getMenus, {
-        userId: args.userId,
-      });
+      const menus = localStore.getQuery(api.menus.getMenus, {});
       if (menus) {
         localStore.setQuery(
           api.menus.getMenus,
-          { userId: args.userId },
-          {
-            ...menus,
-            page: menus.page.map((menu) =>
-              menu._id === args.id ? { ...menu, name: args.name } : menu,
-            ),
-          },
+          {},
+          menus.map((menu) =>
+            menu._id === args.id ? { ...menu, name: args.name } : menu,
+          ),
         );
       }
     },
@@ -67,7 +60,6 @@ const UpdateMenuInput = ({
 
       await updateMenu({
         id: menuId,
-        userId: user?.id ?? "",
         name: sanitizedName,
       });
 
@@ -78,8 +70,6 @@ const UpdateMenuInput = ({
       toast.error(errorMessage);
     }
   };
-
-  if (!user) return null;
 
   return (
     <Form {...form}>

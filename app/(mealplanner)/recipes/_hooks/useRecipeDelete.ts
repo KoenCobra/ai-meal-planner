@@ -1,6 +1,5 @@
 import { api } from "@/convex/_generated/api";
 import { Id } from "@/convex/_generated/dataModel";
-import { useUser } from "@clerk/clerk-react";
 import { useMutation } from "convex/react";
 import { ConvexError } from "convex/values";
 import { useState } from "react";
@@ -11,10 +10,6 @@ interface UseRecipeDeleteProps {
 }
 
 export const useRecipeDelete = ({ menuId }: UseRecipeDeleteProps) => {
-  const { user } = useUser();
-
-  const userId = user?.id || "";
-
   const [recipeToDelete, setRecipeToDelete] = useState<{
     id: Id<"recipes">;
     title: string;
@@ -25,7 +20,6 @@ export const useRecipeDelete = ({ menuId }: UseRecipeDeleteProps) => {
     api.recipes.deleteRecipe,
   ).withOptimisticUpdate((localStore, args) => {
     const recipes = localStore.getQuery(api.recipes.getRecipesByDishType, {
-      userId: args.userId,
       dishType: args.dishType,
       paginationOpts: {
         numItems: 100,
@@ -36,7 +30,6 @@ export const useRecipeDelete = ({ menuId }: UseRecipeDeleteProps) => {
       localStore.setQuery(
         api.recipes.getRecipesByDishType,
         {
-          userId: args.userId,
           dishType: args.dishType,
           paginationOpts: {
             numItems: 100,
@@ -56,13 +49,12 @@ export const useRecipeDelete = ({ menuId }: UseRecipeDeleteProps) => {
     api.menus.removeRecipeFromMenu,
   ).withOptimisticUpdate((localStore, args) => {
     const recipes = localStore.getQuery(api.menus.getMenuRecipes, {
-      userId: args.userId,
       menuId: args.menuId,
     });
     if (recipes) {
       localStore.setQuery(
         api.menus.getMenuRecipes,
-        { userId: args.userId, menuId: args.menuId },
+        { menuId: args.menuId },
         recipes.filter((recipe) => recipe._id !== args.recipeId),
       );
     }
@@ -83,14 +75,12 @@ export const useRecipeDelete = ({ menuId }: UseRecipeDeleteProps) => {
       if (menuId) {
         // Remove from specific menu
         await removeFromMenu({
-          userId,
           menuId,
           recipeId: recipeToDelete.id,
         });
       } else {
         // Delete recipe completely
         await deleteRecipe({
-          userId,
           id: recipeToDelete.id,
           dishType: recipeToDelete.dishType,
         });

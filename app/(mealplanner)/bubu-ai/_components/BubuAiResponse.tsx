@@ -21,7 +21,6 @@ import {
   titleVariants,
 } from "@/lib/animation";
 import { RecipeInput } from "@/lib/validation";
-import { useUser } from "@clerk/clerk-react";
 import { useQuery } from "@tanstack/react-query";
 import { useMutation } from "convex/react";
 import { AnimatePresence, motion } from "framer-motion";
@@ -49,7 +48,6 @@ interface BubuAiResponseProps {
 }
 
 const BubuAiResponse = ({ isGeneratingImage }: BubuAiResponseProps) => {
-  const { user } = useUser();
   const { clearForm, savedRecipeId, setSavedRecipeId } = useBubuAi();
   const [isSaving, setIsSaving] = useState(false);
   const [activeTab, setActiveTab] = useState("ingredients");
@@ -71,18 +69,15 @@ const BubuAiResponse = ({ isGeneratingImage }: BubuAiResponseProps) => {
   const deleteRecipe = useMutation(api.recipes.deleteRecipe);
 
   const { open, recipeId, openDialog, closeDialog } = useAddToMenuDialogStore();
-  const { handleSyncIngredients } = useSyncIngredients(user?.id || "");
+  const { handleSyncIngredients } = useSyncIngredients();
 
   const handleSave = async () => {
-    if (!user) return;
-
     try {
       setIsSaving(true);
 
       if (!recipeImageData?.imageUrl || !recipe) return;
 
       const newRecipeId = await createRecipe({
-        userId: user.id,
         title: recipe.title,
         summary: recipe.summary,
         servings: recipe.servings,
@@ -107,11 +102,10 @@ const BubuAiResponse = ({ isGeneratingImage }: BubuAiResponseProps) => {
   };
 
   const handleDelete = async () => {
-    if (!user || !savedRecipeId) return;
+    if (!savedRecipeId) return;
 
     try {
       await deleteRecipe({
-        userId: user.id,
         id: savedRecipeId,
         dishType: recipe?.dishType || "",
       });

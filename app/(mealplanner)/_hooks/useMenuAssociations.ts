@@ -7,34 +7,26 @@ import { useEffect, useState } from "react";
 import { toast } from "sonner";
 
 interface UseMenuAssociationsProps {
-  userId: string;
   recipeId: Id<"recipes"> | null;
 }
 
-export const useMenuAssociations = ({
-  userId,
-  recipeId,
-}: UseMenuAssociationsProps) => {
+export const useMenuAssociations = ({ recipeId }: UseMenuAssociationsProps) => {
   const [selectedMenus, setSelectedMenus] = useState<Id<"menus">[]>([]);
   const [loading, setLoading] = useState(false);
 
-  // Get all available menus
   const { data: menus } = useQuery({
-    ...convexQuery(api.menus.getMenus, { userId }),
+    ...convexQuery(api.menus.getMenus, {}),
   });
 
-  // Get menus that contain this recipe
   const { data: menuRecipes } = useQuery({
     ...convexQuery(
       api.menus.getMenusContainingRecipe,
-      userId && recipeId ? { userId, recipeId } : "skip",
+      recipeId ? { recipeId } : "skip",
     ),
   });
 
-  // Mutation
   const setMenuAssociations = useMutation(api.menus.setRecipeMenuAssociations);
 
-  // Initialize selected menus when data is loaded
   useEffect(() => {
     if (menuRecipes) {
       setSelectedMenus(menuRecipes.map((menu) => menu._id));
@@ -55,7 +47,6 @@ export const useMenuAssociations = ({
     setLoading(true);
     try {
       await setMenuAssociations({
-        userId,
         recipeId,
         menuIds: selectedMenus,
       });

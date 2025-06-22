@@ -17,24 +17,24 @@ export const parseQuantity = (
 
 export const addItem = mutation({
   args: {
-    userId: v.string(),
     name: v.string(),
     quantity: v.optional(v.string()),
   },
   handler: async (ctx, args) => {
-    const user = (await ctx.auth.getUserIdentity())?.tokenIdentifier;
-    if (!user) {
-      throw new Error("Unauthorized");
+    const userId = (await ctx.auth.getUserIdentity())?.subject;
+    if (!userId) {
+      console.error("Unauthorized when adding grocery item");
+      throw new Error("Unauthorized when adding grocery item");
     }
     await rateLimiter.limit(ctx, "addGroceryItem", {
-      key: args.userId,
+      key: userId,
       throws: true,
     });
 
     const existingItem = await ctx.db
       .query("groceryItems")
       .withIndex("by_user_and_name", (q) =>
-        q.eq("userId", args.userId).eq("name", args.name),
+        q.eq("userId", userId).eq("name", args.name),
       )
       .first();
 
@@ -59,7 +59,7 @@ export const addItem = mutation({
     }
 
     return await ctx.db.insert("groceryItems", {
-      userId: args.userId,
+      userId,
       name: args.name,
       quantity: args.quantity,
       checked: false,
@@ -69,13 +69,13 @@ export const addItem = mutation({
 
 export const addOrUpdateGroceryItem = async (
   ctx: MutationCtx,
-  userId: string,
   name: string,
   quantity: string,
 ) => {
-  const user = (await ctx.auth.getUserIdentity())?.tokenIdentifier;
-  if (!user) {
-    throw new Error("Unauthorized");
+  const userId = (await ctx.auth.getUserIdentity())?.subject;
+  if (!userId) {
+    console.error("Unauthorized when adding or updating grocery item");
+    throw new Error("Unauthorized when adding or updating grocery item");
   }
 
   const existingItem = await ctx.db
@@ -115,60 +115,58 @@ export const addOrUpdateGroceryItem = async (
 
 export const toggleItem = mutation({
   args: {
-    userId: v.string(),
     id: v.id("groceryItems"),
   },
   handler: async (ctx, args) => {
-    const user = (await ctx.auth.getUserIdentity())?.tokenIdentifier;
-    if (!user) {
-      throw new Error("Unauthorized");
+    const userId = (await ctx.auth.getUserIdentity())?.subject;
+    if (!userId) {
+      console.error("Unauthorized when toggling grocery item");
+      throw new Error("Unauthorized when toggling grocery item");
     }
 
     await rateLimiter.limit(ctx, "toggleGroceryItem", {
-      key: args.userId,
+      key: userId,
       throws: true,
     });
 
     const item = await ctx.db.get(args.id);
     if (!item) throw new ConvexError("Item not found");
-    if (item.userId !== args.userId) throw new ConvexError("Not authorized");
+    if (item.userId !== userId) throw new ConvexError("Not authorized");
 
     await ctx.db.patch(args.id, { checked: !item.checked });
   },
 });
 
 export const listItems = query({
-  args: { userId: v.string() },
-  handler: async (ctx, args) => {
-    const user = (await ctx.auth.getUserIdentity())?.tokenIdentifier;
-    if (!user) {
-      throw new Error("Unauthorized");
+  handler: async (ctx) => {
+    const userId = (await ctx.auth.getUserIdentity())?.subject;
+    if (!userId) {
+      console.error("Unauthorized when listing grocery items");
+      throw new Error("Unauthorized when listing grocery items");
     }
     return await ctx.db
       .query("groceryItems")
-      .withIndex("by_user", (q) => q.eq("userId", args.userId))
+      .withIndex("by_user", (q) => q.eq("userId", userId))
       .order("desc")
       .collect();
   },
 });
 
 export const clearAllItems = mutation({
-  args: {
-    userId: v.string(),
-  },
-  handler: async (ctx, args) => {
-    const user = (await ctx.auth.getUserIdentity())?.tokenIdentifier;
-    if (!user) {
-      throw new Error("Unauthorized");
+  handler: async (ctx) => {
+    const userId = (await ctx.auth.getUserIdentity())?.subject;
+    if (!userId) {
+      console.error("Unauthorized when clearing all grocery items");
+      throw new Error("Unauthorized when clearing all grocery items");
     }
     await rateLimiter.limit(ctx, "clearAllGroceryItems", {
-      key: args.userId,
+      key: userId,
       throws: true,
     });
 
     const allItems = await ctx.db
       .query("groceryItems")
-      .withIndex("by_user", (q) => q.eq("userId", args.userId))
+      .withIndex("by_user", (q) => q.eq("userId", userId))
       .collect();
 
     for (const item of allItems) {

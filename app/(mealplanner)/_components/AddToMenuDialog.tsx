@@ -11,7 +11,6 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 import { Id } from "@/convex/_generated/dataModel";
-import { useUser } from "@clerk/clerk-react";
 import React from "react";
 import { useMenuAssociations } from "../_hooks/useMenuAssociations";
 
@@ -28,8 +27,6 @@ const AddToMenuDialog: React.FC<AddToMenuDialogProps> = ({
   recipeId,
   onSuccess,
 }) => {
-  const { user } = useUser();
-
   const {
     menus,
     selectedMenus,
@@ -37,11 +34,10 @@ const AddToMenuDialog: React.FC<AddToMenuDialogProps> = ({
     handleCheckboxChange,
     saveMenuAssociations,
   } = useMenuAssociations({
-    userId: user?.id || "",
     recipeId,
   });
 
-  if (!user || !recipeId) return null;
+  if (!recipeId) return null;
 
   const handleSave = async () => {
     const success = await saveMenuAssociations();
@@ -63,10 +59,10 @@ const AddToMenuDialog: React.FC<AddToMenuDialogProps> = ({
         <div className="max-h-64 overflow-y-auto space-y-2 my-4">
           {!menus ? (
             <div>Loading menus...</div>
-          ) : menus.page?.length === 0 ? (
+          ) : menus.length === 0 ? (
             <div className="text-muted-foreground">No menus found.</div>
           ) : (
-            menus.page.map((menu) => (
+            menus?.map((menu) => (
               <label
                 key={menu._id}
                 className="flex items-center gap-2 cursor-pointer"

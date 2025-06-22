@@ -6,7 +6,6 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { api } from "@/convex/_generated/api";
 import type { Id } from "@/convex/_generated/dataModel";
-import { useUser } from "@clerk/clerk-react";
 import { convexQuery } from "@convex-dev/react-query";
 import { useQuery } from "@tanstack/react-query";
 import { AnimatePresence, motion } from "framer-motion";
@@ -37,14 +36,12 @@ import { useSyncIngredients } from "../_hooks/useSyncIngredients";
 
 const RecipeDetails = () => {
   const params = useParams();
-  const { user } = useUser();
   const { open, recipeId, openDialog, closeDialog } = useAddToMenuDialogStore();
-  const { handleSyncIngredients } = useSyncIngredients(user?.id || "");
+  const { handleSyncIngredients } = useSyncIngredients();
   const [activeTab, setActiveTab] = useState("ingredients");
 
   const { data: recipe, isLoading } = useQuery({
     ...convexQuery(api.recipes.getRecipe, {
-      userId: user?.id || "",
       id: params.id as Id<"recipes">,
     }),
   });

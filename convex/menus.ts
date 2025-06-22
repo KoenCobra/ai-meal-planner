@@ -6,22 +6,22 @@ import { rateLimiter } from "./rateLimiter";
 
 export const createMenu = mutation({
   args: {
-    userId: v.string(),
     name: v.string(),
   },
   handler: async (ctx, args) => {
-    const user = (await ctx.auth.getUserIdentity())?.tokenIdentifier;
-    if (!user) {
-      throw new Error("Unauthorized");
+    const userId = (await ctx.auth.getUserIdentity())?.subject;
+    if (!userId) {
+      console.error("Unauthorized when creating menu");
+      throw new Error("Unauthorized when creating menu");
     }
 
     await rateLimiter.limit(ctx, "createMenu", {
-      key: args.userId,
+      key: userId,
       throws: true,
     });
 
     return await ctx.db.insert("menus", {
-      userId: args.userId,
+      userId,
       name: args.name,
     });
   },
@@ -29,23 +29,23 @@ export const createMenu = mutation({
 
 export const updateMenu = mutation({
   args: {
-    userId: v.string(),
     id: v.id("menus"),
     name: v.string(),
   },
   handler: async (ctx, args) => {
-    const user = (await ctx.auth.getUserIdentity())?.tokenIdentifier;
-    if (!user) {
-      throw new Error("Unauthorized");
+    const userId = (await ctx.auth.getUserIdentity())?.subject;
+    if (!userId) {
+      console.error("Unauthorized when updating menu");
+      throw new Error("Unauthorized when updating menu");
     }
     await rateLimiter.limit(ctx, "updateMenu", {
-      key: args.userId,
+      key: userId,
       throws: true,
     });
 
     const menu = await ctx.db.get(args.id);
     if (!menu) throw new ConvexError("Menu not found");
-    if (menu.userId !== args.userId) throw new ConvexError("Not authorized");
+    if (menu.userId !== userId) throw new ConvexError("Not authorized");
 
     await ctx.db.patch(args.id, { name: args.name });
 
@@ -55,22 +55,22 @@ export const updateMenu = mutation({
 
 export const deleteMenu = mutation({
   args: {
-    userId: v.string(),
     id: v.id("menus"),
   },
   handler: async (ctx, args) => {
-    const user = (await ctx.auth.getUserIdentity())?.tokenIdentifier;
-    if (!user) {
-      throw new Error("Unauthorized");
+    const userId = (await ctx.auth.getUserIdentity())?.subject;
+    if (!userId) {
+      console.error("Unauthorized when deleting menu");
+      throw new Error("Unauthorized when deleting menu");
     }
     await rateLimiter.limit(ctx, "deleteMenu", {
-      key: args.userId,
+      key: userId,
       throws: true,
     });
 
     const menu = await ctx.db.get(args.id);
     if (!menu) throw new ConvexError("Menu not found");
-    if (menu.userId !== args.userId) throw new ConvexError("Not authorized");
+    if (menu.userId !== userId) throw new ConvexError("Not authorized");
 
     const recipeAssociations = await ctx.db
       .query("menusOnRecipes")
@@ -87,23 +87,23 @@ export const deleteMenu = mutation({
 
 export const removeRecipeFromMenu = mutation({
   args: {
-    userId: v.string(),
     menuId: v.id("menus"),
     recipeId: v.id("recipes"),
   },
   handler: async (ctx, args) => {
-    const user = (await ctx.auth.getUserIdentity())?.tokenIdentifier;
-    if (!user) {
-      throw new Error("Unauthorized");
+    const userId = (await ctx.auth.getUserIdentity())?.subject;
+    if (!userId) {
+      console.error("Unauthorized when removing recipe from menu");
+      throw new Error("Unauthorized when removing recipe from menu");
     }
     await rateLimiter.limit(ctx, "removeRecipeFromMenu", {
-      key: args.userId,
+      key: userId,
       throws: true,
     });
 
     const menu = await ctx.db.get(args.menuId);
     if (!menu) throw new ConvexError("Menu not found");
-    if (menu.userId !== args.userId) throw new ConvexError("Not authorized");
+    if (menu.userId !== userId) throw new ConvexError("Not authorized");
 
     const association = await ctx.db
       .query("menusOnRecipes")
@@ -120,58 +120,55 @@ export const removeRecipeFromMenu = mutation({
 
 export const getMenu = query({
   args: {
-    userId: v.string(),
     id: v.id("menus"),
   },
   handler: async (ctx, args) => {
-    const user = (await ctx.auth.getUserIdentity())?.tokenIdentifier;
-    if (!user) {
-      throw new Error("Unauthorized");
+    const userId = (await ctx.auth.getUserIdentity())?.subject;
+    if (!userId) {
+      console.error("Unauthorized when getting menu");
+      throw new Error("Unauthorized when getting menu");
     }
 
     const menu = await ctx.db.get(args.id);
 
     if (!menu) throw new ConvexError("Menu not found");
 
-    if (menu.userId !== args.userId) throw new ConvexError("Not authorized");
+    if (menu.userId !== userId) throw new ConvexError("Not authorized");
 
     return menu;
   },
 });
 
 export const getMenus = query({
-  args: {
-    userId: v.string(),
-    paginationOpts: v.optional(paginationOptsValidator),
-  },
-  handler: async (ctx, args) => {
-    const user = (await ctx.auth.getUserIdentity())?.tokenIdentifier;
-    if (!user) {
-      throw new Error("Unauthorized");
+  handler: async (ctx) => {
+    const userId = (await ctx.auth.getUserIdentity())?.subject;
+    if (!userId) {
+      console.error("Unauthorized when getting menus");
+      throw new Error("Unauthorized when getting menus");
     }
 
-    return await ctx.db
+    return ctx.db
       .query("menus")
-      .withIndex("by_user", (q) => q.eq("userId", args.userId))
+      .withIndex("by_user", (q) => q.eq("userId", userId))
       .order("desc")
-      .paginate(args.paginationOpts || { numItems: 10, cursor: null });
+      .collect();
   },
 });
 
 export const getMenuRecipes = query({
   args: {
-    userId: v.string(),
     menuId: v.id("menus"),
   },
   handler: async (ctx, args) => {
-    const user = (await ctx.auth.getUserIdentity())?.tokenIdentifier;
-    if (!user) {
-      throw new Error("Unauthorized");
+    const userId = (await ctx.auth.getUserIdentity())?.subject;
+    if (!userId) {
+      console.error("Unauthorized when getting menu recipes");
+      throw new Error("Unauthorized when getting menu recipes");
     }
 
     const menu = await ctx.db.get(args.menuId);
     if (!menu) throw new ConvexError("Menu not found");
-    if (menu.userId !== args.userId) throw new ConvexError("Not authorized");
+    if (menu.userId !== userId) throw new ConvexError("Not authorized");
 
     const associations = await ctx.db
       .query("menusOnRecipes")
@@ -192,20 +189,20 @@ export const getMenuRecipes = query({
 // Optimized single function to get menu recipes by dish type
 export const getMenuRecipesByDishType = query({
   args: {
-    userId: v.string(),
     menuId: v.id("menus"),
     dishType: v.string(),
     paginationOpts: paginationOptsValidator,
   },
   handler: async (ctx, args) => {
-    const user = (await ctx.auth.getUserIdentity())?.tokenIdentifier;
-    if (!user) {
-      throw new Error("Unauthorized");
+    const userId = (await ctx.auth.getUserIdentity())?.subject;
+    if (!userId) {
+      console.error("Unauthorized when getting menu recipes by dish type");
+      throw new Error("Unauthorized when getting menu recipes by dish type");
     }
 
     const menu = await ctx.db.get(args.menuId);
     if (!menu) throw new ConvexError("Menu not found");
-    if (menu.userId !== args.userId) throw new ConvexError("Not authorized");
+    if (menu.userId !== userId) throw new ConvexError("Not authorized");
 
     const associations = await ctx.db
       .query("menusOnRecipes")
@@ -232,13 +229,13 @@ export const getMenuRecipesByDishType = query({
 
 export const getMenusContainingRecipe = query({
   args: {
-    userId: v.string(),
     recipeId: v.id("recipes"),
   },
   handler: async (ctx, args) => {
-    const user = (await ctx.auth.getUserIdentity())?.tokenIdentifier;
-    if (!user) {
-      throw new Error("Unauthorized");
+    const userId = (await ctx.auth.getUserIdentity())?.subject;
+    if (!userId) {
+      console.error("Unauthorized when getting menus containing recipe");
+      throw new Error("Unauthorized when getting menus containing recipe");
     }
 
     const associations = await ctx.db
@@ -251,7 +248,7 @@ export const getMenusContainingRecipe = query({
     const menus = await Promise.all(
       menuIds.map(async (menuId) => {
         const menu = await ctx.db.get(menuId);
-        if (menu && menu.userId === args.userId) {
+        if (menu && menu.userId === userId) {
           return menu;
         }
         return null;
@@ -266,23 +263,27 @@ export const getMenusContainingRecipe = query({
 
 export const syncMenuIngredientsToGroceryList = mutation({
   args: {
-    userId: v.string(),
     menuId: v.id("menus"),
   },
   returns: v.null(),
   handler: async (ctx, args) => {
-    const user = (await ctx.auth.getUserIdentity())?.tokenIdentifier;
-    if (!user) {
-      throw new Error("Unauthorized");
+    const userId = (await ctx.auth.getUserIdentity())?.subject;
+    if (!userId) {
+      console.error(
+        "Unauthorized when syncing menu ingredients to grocery list",
+      );
+      throw new Error(
+        "Unauthorized when syncing menu ingredients to grocery list",
+      );
     }
     await rateLimiter.limit(ctx, "syncMenuIngredients", {
-      key: args.userId,
+      key: userId,
       throws: true,
     });
 
     const menu = await ctx.db.get(args.menuId);
     if (!menu) throw new ConvexError("Menu not found");
-    if (menu.userId !== args.userId) throw new ConvexError("Not authorized");
+    if (menu.userId !== userId) throw new ConvexError("Not authorized");
 
     const associations = await ctx.db
       .query("menusOnRecipes")
@@ -297,12 +298,7 @@ export const syncMenuIngredientsToGroceryList = mutation({
       if (recipe) {
         for (const ingredient of recipe.ingredients) {
           const quantity = `${ingredient.measures.amount} ${ingredient.measures.unit}`;
-          await addOrUpdateGroceryItem(
-            ctx,
-            args.userId,
-            ingredient.name,
-            quantity,
-          );
+          await addOrUpdateGroceryItem(ctx, ingredient.name, quantity);
         }
       }
     }
@@ -313,30 +309,30 @@ export const syncMenuIngredientsToGroceryList = mutation({
 
 export const setRecipeMenuAssociations = mutation({
   args: {
-    userId: v.string(),
     recipeId: v.id("recipes"),
     menuIds: v.array(v.id("menus")),
   },
   handler: async (ctx, args) => {
-    const user = (await ctx.auth.getUserIdentity())?.tokenIdentifier;
-    if (!user) {
-      throw new Error("Unauthorized");
+    const userId = (await ctx.auth.getUserIdentity())?.subject;
+    if (!userId) {
+      console.error("Unauthorized when setting recipe menu associations");
+      throw new Error("Unauthorized when setting recipe menu associations");
     }
     await rateLimiter.limit(ctx, "addRecipeToMenu", {
-      key: args.userId,
+      key: userId,
       throws: true,
     });
 
     // Verify recipe ownership
     const recipe = await ctx.db.get(args.recipeId);
     if (!recipe) throw new ConvexError("Recipe not found");
-    if (recipe.userId !== args.userId) throw new ConvexError("Not authorized");
+    if (recipe.userId !== userId) throw new ConvexError("Not authorized");
 
     // Verify menu ownership for all provided menuIds
     for (const menuId of args.menuIds) {
       const menu = await ctx.db.get(menuId);
       if (!menu) throw new ConvexError(`Menu ${menuId} not found`);
-      if (menu.userId !== args.userId) throw new ConvexError("Not authorized");
+      if (menu.userId !== userId) throw new ConvexError("Not authorized");
     }
 
     // Get all existing associations for this recipe
@@ -349,7 +345,7 @@ export const setRecipeMenuAssociations = mutation({
     const userMenuAssociations = [];
     for (const assoc of existingAssociations) {
       const menu = await ctx.db.get(assoc.menuId);
-      if (menu && menu.userId === args.userId) {
+      if (menu && menu.userId === userId) {
         userMenuAssociations.push(assoc);
       }
     }

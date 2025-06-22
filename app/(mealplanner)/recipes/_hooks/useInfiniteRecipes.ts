@@ -1,7 +1,6 @@
 import { api } from "@/convex/_generated/api";
 import type { Doc } from "@/convex/_generated/dataModel";
 import { Id } from "@/convex/_generated/dataModel";
-import { useUser } from "@clerk/clerk-react";
 import { convexQuery } from "@convex-dev/react-query";
 import { useQuery } from "@tanstack/react-query";
 import { usePaginatedQuery } from "convex/react";
@@ -21,9 +20,6 @@ export const useInfiniteRecipes = ({
   menuId,
   itemsPerPage = 8,
 }: UseInfiniteRecipesProps) => {
-  const { user } = useUser();
-  const userId = user?.id || "";
-
   // TanStack Query caching for menu recipes
   const {
     data: cachedMenuResults,
@@ -34,7 +30,6 @@ export const useInfiniteRecipes = ({
       api.menus.getMenuRecipesByDishType,
       menuId
         ? {
-            userId,
             menuId,
             dishType: mealType,
             paginationOpts: { numItems: itemsPerPage, cursor: null },
@@ -55,7 +50,6 @@ export const useInfiniteRecipes = ({
     isFetching: isRecipeCacheFetching,
   } = useQuery({
     ...convexQuery(api.recipes.getRecipesByDishType, {
-      userId,
       dishType: mealType,
       paginationOpts: { numItems: itemsPerPage, cursor: null },
     }),
@@ -71,7 +65,6 @@ export const useInfiniteRecipes = ({
     api.menus.getMenuRecipesByDishType,
     menuId
       ? {
-          userId,
           menuId,
           dishType: mealType,
         }
@@ -84,7 +77,6 @@ export const useInfiniteRecipes = ({
     api.recipes.getRecipesByDishType,
     !menuId
       ? {
-          userId,
           dishType: mealType,
         }
       : "skip",

@@ -1,9 +1,9 @@
-import { useMutation } from "convex/react";
 import { api } from "@/convex/_generated/api";
 import { Id } from "@/convex/_generated/dataModel";
+import { useMutation } from "convex/react";
 import { toast } from "sonner";
 
-export const useSyncIngredients = (userId: string) => {
+export const useSyncIngredients = () => {
   const syncIngredientsToGroceryList = useMutation(
     api.recipes.syncIngredientsToGroceryList,
   );
@@ -11,7 +11,6 @@ export const useSyncIngredients = (userId: string) => {
   const handleSyncIngredients = async (recipeId: Id<"recipes">) => {
     try {
       await syncIngredientsToGroceryList({
-        userId,
         recipeId,
       });
       toast.success("Ingredients added to grocery list");

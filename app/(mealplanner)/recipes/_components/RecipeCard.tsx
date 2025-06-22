@@ -12,7 +12,6 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { Id } from "@/convex/_generated/dataModel";
 import { cn } from "@/lib/utils";
-import { useUser } from "@clerk/clerk-react";
 import {
   Clock,
   MoreHorizontal,
@@ -43,15 +42,12 @@ interface RecipeCardProps {
 }
 
 export const RecipeCard = ({ recipe, onDelete }: RecipeCardProps) => {
-  const { user } = useUser();
   const searchParams = useSearchParams();
   const currentTab = searchParams.get("type") || "breakfast";
 
-  if (!user) throw new Error("User not found");
-
   const [dropdownOpen, setDropdownOpen] = React.useState(false);
   const [dialogOpen, setDialogOpen] = React.useState(false);
-  const { handleSyncIngredients } = useSyncIngredients(user.id);
+  const { handleSyncIngredients } = useSyncIngredients();
   const [isHovered, setIsHovered] = React.useState(false);
 
   const handleOpenDialog = () => {

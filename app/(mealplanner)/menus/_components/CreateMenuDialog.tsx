@@ -20,7 +20,6 @@ import { api } from "@/convex/_generated/api";
 import { Doc, Id } from "@/convex/_generated/dataModel";
 import { sanitizeInput } from "@/lib/utils";
 import { CreateMenuInput, createMenuSchema } from "@/lib/validation";
-import { useUser } from "@clerk/clerk-react";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useMutation } from "convex/react";
 import { ConvexError } from "convex/values";
@@ -31,7 +30,6 @@ import { useCreateMenuDialog } from "../hooks";
 
 const CreateMenuDialog = () => {
   const { isOpen, onClose } = useCreateMenuDialog();
-  const { user } = useUser();
 
   const form = useForm<CreateMenuInput>({
     resolver: zodResolver(createMenuSchema),
@@ -43,26 +41,18 @@ const CreateMenuDialog = () => {
   const createMenuMutation = useMutation(
     api.menus.createMenu,
   ).withOptimisticUpdate((localStore, args) => {
-    const menus = localStore.getQuery(api.menus.getMenus, {
-      userId: args.userId,
-    });
+    const menus = localStore.getQuery(api.menus.getMenus, {});
     if (menus) {
       const now = Date.now();
       const newMenu = {
         _id: ("optimistic-" + now) as Id<"menus"> | string, // Temporary ID for optimistic UI
         _creationTime: now,
-        userId: args.userId,
         name: args.name,
       };
-      localStore.setQuery(
-        api.menus.getMenus,
-        { userId: args.userId },
-        {
-          page: [newMenu as Doc<"menus">, ...menus.page],
-          isDone: menus.isDone,
-          continueCursor: menus.continueCursor,
-        },
-      );
+      localStore.setQuery(api.menus.getMenus, {}, [
+        newMenu as Doc<"menus">,
+        ...menus,
+      ]);
     }
   });
 
@@ -74,7 +64,6 @@ const CreateMenuDialog = () => {
       const sanitizedName = sanitizeInput(input.name);
 
       await createMenuMutation({
-        userId: user?.id ?? "",
         name: sanitizedName,
       });
 
@@ -85,8 +74,6 @@ const CreateMenuDialog = () => {
       toast.error(errorMessage);
     }
   };
-
-  if (!user) return null;
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose} defaultOpen={isOpen}>

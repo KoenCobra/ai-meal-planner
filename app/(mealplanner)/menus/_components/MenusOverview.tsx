@@ -2,7 +2,6 @@
 
 import { Skeleton } from "@/components/ui/skeleton";
 import { api } from "@/convex/_generated/api";
-import { useUser } from "@clerk/clerk-react";
 import { convexQuery } from "@convex-dev/react-query";
 import { useQuery } from "@tanstack/react-query";
 import CreateMenuDialog from "./CreateMenuDialog";
@@ -34,22 +33,15 @@ function MenusLoadingState() {
 }
 
 const MenusOverview = () => {
-  const { user } = useUser();
-
   const { data: menus, isLoading } = useQuery({
-    ...convexQuery(api.menus.getMenus, { userId: user?.id ?? "" }),
+    ...convexQuery(api.menus.getMenus, {}),
   });
 
   if (isLoading) return <MenusLoadingState />;
-  if (!user) return null;
 
   return (
     <div className="animate-in fade-in duration-500">
-      {menus?.page.length === 0 ? (
-        <EmptyMenus />
-      ) : (
-        <MenuList menus={menus?.page || []} />
-      )}
+      {menus?.length === 0 ? <EmptyMenus /> : <MenuList menus={menus || []} />}
       <CreateMenuDialog />
     </div>
   );

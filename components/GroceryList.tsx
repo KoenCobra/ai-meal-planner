@@ -16,49 +16,38 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Input } from "@/components/ui/input";
+import { Skeleton } from "@/components/ui/skeleton";
 import { api } from "@/convex/_generated/api";
 import type { Doc, Id } from "@/convex/_generated/dataModel";
 import { sanitizeInput } from "@/lib/utils";
-import { useUser } from "@clerk/clerk-react";
 import { convexQuery } from "@convex-dev/react-query";
 import { useQuery } from "@tanstack/react-query";
 import { useMutation } from "convex/react";
 import { Plus, ShoppingCart, Trash2 } from "lucide-react";
 import { useState } from "react";
-// First, add the Skeleton component import at the top with the other UI imports
-import { Skeleton } from "@/components/ui/skeleton";
 
 export function GroceryList() {
-  const { user } = useUser();
   const [newItemName, setNewItemName] = useState("");
   const [clearAllDialogOpen, setClearAllDialogOpen] = useState(false);
 
   const { data: items, isLoading } = useQuery({
-    ...convexQuery(api.groceryList.listItems, {
-      userId: user?.id ?? "",
-    }),
+    ...convexQuery(api.groceryList.listItems, {}),
   });
 
   const addItem = useMutation(api.groceryList.addItem).withOptimisticUpdate(
     (localStore, args) => {
-      const items = localStore.getQuery(api.groceryList.listItems, {
-        userId: args.userId,
-      });
+      const items = localStore.getQuery(api.groceryList.listItems, {});
       if (items) {
         const now = Date.now();
         const newItem: Doc<"groceryItems"> = {
           _id: ("optimistic-" + now) as Id<"groceryItems">,
           _creationTime: now,
-          userId: args.userId,
+          userId: "optimistic-user", // Placeholder for optimistic update
           name: args.name,
           quantity: args.quantity,
           checked: false,
         };
-        localStore.setQuery(
-          api.groceryList.listItems,
-          { userId: args.userId },
-          [newItem, ...items],
-        );
+        localStore.setQuery(api.groceryList.listItems, {}, [newItem, ...items]);
       }
     },
   );
@@ -66,13 +55,11 @@ export function GroceryList() {
   const toggleItem = useMutation(
     api.groceryList.toggleItem,
   ).withOptimisticUpdate((localStore, args) => {
-    const items = localStore.getQuery(api.groceryList.listItems, {
-      userId: args.userId,
-    });
+    const items = localStore.getQuery(api.groceryList.listItems, {});
     if (items) {
       localStore.setQuery(
         api.groceryList.listItems,
-        { userId: args.userId },
+        {},
         items.map((item) =>
           item._id === args.id ? { ...item, checked: !item.checked } : item,
         ),
@@ -82,8 +69,8 @@ export function GroceryList() {
 
   const clearAllItems = useMutation(
     api.groceryList.clearAllItems,
-  ).withOptimisticUpdate((localStore, args) => {
-    localStore.setQuery(api.groceryList.listItems, { userId: args.userId }, []);
+  ).withOptimisticUpdate((localStore) => {
+    localStore.setQuery(api.groceryList.listItems, {}, []);
   });
 
   const handleAddItem = async (e: React.FormEvent) => {
@@ -93,7 +80,6 @@ export function GroceryList() {
     const sanitizedName = sanitizeInput(newItemName.trim());
 
     await addItem({
-      userId: user?.id ?? "",
       name: sanitizedName,
     });
 
@@ -101,12 +87,12 @@ export function GroceryList() {
   };
 
   const handleToggleItem = async (itemId: Id<"groceryItems">) => {
-    await toggleItem({ userId: user?.id ?? "", id: itemId });
+    await toggleItem({ id: itemId });
   };
 
   const handleClearAll = async () => {
     setClearAllDialogOpen(false);
-    await clearAllItems({ userId: user?.id ?? "" });
+    await clearAllItems();
   };
 
   const activeItems = items?.filter((item) => !item.checked) || [];

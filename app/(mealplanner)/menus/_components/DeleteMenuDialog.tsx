@@ -10,10 +10,10 @@ import {
 } from "@/components/ui/alert-dialog";
 import { api } from "@/convex/_generated/api";
 import { Id } from "@/convex/_generated/dataModel";
-import { useUser } from "@clerk/clerk-react";
 import { useMutation } from "convex/react";
 import { ConvexError } from "convex/values";
 import { toast } from "sonner";
+
 interface DeleteMenuDialogProps {
   openDeleteMenu: boolean;
   setOpenDeleteMenu: (open: boolean) => void;
@@ -25,20 +25,14 @@ const DeleteMenuDialog = ({
   setOpenDeleteMenu,
   menuId,
 }: DeleteMenuDialogProps) => {
-  const { user } = useUser();
   const deleteMenu = useMutation(api.menus.deleteMenu).withOptimisticUpdate(
     (localStore, args) => {
-      const menus = localStore.getQuery(api.menus.getMenus, {
-        userId: args.userId,
-      });
+      const menus = localStore.getQuery(api.menus.getMenus, {});
       if (menus) {
         localStore.setQuery(
           api.menus.getMenus,
-          { userId: args.userId },
-          {
-            ...menus,
-            page: menus.page.filter((menu) => menu._id !== args.id),
-          },
+          {},
+          menus.filter((menu) => menu._id !== args.id),
         );
       }
     },
@@ -46,7 +40,7 @@ const DeleteMenuDialog = ({
 
   const handleDelete = async () => {
     try {
-      await deleteMenu({ id: menuId, userId: user?.id ?? "" });
+      await deleteMenu({ id: menuId });
       setOpenDeleteMenu(false);
     } catch (error) {
       const errorMessage =

@@ -6,20 +6,20 @@ import { rateLimiter } from "./rateLimiter";
 
 export const getRecipesByDishType = query({
   args: {
-    userId: v.string(),
     dishType: v.string(),
     paginationOpts: paginationOptsValidator,
   },
   handler: async (ctx, args) => {
-    const user = (await ctx.auth.getUserIdentity())?.tokenIdentifier;
-    if (!user) {
-      throw new Error("Unauthorized");
+    const userId = (await ctx.auth.getUserIdentity())?.subject;
+    if (!userId) {
+      console.error("Unauthorized when getting recipes by dish type");
+      throw new Error("Unauthorized when getting recipes by dish type");
     }
 
     return await ctx.db
       .query("recipes")
       .withIndex("by_user_and_dish_type", (q) =>
-        q.eq("userId", args.userId).eq("dishType", args.dishType),
+        q.eq("userId", userId).eq("dishType", args.dishType),
       )
       .order("desc")
       .paginate(args.paginationOpts);
@@ -28,7 +28,6 @@ export const getRecipesByDishType = query({
 
 export const createRecipe = mutation({
   args: {
-    userId: v.string(),
     title: v.string(),
     summary: v.string(),
     servings: v.number(),
@@ -56,12 +55,13 @@ export const createRecipe = mutation({
     dishType: v.string(),
   },
   handler: async (ctx, args) => {
-    const { userId, ...recipeData } = args;
-
-    const user = (await ctx.auth.getUserIdentity())?.tokenIdentifier;
-    if (!user) {
-      throw new Error("Unauthorized");
+    const userId = (await ctx.auth.getUserIdentity())?.subject;
+    if (!userId) {
+      console.error("Unauthorized when creating recipe");
+      throw new Error("Unauthorized when creating recipe");
     }
+
+    const { ...recipeData } = args;
 
     await rateLimiter.limit(ctx, "createRecipe", { key: userId, throws: true });
 
@@ -84,24 +84,24 @@ export const createRecipe = mutation({
 
 export const deleteRecipe = mutation({
   args: {
-    userId: v.string(),
     id: v.id("recipes"),
     dishType: v.string(),
   },
   handler: async (ctx, args) => {
-    const user = (await ctx.auth.getUserIdentity())?.tokenIdentifier;
-    if (!user) {
-      throw new Error("Unauthorized");
+    const userId = (await ctx.auth.getUserIdentity())?.subject;
+    if (!userId) {
+      console.error("Unauthorized when deleting recipe");
+      throw new Error("Unauthorized when deleting recipe");
     }
 
     await rateLimiter.limit(ctx, "deleteRecipe", {
-      key: args.userId,
+      key: userId,
       throws: true,
     });
 
     const recipe = await ctx.db.get(args.id);
     if (!recipe) throw new ConvexError("Recipe not found");
-    if (recipe.userId !== args.userId) throw new ConvexError("Not authorized");
+    if (recipe.userId !== userId) throw new ConvexError("Not authorized");
 
     const menuAssociations = await ctx.db
       .query("menusOnRecipes")
@@ -118,34 +118,34 @@ export const deleteRecipe = mutation({
 
 export const getRecipe = query({
   args: {
-    userId: v.string(),
     id: v.id("recipes"),
   },
   handler: async (ctx, args) => {
-    const user = (await ctx.auth.getUserIdentity())?.tokenIdentifier;
-    if (!user) {
-      throw new Error("Unauthorized");
+    const userId = (await ctx.auth.getUserIdentity())?.subject;
+    if (!userId) {
+      console.error("Unauthorized when getting recipe");
+      throw new Error("Unauthorized when getting recipe");
     }
     const recipe = await ctx.db.get(args.id);
     if (!recipe) return null;
-    if (recipe.userId !== args.userId) throw new ConvexError("Not authorized");
+    if (recipe.userId !== userId) throw new ConvexError("Not authorized");
     return recipe;
   },
 });
 
 export const listRecipes = query({
   args: {
-    userId: v.string(),
     paginationOpts: paginationOptsValidator,
   },
   handler: async (ctx, args) => {
-    const user = await ctx.auth.getUserIdentity();
-    if (!user) {
-      throw new Error("Unauthorized");
+    const userId = (await ctx.auth.getUserIdentity())?.subject;
+    if (!userId) {
+      console.error("Unauthorized when listing recipes");
+      throw new Error("Unauthorized when listing recipes");
     }
     return await ctx.db
       .query("recipes")
-      .withIndex("by_user", (q) => q.eq("userId", args.userId))
+      .withIndex("by_user", (q) => q.eq("userId", userId))
       .order("desc")
       .paginate(args.paginationOpts);
   },
@@ -153,20 +153,24 @@ export const listRecipes = query({
 
 export const searchRecipesByTitleIngredientsAndCategories = query({
   args: {
-    userId: v.string(),
     query: v.string(),
     paginationOpts: paginationOptsValidator,
   },
   handler: async (ctx, args) => {
-    const user = await ctx.auth.getUserIdentity();
-    if (!user) {
-      throw new Error("Unauthorized");
+    const userId = (await ctx.auth.getUserIdentity())?.subject;
+    if (!userId) {
+      console.error(
+        "Unauthorized when searching recipes by title ingredients and categories",
+      );
+      throw new Error(
+        "Unauthorized when searching recipes by title ingredients and categories",
+      );
     }
 
     if (!args.query.trim()) {
       return await ctx.db
         .query("recipes")
-        .withIndex("by_user", (q) => q.eq("userId", args.userId))
+        .withIndex("by_user", (q) => q.eq("userId", userId))
         .order("desc")
         .paginate(args.paginationOpts);
     }
@@ -174,7 +178,7 @@ export const searchRecipesByTitleIngredientsAndCategories = query({
     return await ctx.db
       .query("recipes")
       .withSearchIndex("search_recipes", (q) =>
-        q.search("searchText", args.query).eq("userId", args.userId),
+        q.search("searchText", args.query).eq("userId", userId),
       )
       .paginate(args.paginationOpts);
   },
@@ -182,27 +186,28 @@ export const searchRecipesByTitleIngredientsAndCategories = query({
 
 export const syncIngredientsToGroceryList = mutation({
   args: {
-    userId: v.string(),
     recipeId: v.id("recipes"),
   },
   returns: v.null(),
   handler: async (ctx, args) => {
-    const user = await ctx.auth.getUserIdentity();
-    if (!user) {
-      throw new Error("Unauthorized");
+    const userId = (await ctx.auth.getUserIdentity())?.subject;
+    if (!userId) {
+      console.error("Unauthorized when syncing ingredients to grocery list");
+      throw new Error("Unauthorized when syncing ingredients to grocery list");
     }
+
     await rateLimiter.limit(ctx, "syncRecipeIngredients", {
-      key: args.userId,
+      key: userId,
       throws: true,
     });
 
     const recipe = await ctx.db.get(args.recipeId);
     if (!recipe) throw new ConvexError("Recipe not found");
-    if (recipe.userId !== args.userId) throw new ConvexError("Not authorized");
+    if (recipe.userId !== userId) throw new ConvexError("Not authorized");
 
     for (const ingredient of recipe.ingredients) {
       const quantity = `${ingredient.measures.amount} ${ingredient.measures.unit}`;
-      await addOrUpdateGroceryItem(ctx, args.userId, ingredient.name, quantity);
+      await addOrUpdateGroceryItem(ctx, ingredient.name, quantity);
     }
 
     return null;
