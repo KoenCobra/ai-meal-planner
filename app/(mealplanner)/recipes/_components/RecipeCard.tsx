@@ -39,9 +39,10 @@ interface RecipeCardProps {
     dishType: string;
   };
   onDelete: (recipeId: Id<"recipes">, title: string, dishType: string) => void;
+  menuId?: Id<"menus">;
 }
 
-export const RecipeCard = ({ recipe, onDelete }: RecipeCardProps) => {
+export const RecipeCard = ({ recipe, onDelete, menuId }: RecipeCardProps) => {
   const searchParams = useSearchParams();
   const currentTab = searchParams.get("type") || "breakfast";
 
@@ -140,7 +141,7 @@ export const RecipeCard = ({ recipe, onDelete }: RecipeCardProps) => {
                     className="text-destructive cursor-pointer"
                   >
                     <Trash className="h-4 w-4 mr-2" />
-                    Delete Recipe
+                    {menuId ? "Remove Recipe" : "Delete Recipe"}
                   </DropdownMenuItem>
                 </DropdownMenuContent>
               </DropdownMenu>

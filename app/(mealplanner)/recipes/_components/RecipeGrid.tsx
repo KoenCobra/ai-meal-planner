@@ -14,13 +14,19 @@ interface RecipeGridProps {
     dishType: string;
   }>;
   onDelete: (recipeId: Id<"recipes">, title: string, dishType: string) => void;
+  menuId?: Id<"menus">;
 }
 
-export const RecipeGrid = ({ recipes, onDelete }: RecipeGridProps) => {
+export const RecipeGrid = ({ recipes, onDelete, menuId }: RecipeGridProps) => {
   return (
     <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
       {recipes.map((recipe) => (
-        <RecipeCard key={recipe._id} recipe={recipe} onDelete={onDelete} />
+        <RecipeCard
+          key={recipe._id}
+          recipe={recipe}
+          onDelete={onDelete}
+          menuId={menuId}
+        />
       ))}
     </div>
   );

@@ -82,7 +82,7 @@ export const InfiniteRecipeGrid = ({
 
   return (
     <div className="animate-in fade-in duration-500">
-      <RecipeGrid recipes={recipes} onDelete={onDelete} />
+      <RecipeGrid recipes={recipes} onDelete={onDelete} menuId={menuId} />
 
       {/* Load more trigger */}
       <div ref={loadMoreRef} className="mt-8">

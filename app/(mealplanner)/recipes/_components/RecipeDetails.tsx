@@ -57,6 +57,7 @@ const RecipeDetails = ({ menuId }: RecipeDetailsProps) => {
         onOpenChange={(open) => !open && setRecipeToDelete(null)}
         onConfirm={handleConfirmDelete}
         recipeName={recipeToDelete?.title || ""}
+        mode={menuId ? "remove" : "delete"}
       />
     </div>
   );
