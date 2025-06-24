@@ -64,7 +64,7 @@ export async function POST(req: NextRequest) {
               type: "text",
               text: `You are a recipe generator AI. Your task is to analyze the food image and generate a recipe that could recreate this dish.
               Make sure to generate all the output in the language that is used in the image.
-              If the input has nothing to do with food, please return an error message. Be very detailed and elaborate with the ingredients and steps.
+              If the input has nothing to do with food, please return an error message with the error prop in the shema output. Be very detailed and elaborate with the ingredients and steps.
               ${
                 additionalInstructions
                   ? `Additionally, consider these instructions from the user: ${additionalInstructions}`
