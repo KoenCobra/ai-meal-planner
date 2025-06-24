@@ -4,6 +4,31 @@ import { mutation, query } from "./_generated/server";
 import { addOrUpdateGroceryItem } from "./groceryList";
 import { rateLimiter } from "./rateLimiter";
 
+export const generateUploadUrl = mutation({
+  args: {},
+  handler: async (ctx) => {
+    const userId = (await ctx.auth.getUserIdentity())?.subject;
+    if (!userId) {
+      throw new Error("Unauthorized");
+    }
+    return await ctx.storage.generateUploadUrl();
+  },
+});
+
+export const getRecipeImageUrl = query({
+  args: {
+    imageId: v.id("_storage"),
+  },
+  returns: v.union(v.string(), v.null()),
+  handler: async (ctx, args) => {
+    const userId = (await ctx.auth.getUserIdentity())?.subject;
+    if (!userId) {
+      throw new Error("Unauthorized");
+    }
+    return await ctx.storage.getUrl(args.imageId);
+  },
+});
+
 export const getRecipesByDishType = query({
   args: {
     dishType: v.string(),
@@ -32,7 +57,7 @@ export const createRecipe = mutation({
     summary: v.string(),
     servings: v.number(),
     readyInMinutes: v.number(),
-    imageUrl: v.string(),
+    imageId: v.optional(v.id("_storage")),
     blurDataURL: v.optional(v.string()),
     categories: v.array(v.string()),
     instructions: v.object({

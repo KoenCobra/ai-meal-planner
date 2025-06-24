@@ -165,11 +165,10 @@ const BibiAiForm = ({
                 <div className="relative inline-block mb-4">
                   <div className="h-20 w-20 relative overflow-hidden rounded-sm">
                     <Image
-                      src={imagePreview || "/placeholder.svg"}
+                      src={imagePreview}
                       alt="Selected food"
                       fill
                       className="object-cover"
-                      quality={50}
                     />
                   </div>
                   <Button

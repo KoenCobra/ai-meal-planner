@@ -13,6 +13,7 @@ import {
 import { Skeleton } from "@/components/ui/skeleton";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { api } from "@/convex/_generated/api";
+
 import {
   cardVariants,
   imageContainerVariants,
@@ -67,6 +68,7 @@ const BubuAiResponse = ({ isGeneratingImage }: BubuAiResponseProps) => {
 
   const createRecipe = useMutation(api.recipes.createRecipe);
   const deleteRecipe = useMutation(api.recipes.deleteRecipe);
+  const generateUploadUrl = useMutation(api.recipes.generateUploadUrl);
 
   const { open, recipeId, openDialog, closeDialog } = useAddToMenuDialogStore();
   const { handleSyncIngredients } = useSyncIngredients();
@@ -76,6 +78,31 @@ const BubuAiResponse = ({ isGeneratingImage }: BubuAiResponseProps) => {
       setIsSaving(true);
 
       if (!recipeImageData?.imageUrl || !recipe) return;
+
+      // Upload image to Convex storage
+      let imageId = undefined;
+      if (recipeImageData.imageUrl.startsWith("data:")) {
+        // Convert base64 to blob
+        const response = await fetch(recipeImageData.imageUrl);
+        const blob = await response.blob();
+
+        // Get upload URL
+        const uploadUrl = await generateUploadUrl({});
+
+        // Upload the image
+        const uploadResponse = await fetch(uploadUrl, {
+          method: "POST",
+          headers: { "Content-Type": blob.type },
+          body: blob,
+        });
+
+        if (!uploadResponse.ok) {
+          throw new Error("Failed to upload image");
+        }
+
+        const { storageId } = await uploadResponse.json();
+        imageId = storageId;
+      }
 
       const newRecipeId = await createRecipe({
         title: recipe.title,
@@ -88,7 +115,7 @@ const BubuAiResponse = ({ isGeneratingImage }: BubuAiResponseProps) => {
         },
         ingredients: recipe.ingredients,
         dishType: recipe.dishType,
-        imageUrl: recipeImageData.imageUrl,
+        imageId,
         blurDataURL: recipeImageData.blurDataURL,
       });
 
@@ -163,7 +190,6 @@ const BubuAiResponse = ({ isGeneratingImage }: BubuAiResponseProps) => {
                     className="object-cover"
                     fill
                     sizes="(max-width: 768px) 100vw, 1200px"
-                    quality={50}
                     placeholder="blur"
                     blurDataURL={recipeImageData.blurDataURL}
                   />

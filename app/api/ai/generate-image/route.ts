@@ -4,6 +4,7 @@ import { fal } from "@fal-ai/client";
 import { ConvexHttpClient } from "convex/browser";
 import { NextRequest, NextResponse } from "next/server";
 import { getPlaiceholder } from "plaiceholder";
+import sharp from "sharp";
 
 const convex = new ConvexHttpClient(process.env.NEXT_PUBLIC_CONVEX_URL!);
 
@@ -62,18 +63,26 @@ export async function POST(req: NextRequest) {
 
     const imageUrl = result.data.images[0].url;
 
-    // Fetch the generated image to create a blurred placeholder
+    // Fetch the generated image
     const imageResponse = await fetch(imageUrl);
     const imageBuffer = Buffer.from(await imageResponse.arrayBuffer());
 
-    // Generate blurred placeholder using plaiceholder
+    // Convert image to WebP format
+    const webpBuffer = await sharp(imageBuffer)
+      .webp({ quality: 60 })
+      .toBuffer();
+
+    // Convert WebP buffer to base64 for client
+    const webpBase64 = `data:image/webp;base64,${webpBuffer.toString("base64")}`;
+
+    // Generate blurred placeholder using the WebP buffer
     const { base64: blurDataURL } = await getPlaiceholder(imageBuffer, {
-      size: 20, // Small size for a more blurred effect
+      size: 10, // Small size for a more blurred effect
     });
 
     return NextResponse.json(
       {
-        imageUrl,
+        imageUrl: webpBase64, // Return WebP as base64
         blurDataURL,
       },
       { status: 200 },

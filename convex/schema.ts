@@ -8,7 +8,7 @@ const applicationTables = {
     summary: v.string(),
     servings: v.number(),
     readyInMinutes: v.number(),
-    imageUrl: v.string(),
+    imageId: v.optional(v.id("_storage")),
     blurDataURL: v.optional(v.string()),
     categories: v.array(v.string()),
     instructions: v.object({
