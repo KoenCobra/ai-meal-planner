@@ -57,7 +57,7 @@ export async function POST(req: NextRequest) {
     const result = await fal.subscribe("fal-ai/flux/schnell", {
       input: {
         prompt: `Professional food photography of ${recipeTitle}. ${recipeSummary}.Super high def 4K quality, and detailed.`,
-        image_size: "square_hd",
+        image_size: "landscape_4_3",
       },
     });
 
@@ -69,7 +69,7 @@ export async function POST(req: NextRequest) {
 
     // Convert image to WebP format
     const webpBuffer = await sharp(imageBuffer)
-      .webp({ quality: 60 })
+      .webp({ quality: 80 })
       .toBuffer();
 
     // Convert WebP buffer to base64 for client
