@@ -1,8 +1,35 @@
 import { paginationOptsValidator } from "convex/server";
 import { ConvexError, v } from "convex/values";
-import { mutation, query } from "./_generated/server";
+import { Doc } from "./_generated/dataModel";
+import { mutation, query, QueryCtx } from "./_generated/server";
 import { addOrUpdateGroceryItem } from "./groceryList";
 import { rateLimiter } from "./rateLimiter";
+
+// Helper function to enrich a recipe with its image URL
+async function enrichRecipeWithImageUrl(
+  ctx: QueryCtx,
+  recipe: Doc<"recipes">,
+): Promise<Doc<"recipes"> & { imageUrl?: string }> {
+  if (!recipe.imageId) {
+    return recipe;
+  }
+
+  const imageUrl = await ctx.storage.getUrl(recipe.imageId);
+  return {
+    ...recipe,
+    imageUrl: imageUrl || undefined,
+  };
+}
+
+// Helper function to enrich multiple recipes with their image URLs
+async function enrichRecipesWithImageUrls(
+  ctx: QueryCtx,
+  recipes: Doc<"recipes">[],
+): Promise<(Doc<"recipes"> & { imageUrl?: string })[]> {
+  return Promise.all(
+    recipes.map((recipe) => enrichRecipeWithImageUrl(ctx, recipe)),
+  );
+}
 
 export const generateUploadUrl = mutation({
   args: {},
@@ -41,13 +68,21 @@ export const getRecipesByDishType = query({
       throw new Error("Unauthorized when getting recipes by dish type");
     }
 
-    return await ctx.db
+    const result = await ctx.db
       .query("recipes")
       .withIndex("by_user_and_dish_type", (q) =>
         q.eq("userId", userId).eq("dishType", args.dishType),
       )
       .order("desc")
       .paginate(args.paginationOpts);
+
+    // Enrich recipes with image URLs
+    const enrichedRecipes = await enrichRecipesWithImageUrls(ctx, result.page);
+
+    return {
+      ...result,
+      page: enrichedRecipes,
+    };
   },
 });
 
@@ -154,7 +189,9 @@ export const getRecipe = query({
     const recipe = await ctx.db.get(args.id);
     if (!recipe) return null;
     if (recipe.userId !== userId) throw new ConvexError("Not authorized");
-    return recipe;
+
+    // Enrich recipe with image URL
+    return await enrichRecipeWithImageUrl(ctx, recipe);
   },
 });
 
@@ -168,11 +205,19 @@ export const listRecipes = query({
       console.error("Unauthorized when listing recipes");
       throw new Error("Unauthorized when listing recipes");
     }
-    return await ctx.db
+    const result = await ctx.db
       .query("recipes")
       .withIndex("by_user", (q) => q.eq("userId", userId))
       .order("desc")
       .paginate(args.paginationOpts);
+
+    // Enrich recipes with image URLs
+    const enrichedRecipes = await enrichRecipesWithImageUrls(ctx, result.page);
+
+    return {
+      ...result,
+      page: enrichedRecipes,
+    };
   },
 });
 
@@ -192,20 +237,29 @@ export const searchRecipesByTitleIngredientsAndCategories = query({
       );
     }
 
+    let result;
     if (!args.query.trim()) {
-      return await ctx.db
+      result = await ctx.db
         .query("recipes")
         .withIndex("by_user", (q) => q.eq("userId", userId))
         .order("desc")
         .paginate(args.paginationOpts);
+    } else {
+      result = await ctx.db
+        .query("recipes")
+        .withSearchIndex("search_recipes", (q) =>
+          q.search("searchText", args.query).eq("userId", userId),
+        )
+        .paginate(args.paginationOpts);
     }
 
-    return await ctx.db
-      .query("recipes")
-      .withSearchIndex("search_recipes", (q) =>
-        q.search("searchText", args.query).eq("userId", userId),
-      )
-      .paginate(args.paginationOpts);
+    // Enrich recipes with image URLs
+    const enrichedRecipes = await enrichRecipesWithImageUrls(ctx, result.page);
+
+    return {
+      ...result,
+      page: enrichedRecipes,
+    };
   },
 });
 

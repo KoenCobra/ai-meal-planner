@@ -10,6 +10,7 @@ interface RecipeGridProps {
     readyInMinutes: number;
     servings: number;
     imageId?: Id<"_storage">;
+    imageUrl?: string;
     blurDataURL?: string;
     categories: string[];
     dishType: string;

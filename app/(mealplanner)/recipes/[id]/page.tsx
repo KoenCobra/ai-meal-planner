@@ -46,13 +46,6 @@ const RecipeDetails = () => {
     }),
   });
 
-  const { data: imageUrl } = useQuery({
-    ...convexQuery(
-      api.recipes.getRecipeImageUrl,
-      recipe?.imageId ? { imageId: recipe.imageId } : "skip",
-    ),
-  });
-
   if (isLoading) {
     return (
       <div className="flex items-center justify-center py-8">
@@ -82,7 +75,7 @@ const RecipeDetails = () => {
             >
               <div className="relative w-full h-[400px] md:h-[500px]">
                 <Image
-                  src={imageUrl || recipe?.blurDataURL || ""}
+                  src={recipe?.imageUrl || recipe?.blurDataURL || ""}
                   alt={recipe?.title || "Recipe Image"}
                   className="object-cover"
                   fill

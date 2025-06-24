@@ -1,8 +1,35 @@
 import { paginationOptsValidator } from "convex/server";
 import { ConvexError, v } from "convex/values";
-import { mutation, query } from "./_generated/server";
+import { Doc } from "./_generated/dataModel";
+import { mutation, query, QueryCtx } from "./_generated/server";
 import { addOrUpdateGroceryItem } from "./groceryList";
 import { rateLimiter } from "./rateLimiter";
+
+// Helper function to enrich a recipe with its image URL
+async function enrichRecipeWithImageUrl(
+  ctx: QueryCtx,
+  recipe: Doc<"recipes">,
+): Promise<Doc<"recipes"> & { imageUrl?: string }> {
+  if (!recipe.imageId) {
+    return recipe;
+  }
+
+  const imageUrl = await ctx.storage.getUrl(recipe.imageId);
+  return {
+    ...recipe,
+    imageUrl: imageUrl || undefined,
+  };
+}
+
+// Helper function to enrich multiple recipes with their image URLs
+async function enrichRecipesWithImageUrls(
+  ctx: QueryCtx,
+  recipes: Doc<"recipes">[],
+): Promise<(Doc<"recipes"> & { imageUrl?: string })[]> {
+  return Promise.all(
+    recipes.map((recipe) => enrichRecipeWithImageUrl(ctx, recipe)),
+  );
+}
 
 export const createMenu = mutation({
   args: {
@@ -180,9 +207,12 @@ export const getMenuRecipes = query({
       associations.map(async (assoc) => await ctx.db.get(assoc.recipeId)),
     );
 
-    return recipes.filter(
+    const validRecipes = recipes.filter(
       (recipe): recipe is NonNullable<typeof recipe> => recipe !== null,
     );
+
+    // Enrich recipes with image URLs
+    return await enrichRecipesWithImageUrls(ctx, validRecipes);
   },
 });
 
@@ -219,8 +249,14 @@ export const getMenuRecipesByDishType = query({
         recipe !== null && recipe.dishType === args.dishType,
     );
 
+    // Enrich recipes with image URLs
+    const enrichedRecipes = await enrichRecipesWithImageUrls(
+      ctx,
+      filteredRecipes,
+    );
+
     return {
-      page: filteredRecipes,
+      page: enrichedRecipes,
       isDone: associations.isDone,
       continueCursor: associations.continueCursor,
     };
