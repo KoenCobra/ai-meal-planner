@@ -45,7 +45,7 @@ const RecipeDetails = ({ menuId }: RecipeDetailsProps) => {
           <TabsTrigger value="breakfast">Breakfast</TabsTrigger>
           <TabsTrigger value="lunch">Lunch</TabsTrigger>
           <TabsTrigger value="dinner">Dinner</TabsTrigger>
-          <TabsTrigger value="snacks">Snacks</TabsTrigger>
+          <TabsTrigger value="other">Other</TabsTrigger>
         </TabsList>
       </Tabs>
       {RecipeTabContent && (

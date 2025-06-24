@@ -1,15 +1,15 @@
 import { Id } from "@/convex/_generated/dataModel";
 import { InfiniteRecipeGrid } from "../InfiniteRecipeGrid";
 
-interface SnackTabContentProps {
+interface OtherTabContentProps {
   menuId?: Id<"menus">;
   onDelete: (recipeId: Id<"recipes">, title: string, dishType: string) => void;
 }
 
-const SnackTabContent = ({ menuId, onDelete }: SnackTabContentProps) => {
+const OtherTabContent = ({ menuId, onDelete }: OtherTabContentProps) => {
   return (
-    <InfiniteRecipeGrid mealType="snacks" menuId={menuId} onDelete={onDelete} />
+    <InfiniteRecipeGrid mealType="other" menuId={menuId} onDelete={onDelete} />
   );
 };
 
-export default SnackTabContent;
+export default OtherTabContent;

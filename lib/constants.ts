@@ -85,7 +85,7 @@ export const recipeJsonSchema = {
     dishType: {
       type: "string",
       description:
-        "This can only have 1 of the following values: 'breakfast', 'lunch', 'snacks' or 'dinner'",
+        "This can only have 1 of the following values: 'breakfast', 'lunch', 'dinner' or 'other'",
     },
     error: {
       type: ["string", "null"],

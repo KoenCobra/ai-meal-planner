@@ -7,7 +7,7 @@ import { usePaginatedQuery } from "convex/react";
 import type { PaginationResult } from "convex/server";
 import { useMemo } from "react";
 
-type MealType = "breakfast" | "lunch" | "dinner" | "snacks";
+type MealType = "breakfast" | "lunch" | "dinner" | "other";
 
 interface UseInfiniteRecipesProps {
   mealType: MealType;

@@ -42,7 +42,7 @@ export const Recipe = z.object({
   dishType: z
     .string()
     .describe(
-      "This can only have 1 of the following values: 'breakfast', 'lunch', 'snacks' or 'dinner'",
+      "This can only have 1 of the following values: 'breakfast', 'lunch', 'dinner' or 'other'",
     ),
   error: z
     .string()

@@ -7,7 +7,7 @@ import { useInfiniteRecipes } from "../_hooks/useInfiniteRecipes";
 import { EmptyState } from "./EmptyState";
 import { RecipeGrid } from "./RecipeGrid";
 
-type MealType = "breakfast" | "lunch" | "dinner" | "snacks";
+type MealType = "breakfast" | "lunch" | "dinner" | "other";
 
 interface InfiniteRecipeGridProps {
   mealType: MealType;

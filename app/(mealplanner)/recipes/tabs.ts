@@ -2,7 +2,7 @@ import { Id } from "@/convex/_generated/dataModel";
 import BreakfastTabContent from "./_components/recipeTypeTabsContent/breakfastTabContent";
 import DinnerTabContent from "./_components/recipeTypeTabsContent/dinnerTabContent";
 import LunchTabContent from "./_components/recipeTypeTabsContent/lunchTabContent";
-import SnackTabContent from "./_components/recipeTypeTabsContent/snackTabContent";
+import OtherTabContent from "./_components/recipeTypeTabsContent/otherTabContent";
 
 interface TabContentProps {
   menuId?: Id<"menus">;
@@ -30,8 +30,8 @@ export const tabs: {
     key: "dinner",
   },
   {
-    title: "Snacks",
-    component: SnackTabContent,
-    key: "snacks",
+    title: "Other",
+    component: OtherTabContent,
+    key: "other",
   },
 ];
