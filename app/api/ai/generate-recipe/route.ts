@@ -40,7 +40,7 @@ export async function POST(req: NextRequest) {
     };
 
     const payload = {
-      models: ["google/gemini-2.5-flash-preview-05-20", "openai/gpt-4.1-mini"],
+      models: ["google/gemini-2.5-flash", "openai/gpt-4.1-mini"],
       messages: [
         {
           role: "user",

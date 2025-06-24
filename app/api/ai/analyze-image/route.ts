@@ -55,14 +55,15 @@ export async function POST(req: NextRequest) {
     };
 
     const payload = {
-      models: ["google/gemini-2.5-flash-preview-05-20", "openai/gpt-4.1-mini"],
+      models: ["google/gemini-2.5-flash", "openai/gpt-4.1-mini"],
       messages: [
         {
           role: "user",
           content: [
             {
               type: "text",
-              text: `You are a recipe generator AI. Your task is to analyze the food image and generate a recipe that could recreate this dish. Make sure to generate all the output in the language that is used in the image.
+              text: `You are a recipe generator AI. Your task is to analyze the food image and generate a recipe that could recreate this dish.
+              Make sure to generate all the output in the language that is used in the image.
               If the input has nothing to do with food, please return an error message. Be very detailed and elaborate with the ingredients and steps.
               ${
                 additionalInstructions
