@@ -75,12 +75,12 @@ const RecipeDetails = () => {
             >
               <div className="relative w-full aspect-[4/3]">
                 <Image
-                  src={recipe?.imageUrl || recipe?.blurDataURL || ""}
+                  src={recipe?.imageUrl || ""}
                   alt={recipe?.title || "Recipe Image"}
                   className="object-cover"
                   fill
-                  placeholder={recipe?.blurDataURL ? "blur" : "empty"}
-                  blurDataURL={recipe?.blurDataURL || ""}
+                  placeholder="blur"
+                  blurDataURL={recipe?.blurDataURL}
                   priority
                 />
               </div>

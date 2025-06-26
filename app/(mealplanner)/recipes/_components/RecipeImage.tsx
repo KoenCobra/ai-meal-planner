@@ -18,12 +18,12 @@ export const RecipeImage = ({ recipe, className }: RecipeImageProps) => {
     <div className={cn("relative w-full h-full", className)}>
       <div className="relative w-full h-full">
         <Image
-          src={recipe.imageUrl || recipe.blurDataURL || ""}
+          src={recipe.imageUrl || ""}
           alt={recipe.title}
           fill
           className="object-cover rounded-t-lg"
           priority
-          placeholder={recipe.blurDataURL ? "blur" : "empty"}
+          placeholder="blur"
           blurDataURL={recipe.blurDataURL}
         />
       </div>
