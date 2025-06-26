@@ -64,7 +64,7 @@ export async function POST(req: NextRequest) {
     const imageBuffer = Buffer.from(await imageResponse.arrayBuffer());
 
     const webpBuffer = await sharp(imageBuffer)
-      .webp({ quality: 70 })
+      .webp({ quality: 80 })
       .toBuffer();
 
     const webpBase64 = `data:image/webp;base64,${webpBuffer.toString("base64")}`;
