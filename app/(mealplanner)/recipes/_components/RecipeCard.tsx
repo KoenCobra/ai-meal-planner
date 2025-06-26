@@ -22,7 +22,7 @@ import {
 } from "lucide-react";
 import Link from "next/link";
 import { useSearchParams } from "next/navigation";
-import React from "react";
+import { useState } from "react";
 import AddToMenuDialog from "../../_components/AddToMenuDialog";
 import { useSyncIngredients } from "../_hooks/useSyncIngredients";
 import { RecipeImage } from "./RecipeImage";
@@ -47,10 +47,10 @@ export const RecipeCard = ({ recipe, onDelete, menuId }: RecipeCardProps) => {
   const searchParams = useSearchParams();
   const currentTab = searchParams.get("type") || "breakfast";
 
-  const [dropdownOpen, setDropdownOpen] = React.useState(false);
-  const [dialogOpen, setDialogOpen] = React.useState(false);
+  const [dropdownOpen, setDropdownOpen] = useState(false);
+  const [dialogOpen, setDialogOpen] = useState(false);
   const { handleSyncIngredients } = useSyncIngredients();
-  const [isHovered, setIsHovered] = React.useState(false);
+  const [isHovered, setIsHovered] = useState(false);
 
   const handleOpenDialog = () => {
     setDialogOpen(true);
