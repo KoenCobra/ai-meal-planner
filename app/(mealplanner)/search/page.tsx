@@ -95,7 +95,7 @@ const SearchPage = () => {
         transition={{ duration: 0.5, delay: 0.1 }}
         className="mb-8"
       >
-        <div className="flex  gap-3">
+        <div className="flex gap-3">
           <div className="relative flex-1">
             <div className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground">
               <SearchIcon className="size-4" />

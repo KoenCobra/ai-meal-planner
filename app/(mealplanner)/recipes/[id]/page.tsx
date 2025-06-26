@@ -73,7 +73,7 @@ const RecipeDetails = () => {
               initial="hidden"
               animate="visible"
             >
-              <div className="relative w-full h-[400px] md:h-[500px]">
+              <div className="relative w-full aspect-[4/3]">
                 <Image
                   src={recipe?.imageUrl || recipe?.blurDataURL || ""}
                   alt={recipe?.title || "Recipe Image"}

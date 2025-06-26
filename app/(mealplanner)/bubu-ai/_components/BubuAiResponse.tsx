@@ -152,7 +152,7 @@ const BubuAiResponse = ({ isGeneratingImage }: BubuAiResponseProps) => {
             initial="hidden"
             animate="visible"
           >
-            <div className="relative w-full h-[400px] md:h-[500px]">
+            <div className="relative w-full aspect-[4/3]">
               {isGeneratingImage ? (
                 <div className="relative w-full h-full">
                   <Skeleton className="w-full h-full" />
