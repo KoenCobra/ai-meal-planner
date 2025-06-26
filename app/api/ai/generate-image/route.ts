@@ -20,7 +20,6 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
-    // Parse request body
     const { recipeTitle, recipeSummary } = await req.json();
 
     if (!recipeTitle || !recipeSummary) {
@@ -30,7 +29,6 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    // Check rate limits
     const rateLimitCheck = await convex.mutation(
       api.aiRateLimit.checkImageGenerationLimit,
       {
@@ -53,7 +51,6 @@ export async function POST(req: NextRequest) {
       abortController.abort();
     });
 
-    // Generate image
     const result = await fal.subscribe("fal-ai/flux/schnell", {
       input: {
         prompt: `Professional food photography of ${recipeTitle}. ${recipeSummary}.Super high def 4K quality, and detailed.`,
@@ -63,26 +60,22 @@ export async function POST(req: NextRequest) {
 
     const imageUrl = result.data.images[0].url;
 
-    // Fetch the generated image
     const imageResponse = await fetch(imageUrl);
     const imageBuffer = Buffer.from(await imageResponse.arrayBuffer());
 
-    // Convert image to WebP format
     const webpBuffer = await sharp(imageBuffer)
-      .webp({ quality: 80 })
+      .webp({ quality: 70 })
       .toBuffer();
 
-    // Convert WebP buffer to base64 for client
     const webpBase64 = `data:image/webp;base64,${webpBuffer.toString("base64")}`;
 
-    // Generate blurred placeholder using the WebP buffer
     const { base64: blurDataURL } = await getPlaiceholder(imageBuffer, {
-      size: 10, // Small size for a more blurred effect
+      size: 10,
     });
 
     return NextResponse.json(
       {
-        imageUrl: webpBase64, // Return WebP as base64
+        imageUrl: webpBase64,
         blurDataURL,
       },
       { status: 200 },

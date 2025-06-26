@@ -42,20 +42,6 @@ export const generateUploadUrl = mutation({
   },
 });
 
-export const getRecipeImageUrl = query({
-  args: {
-    imageId: v.id("_storage"),
-  },
-  returns: v.union(v.string(), v.null()),
-  handler: async (ctx, args) => {
-    const userId = (await ctx.auth.getUserIdentity())?.subject;
-    if (!userId) {
-      throw new Error("Unauthorized");
-    }
-    return await ctx.storage.getUrl(args.imageId);
-  },
-});
-
 export const getRecipesByDishType = query({
   args: {
     dishType: v.string(),

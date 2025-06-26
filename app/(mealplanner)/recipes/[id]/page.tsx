@@ -79,7 +79,6 @@ const RecipeDetails = () => {
                   alt={recipe?.title || "Recipe Image"}
                   className="object-cover"
                   fill
-                  sizes="(max-width: 768px) 100vw, 1200px"
                   placeholder={recipe?.blurDataURL ? "blur" : "empty"}
                   blurDataURL={recipe?.blurDataURL || ""}
                   priority

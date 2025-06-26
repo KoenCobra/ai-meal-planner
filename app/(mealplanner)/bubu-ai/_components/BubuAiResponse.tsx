@@ -41,6 +41,7 @@ import { toast } from "sonner";
 import AddToMenuDialog from "../../_components/AddToMenuDialog";
 import { useAddToMenuDialogStore } from "../../_stores/useAddToMenuDialogStore";
 import { useSyncIngredients } from "../../recipes/_hooks/useSyncIngredients";
+import { useUploadImage } from "../_hooks/useUploadImage";
 import { useBubuAi } from "../BubuAiContext";
 import { useClearAiCache } from "../utils/clearAiCache";
 
@@ -54,6 +55,7 @@ const BubuAiResponse = ({ isGeneratingImage }: BubuAiResponseProps) => {
   const [activeTab, setActiveTab] = useState("ingredients");
   const [dropdownOpen, setDropdownOpen] = useState(false);
   const { clearAiCache } = useClearAiCache();
+  const { uploadImage } = useUploadImage();
 
   const { data: recipe } = useQuery<RecipeInput>({
     queryKey: ["generate-recipe"],
@@ -68,7 +70,6 @@ const BubuAiResponse = ({ isGeneratingImage }: BubuAiResponseProps) => {
 
   const createRecipe = useMutation(api.recipes.createRecipe);
   const deleteRecipe = useMutation(api.recipes.deleteRecipe);
-  const generateUploadUrl = useMutation(api.recipes.generateUploadUrl);
 
   const { open, recipeId, openDialog, closeDialog } = useAddToMenuDialogStore();
   const { handleSyncIngredients } = useSyncIngredients();
@@ -79,30 +80,7 @@ const BubuAiResponse = ({ isGeneratingImage }: BubuAiResponseProps) => {
 
       if (!recipeImageData?.imageUrl || !recipe) return;
 
-      // Upload image to Convex storage
-      let imageId = undefined;
-      if (recipeImageData.imageUrl.startsWith("data:")) {
-        // Convert base64 to blob
-        const response = await fetch(recipeImageData.imageUrl);
-        const blob = await response.blob();
-
-        // Get upload URL
-        const uploadUrl = await generateUploadUrl({});
-
-        // Upload the image
-        const uploadResponse = await fetch(uploadUrl, {
-          method: "POST",
-          headers: { "Content-Type": blob.type },
-          body: blob,
-        });
-
-        if (!uploadResponse.ok) {
-          throw new Error("Failed to upload image");
-        }
-
-        const { storageId } = await uploadResponse.json();
-        imageId = storageId;
-      }
+      const imageId = await uploadImage(recipeImageData.imageUrl);
 
       const newRecipeId = await createRecipe({
         title: recipe.title,
@@ -189,7 +167,6 @@ const BubuAiResponse = ({ isGeneratingImage }: BubuAiResponseProps) => {
                     alt="recipe image"
                     className="object-cover"
                     fill
-                    sizes="(max-width: 768px) 100vw, 1200px"
                     placeholder="blur"
                     blurDataURL={recipeImageData.blurDataURL}
                   />
