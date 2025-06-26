@@ -50,7 +50,6 @@ export async function POST(req: NextRequest) {
           If the input has nothing to do with food, or will cause even the slightest bit of harm please return an error message with the error prop in the shema output. Be very detailed and elaborate with the ingredients and steps.`,
         },
       ],
-      stream: true,
       response_format: {
         type: "json_schema",
         json_schema: {
