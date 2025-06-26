@@ -66,9 +66,7 @@ export async function POST(req: NextRequest) {
     };
 
     const controller = new AbortController();
-    const timeoutId = setTimeout(() => controller.abort(), 30000); // 30s timeout
 
-    // Forward abort signal from request
     req.signal.addEventListener("abort", () => {
       controller.abort();
     });
@@ -79,8 +77,6 @@ export async function POST(req: NextRequest) {
       body: JSON.stringify(payload),
       signal: controller.signal,
     });
-
-    clearTimeout(timeoutId);
 
     if (!response.ok) {
       const errorData = await response.json().catch(() => null);
