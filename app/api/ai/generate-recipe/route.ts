@@ -1,9 +1,11 @@
+import { api } from "@/convex/_generated/api";
 import { recipeJsonSchema } from "@/lib/constants";
 import { generateRecipeSchema } from "@/lib/validation";
 import { auth } from "@clerk/nextjs/server";
+import { ConvexHttpClient } from "convex/browser";
 import { NextRequest, NextResponse } from "next/server";
 
-// const convex = new ConvexHttpClient(process.env.NEXT_PUBLIC_CONVEX_URL!);
+const convex = new ConvexHttpClient(process.env.NEXT_PUBLIC_CONVEX_URL!);
 
 export async function POST(req: NextRequest) {
   try {
@@ -16,21 +18,21 @@ export async function POST(req: NextRequest) {
     const input = generateRecipeSchema.parse(await req.json());
     const { description } = input;
 
-    // const rateLimitCheck = await convex.mutation(
-    //   api.aiRateLimit.checkRecipeGenerationLimit,
-    //   {
-    //     userId,
-    //   },
-    // );
+    const rateLimitCheck = await convex.mutation(
+      api.aiRateLimit.checkRecipeGenerationLimit,
+      {
+        userId,
+      },
+    );
 
-    // if (!rateLimitCheck?.success) {
-    //   return NextResponse.json(
-    //     {
-    //       error: rateLimitCheck?.message || "Rate limit exceeded",
-    //     },
-    //     { status: 429 },
-    //   );
-    // }
+    if (!rateLimitCheck?.success) {
+      return NextResponse.json(
+        {
+          error: rateLimitCheck?.message || "Rate limit exceeded",
+        },
+        { status: 429 },
+      );
+    }
 
     // OpenRouter API call with structured output
     const url = "https://openrouter.ai/api/v1/chat/completions";
@@ -48,6 +50,7 @@ export async function POST(req: NextRequest) {
           If the input has nothing to do with food, or will cause even the slightest bit of harm please return an error message with the error prop in the shema output. Be very detailed and elaborate with the ingredients and steps.`,
         },
       ],
+      stream: true,
       response_format: {
         type: "json_schema",
         json_schema: {
@@ -88,6 +91,7 @@ export async function POST(req: NextRequest) {
       );
     }
 
+    console.log("response", response);
     const data = await response.json();
 
     if (!data.choices || !data.choices[0] || !data.choices[0].message) {
@@ -130,8 +134,8 @@ export async function POST(req: NextRequest) {
     };
 
     return NextResponse.json(recipe, { status: 200 });
-  } catch {
-    console.error("Error generating recipe");
+  } catch (error) {
+    console.error("Error generating recipe", error);
     return NextResponse.json(
       { error: "Failed to generate recipe" },
       { status: 500 },
