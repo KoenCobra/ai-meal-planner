@@ -26,8 +26,8 @@ export const addItem = mutation({
       .withIndex("by_user_name_and_unit", (q) =>
         q
           .eq("userId", userId)
-          .eq("name", args.name)
-          .eq("unit", args.unit || ""),
+          .eq("name", args.name.toLowerCase())
+          .eq("unit", args.unit?.toLowerCase() || ""),
       )
       .first();
 
@@ -44,8 +44,8 @@ export const addItem = mutation({
 
     return await ctx.db.insert("groceryItems", {
       userId,
-      name: args.name,
-      unit: args.unit,
+      name: args.name.toLowerCase(),
+      unit: args.unit?.toLowerCase() || "",
       quantity: args.quantity,
       checked: false,
     });
@@ -68,7 +68,10 @@ export const addOrUpdateGroceryItem = async (
   const existingItem = await ctx.db
     .query("groceryItems")
     .withIndex("by_user_name_and_unit", (q) =>
-      q.eq("userId", userId).eq("name", name).eq("unit", unit),
+      q
+        .eq("userId", userId)
+        .eq("name", name.toLowerCase())
+        .eq("unit", unit.toLowerCase()),
     )
     .first();
 
@@ -85,8 +88,8 @@ export const addOrUpdateGroceryItem = async (
 
   return await ctx.db.insert("groceryItems", {
     userId,
-    name,
-    unit,
+    name: name.toLowerCase(),
+    unit: unit.toLowerCase(),
     quantity,
     checked: false,
   });
@@ -125,8 +128,8 @@ export const listItems = query({
     }
     return await ctx.db
       .query("groceryItems")
-      .withIndex("by_user", (q) => q.eq("userId", userId))
-      .order("desc")
+      .withIndex("by_user_name_and_unit", (q) => q.eq("userId", userId))
+      .order("asc")
       .collect();
   },
 });

@@ -76,7 +76,7 @@ const MenuPage = () => {
           className="gap-2"
         >
           <ShoppingCart className="h-5 w-5" />
-          Add All Ingredients to Grocery List
+          Add all ingredients to grocery list
         </Button>
       </div>
       <RecipeDetails menuId={menu._id} />

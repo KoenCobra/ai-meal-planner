@@ -47,7 +47,9 @@ export async function POST(req: NextRequest) {
         {
           role: "user",
           content: `You will always answer in the language that the user is using.Please provide a recipe from this description: ${description}
-          If the input has nothing to do with food, or will cause even the slightest bit of harm please return an error message with the error prop in the shema output. Be very detailed and elaborate with the ingredients and steps.`,
+          If the input has nothing to do with food, or will cause even the slightest bit of harm please return an error message with the error prop in the shema output.
+          Be very detailed and elaborate with the ingredients and steps.
+          Smoothies are by default in the "other" dishType.`,
         },
       ],
       response_format: {
