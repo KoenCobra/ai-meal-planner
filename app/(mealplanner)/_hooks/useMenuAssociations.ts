@@ -8,14 +8,19 @@ import { toast } from "sonner";
 
 interface UseMenuAssociationsProps {
   recipeId: Id<"recipes"> | null;
+  enabled: boolean;
 }
 
-export const useMenuAssociations = ({ recipeId }: UseMenuAssociationsProps) => {
+export const useMenuAssociations = ({
+  recipeId,
+  enabled,
+}: UseMenuAssociationsProps) => {
   const [selectedMenus, setSelectedMenus] = useState<Id<"menus">[]>([]);
   const [loading, setLoading] = useState(false);
 
   const { data: menus } = useQuery({
     ...convexQuery(api.menus.getMenus, {}),
+    enabled,
   });
 
   const { data: menuRecipes } = useQuery({

@@ -18,7 +18,7 @@ interface UseInfiniteRecipesProps {
 export const useInfiniteRecipes = ({
   mealType,
   menuId,
-  itemsPerPage = 8,
+  itemsPerPage = 4,
 }: UseInfiniteRecipesProps) => {
   // TanStack Query caching for menu recipes
   const {

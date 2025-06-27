@@ -88,7 +88,6 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    console.log("response", response);
     const data = await response.json();
 
     if (!data.choices || !data.choices[0] || !data.choices[0].message) {

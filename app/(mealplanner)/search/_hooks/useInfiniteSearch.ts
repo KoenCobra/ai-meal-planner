@@ -13,7 +13,7 @@ interface UseInfiniteSearchProps {
 
 export const useInfiniteSearch = ({
   searchQuery,
-  itemsPerPage = 8,
+  itemsPerPage = 4,
 }: UseInfiniteSearchProps) => {
   const trimmedQuery = useMemo(() => searchQuery.trim(), [searchQuery]);
 

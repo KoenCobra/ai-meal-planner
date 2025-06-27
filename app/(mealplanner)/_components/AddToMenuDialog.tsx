@@ -35,6 +35,7 @@ const AddToMenuDialog: React.FC<AddToMenuDialogProps> = ({
     saveMenuAssociations,
   } = useMenuAssociations({
     recipeId,
+    enabled: open,
   });
 
   if (!recipeId) return null;

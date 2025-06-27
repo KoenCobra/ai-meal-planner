@@ -50,7 +50,7 @@ export const InfiniteRecipeGrid = ({
           fetchNextPage();
         }
       },
-      { threshold: 0.2, rootMargin: "600px" },
+      { threshold: 0.2, rootMargin: "200px" },
     );
 
     if (loadMoreRef.current) {
