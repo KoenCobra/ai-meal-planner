@@ -77,11 +77,13 @@ const AddToMenuDialog: React.FC<AddToMenuDialogProps> = ({
             ))
           )}
         </div>
-        <DialogFooter>
-          <Button onClick={handleSave} disabled={loading}>
-            {loading ? "Saving..." : "Save changes"}
-          </Button>
-        </DialogFooter>
+        {menus && menus.length > 0 && (
+          <DialogFooter>
+            <Button onClick={handleSave} disabled={loading}>
+              {loading ? "Saving..." : "Save changes"}
+            </Button>
+          </DialogFooter>
+        )}
       </DialogContent>
     </Dialog>
   );
