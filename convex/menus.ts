@@ -333,8 +333,12 @@ export const syncMenuIngredientsToGroceryList = mutation({
     for (const recipe of recipes) {
       if (recipe) {
         for (const ingredient of recipe.ingredients) {
-          const quantity = `${ingredient.measures.amount} ${ingredient.measures.unit}`;
-          await addOrUpdateGroceryItem(ctx, ingredient.name, quantity);
+          await addOrUpdateGroceryItem(
+            ctx,
+            ingredient.name,
+            ingredient.measures.unit,
+            ingredient.measures.amount,
+          );
         }
       }
     }

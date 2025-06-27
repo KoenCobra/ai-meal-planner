@@ -2,23 +2,11 @@ import { ConvexError, v } from "convex/values";
 import { mutation, MutationCtx, query } from "./_generated/server";
 import { rateLimiter } from "./rateLimiter";
 
-export const parseQuantity = (
-  quantityStr: string,
-): { amount: number; unit: string } | null => {
-  const match = quantityStr.trim().match(/^([\d.]+)\s*(.*)$/);
-  if (!match) return null;
-
-  const amount = parseFloat(match[1]);
-  const unit = match[2].trim();
-
-  if (isNaN(amount)) return null;
-  return { amount, unit };
-};
-
 export const addItem = mutation({
   args: {
     name: v.string(),
-    quantity: v.optional(v.string()),
+    unit: v.optional(v.string()),
+    quantity: v.optional(v.number()),
   },
   handler: async (ctx, args) => {
     const userId = (await ctx.auth.getUserIdentity())?.subject;
@@ -26,41 +14,38 @@ export const addItem = mutation({
       console.error("Unauthorized when adding grocery item");
       throw new Error("Unauthorized when adding grocery item");
     }
+
     await rateLimiter.limit(ctx, "addGroceryItem", {
       key: userId,
       throws: true,
     });
 
+    // Check if item with same name and unit already exists
     const existingItem = await ctx.db
       .query("groceryItems")
-      .withIndex("by_user_and_name", (q) =>
-        q.eq("userId", userId).eq("name", args.name),
+      .withIndex("by_user_name_and_unit", (q) =>
+        q
+          .eq("userId", userId)
+          .eq("name", args.name)
+          .eq("unit", args.unit || ""),
       )
       .first();
 
     if (existingItem && args.quantity && existingItem.quantity) {
-      const newQuantity = parseQuantity(args.quantity);
-      const existingQuantity = parseQuantity(existingItem.quantity);
+      // Add quantities together if same name and unit
+      const totalQuantity = existingItem.quantity + args.quantity;
 
-      if (
-        newQuantity &&
-        existingQuantity &&
-        newQuantity.unit === existingQuantity.unit
-      ) {
-        const totalAmount = newQuantity.amount + existingQuantity.amount;
-        const updatedQuantity = `${totalAmount} ${newQuantity.unit}`;
+      await ctx.db.patch(existingItem._id, {
+        quantity: totalQuantity,
+      });
 
-        await ctx.db.patch(existingItem._id, {
-          quantity: updatedQuantity,
-        });
-
-        return existingItem._id;
-      }
+      return existingItem._id;
     }
 
     return await ctx.db.insert("groceryItems", {
       userId,
       name: args.name,
+      unit: args.unit,
       quantity: args.quantity,
       checked: false,
     });
@@ -70,7 +55,8 @@ export const addItem = mutation({
 export const addOrUpdateGroceryItem = async (
   ctx: MutationCtx,
   name: string,
-  quantity: string,
+  unit: string,
+  quantity: number,
 ) => {
   const userId = (await ctx.auth.getUserIdentity())?.subject;
   if (!userId) {
@@ -78,36 +64,29 @@ export const addOrUpdateGroceryItem = async (
     throw new Error("Unauthorized when adding or updating grocery item");
   }
 
+  // Check if item with same name and unit already exists
   const existingItem = await ctx.db
     .query("groceryItems")
-    .withIndex("by_user_and_name", (q) =>
-      q.eq("userId", userId).eq("name", name),
+    .withIndex("by_user_name_and_unit", (q) =>
+      q.eq("userId", userId).eq("name", name).eq("unit", unit),
     )
     .first();
 
   if (existingItem && existingItem.quantity) {
-    const newQuantity = parseQuantity(quantity);
-    const existingQuantity = parseQuantity(existingItem.quantity);
+    // Add quantities together if same name and unit
+    const totalQuantity = existingItem.quantity + quantity;
 
-    if (
-      newQuantity &&
-      existingQuantity &&
-      newQuantity.unit === existingQuantity.unit
-    ) {
-      const totalAmount = newQuantity.amount + existingQuantity.amount;
-      const updatedQuantity = `${totalAmount} ${newQuantity.unit}`;
+    await ctx.db.patch(existingItem._id, {
+      quantity: totalQuantity,
+    });
 
-      await ctx.db.patch(existingItem._id, {
-        quantity: updatedQuantity,
-      });
-
-      return existingItem._id;
-    }
+    return existingItem._id;
   }
 
   return await ctx.db.insert("groceryItems", {
     userId,
     name,
+    unit,
     quantity,
     checked: false,
   });

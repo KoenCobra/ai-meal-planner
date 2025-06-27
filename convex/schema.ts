@@ -42,9 +42,7 @@ const applicationTables = {
   menus: defineTable({
     userId: v.string(),
     name: v.string(),
-  })
-    .index("by_user", ["userId"])
-    .index("by_user_and_name", ["userId", "name"]),
+  }).index("by_user", ["userId"]),
   menusOnRecipes: defineTable({
     menuId: v.id("menus"),
     recipeId: v.id("recipes"),
@@ -56,11 +54,12 @@ const applicationTables = {
   groceryItems: defineTable({
     userId: v.string(),
     name: v.string(),
-    quantity: v.optional(v.string()),
+    unit: v.optional(v.string()),
+    quantity: v.optional(v.number()),
     checked: v.boolean(),
   })
     .index("by_user", ["userId"])
-    .index("by_user_and_name", ["userId", "name"]),
+    .index("by_user_name_and_unit", ["userId", "name", "unit"]),
 };
 
 export default defineSchema(

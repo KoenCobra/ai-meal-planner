@@ -44,6 +44,7 @@ export function GroceryList() {
           _creationTime: now,
           userId: "optimistic-user", // Placeholder for optimistic update
           name: args.name,
+          unit: args.unit,
           quantity: args.quantity,
           checked: false,
         };
@@ -95,6 +96,14 @@ export function GroceryList() {
     await clearAllItems();
   };
 
+  const formatQuantityDisplay = (quantity?: number, unit?: string) => {
+    if (!quantity && !unit) return null;
+    if (quantity && unit) return `${quantity} ${unit}`;
+    if (quantity && !unit) return quantity.toString();
+    if (!quantity && unit) return unit;
+    return null;
+  };
+
   const activeItems = items?.filter((item) => !item.checked) || [];
   const checkedItems = items?.filter((item) => item.checked) || [];
 
@@ -139,17 +148,20 @@ export function GroceryList() {
 
           {/* Add Item Form */}
           <div>
-            <form onSubmit={handleAddItem} className="flex gap-2">
-              <Input
-                type="text"
-                placeholder="Add new item to your list..."
-                value={newItemName}
-                onChange={(e) => setNewItemName(e.target.value)}
-                className="flex-1"
-              />
-              <Button variant="outline" type="submit">
-                <Plus className="size-4" />
-              </Button>
+            <form onSubmit={handleAddItem} className="space-y-3">
+              <div className="flex gap-2">
+                <Input
+                  type="text"
+                  placeholder="Item name (e.g., tomatoes)"
+                  value={newItemName}
+                  onChange={(e) => setNewItemName(e.target.value)}
+                  className="flex-1"
+                  required
+                />
+                <Button variant="outline" type="submit">
+                  <Plus className="size-4" />
+                </Button>
+              </div>
             </form>
           </div>
 
@@ -187,9 +199,9 @@ export function GroceryList() {
                       />
                       <div className="flex-1 cursor-pointer">
                         <span className="font-medium">{item.name}</span>
-                        {item.quantity && (
+                        {formatQuantityDisplay(item.quantity, item.unit) && (
                           <span className="text-sm text-muted-foreground ml-2">
-                            ({item.quantity})
+                            ({formatQuantityDisplay(item.quantity, item.unit)})
                           </span>
                         )}
                       </div>
@@ -241,9 +253,9 @@ export function GroceryList() {
                         <span className="line-through text-muted-foreground font-medium">
                           {item.name}
                         </span>
-                        {item.quantity && (
+                        {formatQuantityDisplay(item.quantity, item.unit) && (
                           <span className="text-sm text-muted-foreground ml-2 line-through">
-                            ({item.quantity})
+                            ({formatQuantityDisplay(item.quantity, item.unit)})
                           </span>
                         )}
                       </div>
