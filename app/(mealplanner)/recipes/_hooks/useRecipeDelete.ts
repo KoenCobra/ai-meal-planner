@@ -1,5 +1,6 @@
 import { api } from "@/convex/_generated/api";
 import { Id } from "@/convex/_generated/dataModel";
+import { useQueryClient } from "@tanstack/react-query";
 import { useMutation } from "convex/react";
 import { ConvexError } from "convex/values";
 import { useState } from "react";
@@ -10,6 +11,7 @@ interface UseRecipeDeleteProps {
 }
 
 export const useRecipeDelete = ({ menuId }: UseRecipeDeleteProps) => {
+  const queryClient = useQueryClient();
   const [recipeToDelete, setRecipeToDelete] = useState<{
     id: Id<"recipes">;
     title: string;
@@ -78,11 +80,24 @@ export const useRecipeDelete = ({ menuId }: UseRecipeDeleteProps) => {
           menuId,
           recipeId: recipeToDelete.id,
         });
+
+        // Invalidate menu recipes cache
+        queryClient.invalidateQueries({
+          queryKey: ["menu-recipes", menuId],
+        });
       } else {
         // Delete recipe completely
         await deleteRecipe({
           id: recipeToDelete.id,
           dishType: recipeToDelete.dishType,
+        });
+
+        // Invalidate all recipe caches
+        queryClient.invalidateQueries({
+          queryKey: ["recipes"],
+        });
+        queryClient.invalidateQueries({
+          queryKey: ["search-recipes"],
         });
       }
     } catch (error) {

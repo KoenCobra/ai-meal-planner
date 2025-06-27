@@ -1,9 +1,6 @@
 import { api } from "@/convex/_generated/api";
-import type { Doc } from "@/convex/_generated/dataModel";
-import { convexQuery } from "@convex-dev/react-query";
-import { useQuery } from "@tanstack/react-query";
-import { usePaginatedQuery } from "convex/react";
-import type { PaginationResult } from "convex/server";
+import { useInfiniteQuery } from "@tanstack/react-query";
+import { useConvex } from "convex/react";
 import { useMemo } from "react";
 
 interface UseInfiniteSearchProps {
@@ -13,75 +10,49 @@ interface UseInfiniteSearchProps {
 
 export const useInfiniteSearch = ({
   searchQuery,
-  itemsPerPage = 4,
+  itemsPerPage = 8,
 }: UseInfiniteSearchProps) => {
+  const convex = useConvex();
   const trimmedQuery = useMemo(() => searchQuery.trim(), [searchQuery]);
 
   const {
-    data: cachedResults,
-    isLoading: isCacheLoading,
-    isFetching: isCacheFetching,
-  } = useQuery({
-    ...convexQuery(api.recipes.searchRecipesByTitleIngredientsAndCategories, {
-      query: trimmedQuery,
-      paginationOpts: { numItems: itemsPerPage, cursor: null },
-    }),
-    enabled: !!trimmedQuery,
-  }) as {
-    data: PaginationResult<Doc<"recipes">> | undefined;
-    isLoading: boolean;
-    isFetching: boolean;
-  };
-
-  const results = usePaginatedQuery(
-    api.recipes.searchRecipesByTitleIngredientsAndCategories,
-    trimmedQuery !== ""
-      ? {
-          query: trimmedQuery,
-        }
-      : "skip",
-    { initialNumItems: itemsPerPage },
-  );
-
-  const recipes = useMemo(() => {
-    const paginatedResults = results.results || [];
-    const cached = cachedResults?.page || [];
-
-    if (cached.length > 0 && results.status === "LoadingFirstPage") {
-      return cached;
-    }
-
-    if (paginatedResults.length > cached.length) {
-      return paginatedResults;
-    }
-
-    return paginatedResults.length > 0 ? paginatedResults : cached;
-  }, [cachedResults?.page, results.results, results.status]);
-
-  const hasNextPage = results.status === "CanLoadMore";
-  const isFetchingNextPage = results.status === "LoadingMore";
-
-  const isLoading =
-    results.status === "LoadingFirstPage" &&
-    (!cachedResults?.page || cachedResults.page.length === 0) &&
-    isCacheLoading;
-
-  const isError = false;
-
-  const fetchNextPage = () => {
-    if (hasNextPage) {
-      results.loadMore(itemsPerPage);
-    }
-  };
-
-  return {
-    recipes,
+    data,
     fetchNextPage,
     hasNextPage,
     isFetchingNextPage,
     isLoading,
     isError,
-    isCacheFetching,
-    hasCachedData: !!cachedResults?.page && cachedResults.page.length > 0,
+    error,
+  } = useInfiniteQuery({
+    queryKey: ["search-recipes", trimmedQuery],
+    queryFn: async ({ pageParam }) => {
+      return await convex.query(
+        api.recipes.searchRecipesByTitleIngredientsAndCategories,
+        {
+          query: trimmedQuery,
+          paginationOpts: { numItems: itemsPerPage, cursor: pageParam },
+        },
+      );
+    },
+    getNextPageParam: (lastPage) => {
+      return lastPage.isDone ? undefined : lastPage.continueCursor;
+    },
+    initialPageParam: null as string | null,
+    enabled: !!trimmedQuery,
+    staleTime: 30 * 1000, // 30 seconds
+    gcTime: 5 * 60 * 1000, // 5 minutes
+  });
+
+  // Flatten all pages into a single array of recipes
+  const recipes = data?.pages.flatMap((page) => page.page) ?? [];
+
+  return {
+    recipes,
+    fetchNextPage,
+    hasNextPage: !!hasNextPage,
+    isFetchingNextPage,
+    isLoading,
+    isError,
+    error,
   };
 };

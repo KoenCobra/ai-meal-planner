@@ -22,7 +22,7 @@ import {
   titleVariants,
 } from "@/lib/animation";
 import { RecipeInput } from "@/lib/validation";
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { useMutation } from "convex/react";
 import { AnimatePresence, motion } from "framer-motion";
 import {
@@ -56,6 +56,7 @@ const BubuAiResponse = ({ isGeneratingImage }: BubuAiResponseProps) => {
   const [dropdownOpen, setDropdownOpen] = useState(false);
   const { clearAiCache } = useClearAiCache();
   const { uploadImage } = useUploadImage();
+  const queryClient = useQueryClient();
 
   const { data: recipe } = useQuery<RecipeInput>({
     queryKey: ["generate-recipe"],
@@ -98,6 +99,14 @@ const BubuAiResponse = ({ isGeneratingImage }: BubuAiResponseProps) => {
       });
 
       setSavedRecipeId(newRecipeId);
+
+      // Invalidate recipe caches to show the new recipe
+      queryClient.invalidateQueries({
+        queryKey: ["recipes"],
+      });
+      queryClient.invalidateQueries({
+        queryKey: ["search-recipes"],
+      });
     } catch (error) {
       toast.error("Failed to save recipe");
       console.error(error);
@@ -116,8 +125,15 @@ const BubuAiResponse = ({ isGeneratingImage }: BubuAiResponseProps) => {
       });
 
       clearAiCache();
-
       clearForm();
+
+      // Invalidate recipe caches to remove the deleted recipe
+      queryClient.invalidateQueries({
+        queryKey: ["recipes"],
+      });
+      queryClient.invalidateQueries({
+        queryKey: ["search-recipes"],
+      });
     } catch (error) {
       toast.error("Failed to delete recipe");
       console.error(error);

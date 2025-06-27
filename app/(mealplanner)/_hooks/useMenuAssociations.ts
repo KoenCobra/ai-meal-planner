@@ -1,7 +1,7 @@
 import { api } from "@/convex/_generated/api";
 import { Id } from "@/convex/_generated/dataModel";
 import { convexQuery } from "@convex-dev/react-query";
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { useMutation } from "convex/react";
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
@@ -17,6 +17,7 @@ export const useMenuAssociations = ({
 }: UseMenuAssociationsProps) => {
   const [selectedMenus, setSelectedMenus] = useState<Id<"menus">[]>([]);
   const [loading, setLoading] = useState(false);
+  const queryClient = useQueryClient();
 
   const { data: menus } = useQuery({
     ...convexQuery(api.menus.getMenus, {}),
@@ -55,6 +56,23 @@ export const useMenuAssociations = ({
         recipeId,
         menuIds: selectedMenus,
       });
+
+      // Invalidate menu recipes cache for all affected menus
+      selectedMenus.forEach((menuId: Id<"menus">) => {
+        queryClient.invalidateQueries({
+          queryKey: ["menu-recipes", menuId],
+        });
+      });
+
+      // Also invalidate for menus that might have been removed
+      if (menuRecipes) {
+        menuRecipes.forEach((menu) => {
+          queryClient.invalidateQueries({
+            queryKey: ["menu-recipes", menu._id],
+          });
+        });
+      }
+
       toast.success("Menu updated successfully");
       return true;
     } catch (error) {
