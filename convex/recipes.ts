@@ -301,11 +301,12 @@ export const saveNutritionalValues = mutation({
     protein: v.optional(v.number()),
     totalFat: v.optional(v.number()),
     saturatedFat: v.optional(v.number()),
-    polyunsaturatedFat: v.optional(v.number()),
+    unsaturatedFat: v.optional(v.number()),
     totalCarbohydrates: v.optional(v.number()),
     sugars: v.optional(v.number()),
     cholesterol: v.optional(v.number()),
     sodium: v.optional(v.number()),
+    fiber: v.optional(v.number()),
   },
   handler: async (ctx, args) => {
     const userId = (await ctx.auth.getUserIdentity())?.subject;
@@ -329,11 +330,12 @@ export const saveNutritionalValues = mutation({
       protein: args.protein,
       totalFat: args.totalFat,
       saturatedFat: args.saturatedFat,
-      polyunsaturatedFat: args.polyunsaturatedFat,
+      unsaturatedFat: args.unsaturatedFat,
       totalCarbohydrates: args.totalCarbohydrates,
       sugars: args.sugars,
       cholesterol: args.cholesterol,
       sodium: args.sodium,
+      fiber: args.fiber,
     });
   },
 });

@@ -55,7 +55,7 @@ interface NutritionalValuesResponse {
   protein?: number;
   totalFat?: number;
   saturatedFat?: number;
-  polyunsaturatedFat?: number;
+  unsaturatedFat?: number;
   totalCarbohydrates?: number;
   sugars?: number;
   cholesterol?: number;
@@ -127,7 +127,7 @@ const BubuAiResponse = ({ isGeneratingImage }: BubuAiResponseProps) => {
           protein: nutritionalValues.protein,
           totalFat: nutritionalValues.totalFat,
           saturatedFat: nutritionalValues.saturatedFat,
-          polyunsaturatedFat: nutritionalValues.polyunsaturatedFat,
+          unsaturatedFat: nutritionalValues.unsaturatedFat,
           totalCarbohydrates: nutritionalValues.totalCarbohydrates,
           sugars: nutritionalValues.sugars,
           cholesterol: nutritionalValues.cholesterol,
@@ -218,6 +218,7 @@ const BubuAiResponse = ({ isGeneratingImage }: BubuAiResponseProps) => {
                     alt="recipe image"
                     className="object-cover"
                     fill
+                    sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
                     placeholder="blur"
                     blurDataURL={recipeImageData.blurDataURL}
                   />

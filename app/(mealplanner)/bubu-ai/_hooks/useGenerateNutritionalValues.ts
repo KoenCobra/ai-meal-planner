@@ -11,7 +11,7 @@ interface NutritionalValuesResponse {
   protein?: number;
   totalFat?: number;
   saturatedFat?: number;
-  polyunsaturatedFat?: number;
+  unsaturatedFat?: number;
   totalCarbohydrates?: number;
   sugars?: number;
   cholesterol?: number;

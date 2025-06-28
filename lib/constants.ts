@@ -128,9 +128,9 @@ export const nutritionalValuesResponseSchema = {
       type: ["number", "null"],
       description: "Total saturated fat content in grams",
     },
-    polyunsaturatedFat: {
+    unsaturatedFat: {
       type: ["number", "null"],
-      description: "Total polyunsaturated fat content in grams",
+      description: "Total unsaturated fat content in grams",
     },
     totalCarbohydrates: {
       type: ["number", "null"],
@@ -147,6 +147,10 @@ export const nutritionalValuesResponseSchema = {
     sodium: {
       type: ["number", "null"],
       description: "Total sodium content in milligrams",
+    },
+    fiber: {
+      type: ["number", "null"],
+      description: "Total fiber content in grams",
     },
     error: {
       type: ["string", "null"],

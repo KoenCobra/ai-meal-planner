@@ -55,9 +55,7 @@ export async function POST(req: NextRequest) {
         {
           role: "user",
           content: `Please calculate the total nutritional values for the entire recipe with the following ingredients:
-                    Ingredients: ${ingredientList}
-                    Recipe servings: ${servings}
-                    Be as accurate as possible with the nutritional data. Use standard nutritional databases as reference.`,
+                    Ingredients: ${ingredientList} Recipe servings: ${servings} Be as accurate as possible with the nutritional data. Use standard nutritional databases as reference.`,
         },
       ],
       response_format: {
@@ -131,11 +129,12 @@ export async function POST(req: NextRequest) {
       protein: object.protein,
       totalFat: object.totalFat,
       saturatedFat: object.saturatedFat,
-      polyunsaturatedFat: object.polyunsaturatedFat,
+      unsaturatedFat: object.unsaturatedFat,
       totalCarbohydrates: object.totalCarbohydrates,
       sugars: object.sugars,
       cholesterol: object.cholesterol,
       sodium: object.sodium,
+      fiber: object.fiber,
       error: object.error,
     };
 

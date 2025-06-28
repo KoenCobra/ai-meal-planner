@@ -16,11 +16,12 @@ interface NutritionalValues {
   protein?: number;
   totalFat?: number;
   saturatedFat?: number;
-  polyunsaturatedFat?: number;
+  unsaturatedFat?: number;
   totalCarbohydrates?: number;
   sugars?: number;
   cholesterol?: number;
   sodium?: number;
+  fiber?: number;
 }
 
 interface NutritionTabProps {
@@ -187,10 +188,10 @@ const NutritionTab = ({
             </span>
           </div>
           <div className="flex justify-between">
-            <span className="text-muted-foreground">Polyunsaturated Fat</span>
+            <span className="text-muted-foreground">Unsaturated Fat</span>
             <span className="font-medium">
               {Math.round(
-                ((nutritionalValues?.polyunsaturatedFat || 0) / servings) * 10,
+                ((nutritionalValues?.unsaturatedFat || 0) / servings) * 10,
               ) / 10}
               g
             </span>
@@ -210,6 +211,14 @@ const NutritionTab = ({
               {Math.round(((nutritionalValues?.sodium || 0) / servings) * 10) /
                 10}
               mg
+            </span>
+          </div>
+          <div className="flex justify-between">
+            <span className="text-muted-foreground">Fiber</span>
+            <span className="font-medium">
+              {Math.round(((nutritionalValues?.fiber || 0) / servings) * 10) /
+                10}
+              g
             </span>
           </div>
         </div>
