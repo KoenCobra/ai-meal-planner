@@ -23,12 +23,19 @@ import { sanitizeInput } from "@/lib/utils";
 import { convexQuery } from "@convex-dev/react-query";
 import { useQuery } from "@tanstack/react-query";
 import { useMutation } from "convex/react";
-import { Plus, ShoppingCart, Trash2 } from "lucide-react";
-import { useState } from "react";
+import { Plus, Printer, ShoppingCart, Trash2 } from "lucide-react";
+import { useRef, useState } from "react";
+import { useReactToPrint } from "react-to-print";
 
 export function GroceryList() {
   const [newItemName, setNewItemName] = useState("");
   const [clearAllDialogOpen, setClearAllDialogOpen] = useState(false);
+  const contentRef = useRef<HTMLDivElement>(null);
+
+  const reactToPrintFn = useReactToPrint({
+    contentRef,
+    documentTitle: "Grocery List",
+  });
 
   const { data: items, isLoading } = useQuery({
     ...convexQuery(api.groceryList.listItems, {}),
@@ -134,16 +141,28 @@ export function GroceryList() {
   // Now modify the return statement to show the loading state when isLoading is true
   // Replace the entire return statement with this:
   return (
-    <div className="w-full max-w-2xl mx-auto space-y-6 px-4 animate-in fade-in duration-500">
+    <div
+      className="w-full max-w-2xl mx-auto space-y-6 px-4 animate-in fade-in duration-500"
+      ref={contentRef}
+      id="grocery-list"
+    >
       {isLoading ? (
         <LoadingState />
       ) : (
         <>
           {/* Header */}
-          <div className="text-center">
+          <div className="text-center flex justify-center items-center gap-4">
             <h1 className="text-3xl font-bold tracking-tight mb-3">
               Grocery List
             </h1>
+            <Button
+              variant="outline"
+              className="gap-2 text-muted-foreground"
+              onClick={reactToPrintFn}
+            >
+              <Printer className="size-4" />
+              Print
+            </Button>
           </div>
 
           {/* Add Item Form */}

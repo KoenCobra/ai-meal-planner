@@ -145,3 +145,9 @@
     }
   }
 }
+
+@media print {
+  #grocery-list {
+    padding-top: 2rem;
+  }
+}

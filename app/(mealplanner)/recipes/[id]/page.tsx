@@ -14,7 +14,6 @@ import {
   Clock,
   Loader2,
   Plus,
-  Printer,
   Share2,
   ShoppingCart,
   Users,
@@ -199,17 +198,6 @@ const RecipeDetails = () => {
                   <Button variant="outline" className="gap-2">
                     <Share2 className="h-4 w-4" />
                     Share
-                  </Button>
-                </motion.div>
-
-                <motion.div
-                  whileHover={{ scale: 1.05 }}
-                  whileTap={{ scale: 0.95 }}
-                  transition={{ duration: 0.1 }}
-                >
-                  <Button variant="outline" className="gap-2">
-                    <Printer className="h-4 w-4" />
-                    Print
                   </Button>
                 </motion.div>
               </motion.div>
