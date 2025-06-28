@@ -14,7 +14,7 @@ interface UseInfiniteRecipesProps {
 export const useInfiniteRecipes = ({
   mealType,
   menuId,
-  itemsPerPage = 8,
+  itemsPerPage = 4,
 }: UseInfiniteRecipesProps) => {
   const convex = useConvex();
 
@@ -50,11 +50,10 @@ export const useInfiniteRecipes = ({
       return lastPage.isDone ? undefined : lastPage.continueCursor;
     },
     initialPageParam: null as string | null,
-    staleTime: 30 * 1000, // 30 seconds
-    gcTime: 5 * 60 * 1000, // 5 minutes
+    staleTime: Infinity,
+    gcTime: Infinity,
   });
 
-  // Flatten all pages into a single array of recipes
   const recipes = data?.pages.flatMap((page) => page.page) ?? [];
 
   return {

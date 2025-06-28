@@ -10,7 +10,7 @@ interface UseInfiniteSearchProps {
 
 export const useInfiniteSearch = ({
   searchQuery,
-  itemsPerPage = 8,
+  itemsPerPage = 4,
 }: UseInfiniteSearchProps) => {
   const convex = useConvex();
   const trimmedQuery = useMemo(() => searchQuery.trim(), [searchQuery]);
@@ -39,11 +39,10 @@ export const useInfiniteSearch = ({
     },
     initialPageParam: null as string | null,
     enabled: !!trimmedQuery,
-    staleTime: 30 * 1000, // 30 seconds
-    gcTime: 5 * 60 * 1000, // 5 minutes
+    staleTime: Infinity,
+    gcTime: Infinity,
   });
 
-  // Flatten all pages into a single array of recipes
   const recipes = data?.pages.flatMap((page) => page.page) ?? [];
 
   return {
