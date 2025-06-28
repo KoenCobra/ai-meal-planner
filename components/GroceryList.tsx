@@ -24,18 +24,11 @@ import { convexQuery } from "@convex-dev/react-query";
 import { useQuery } from "@tanstack/react-query";
 import { useMutation } from "convex/react";
 import { Plus, Printer, ShoppingCart, Trash2 } from "lucide-react";
-import { useRef, useState } from "react";
-import { useReactToPrint } from "react-to-print";
+import { useState } from "react";
 
 export function GroceryList() {
   const [newItemName, setNewItemName] = useState("");
   const [clearAllDialogOpen, setClearAllDialogOpen] = useState(false);
-  const contentRef = useRef<HTMLDivElement>(null);
-
-  const reactToPrintFn = useReactToPrint({
-    contentRef,
-    documentTitle: "Grocery List",
-  });
 
   const { data: items, isLoading } = useQuery({
     ...convexQuery(api.groceryList.listItems, {}),
@@ -143,7 +136,6 @@ export function GroceryList() {
   return (
     <div
       className="w-full max-w-2xl mx-auto space-y-6 px-4 animate-in fade-in duration-500"
-      ref={contentRef}
       id="grocery-list"
     >
       {isLoading ? (
@@ -158,7 +150,7 @@ export function GroceryList() {
             <Button
               variant="outline"
               className="gap-2 text-muted-foreground"
-              onClick={reactToPrintFn}
+              onClick={() => window.print()}
             >
               <Printer className="size-4" />
               Print
