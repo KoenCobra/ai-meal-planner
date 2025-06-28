@@ -333,11 +333,13 @@ const RecipeDetails = () => {
         </motion.div>
       </div>
 
-      <AddToMenuDialog
-        open={open}
-        onOpenChange={closeDialog}
-        recipeId={recipeId as Id<"recipes">}
-      />
+      {open && (
+        <AddToMenuDialog
+          open={open}
+          onOpenChange={closeDialog}
+          recipeId={recipeId as Id<"recipes">}
+        />
+      )}
     </div>
   );
 };

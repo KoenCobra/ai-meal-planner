@@ -443,11 +443,13 @@ const BubuAiResponse = ({ isGeneratingImage }: BubuAiResponseProps) => {
         </Card>
       </motion.div>
 
-      <AddToMenuDialog
-        open={open}
-        onOpenChange={closeDialog}
-        recipeId={recipeId}
-      />
+      {open && (
+        <AddToMenuDialog
+          open={open}
+          onOpenChange={closeDialog}
+          recipeId={recipeId}
+        />
+      )}
     </>
   );
 };

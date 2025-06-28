@@ -183,11 +183,13 @@ export const RecipeCard = ({ recipe, onDelete, menuId }: RecipeCardProps) => {
         </Card>
       </Link>
 
-      <AddToMenuDialog
-        open={dialogOpen}
-        onOpenChange={handleCloseDialog}
-        recipeId={recipe._id}
-      />
+      {dialogOpen && (
+        <AddToMenuDialog
+          open={dialogOpen}
+          onOpenChange={handleCloseDialog}
+          recipeId={recipe._id}
+        />
+      )}
     </>
   );
 };
