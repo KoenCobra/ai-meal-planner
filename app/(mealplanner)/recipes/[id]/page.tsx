@@ -14,7 +14,6 @@ import {
   Clock,
   Loader2,
   Plus,
-  Share2,
   ShoppingCart,
   Users,
 } from "lucide-react";
@@ -187,17 +186,6 @@ const RecipeDetails = () => {
                   >
                     <ShoppingCart className="h-4 w-4" />
                     Add to Grocery List
-                  </Button>
-                </motion.div>
-
-                <motion.div
-                  whileHover={{ scale: 1.05 }}
-                  whileTap={{ scale: 0.95 }}
-                  transition={{ duration: 0.1 }}
-                >
-                  <Button variant="outline" className="gap-2">
-                    <Share2 className="h-4 w-4" />
-                    Share
                   </Button>
                 </motion.div>
               </motion.div>
