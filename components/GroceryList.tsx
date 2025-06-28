@@ -23,7 +23,7 @@ import { sanitizeInput } from "@/lib/utils";
 import { convexQuery } from "@convex-dev/react-query";
 import { useQuery } from "@tanstack/react-query";
 import { useMutation } from "convex/react";
-import { Plus, Printer, ShoppingCart, Trash2 } from "lucide-react";
+import { Plus, ShoppingCart, Trash2 } from "lucide-react";
 import { useState } from "react";
 
 export function GroceryList() {
@@ -143,19 +143,9 @@ export function GroceryList() {
       ) : (
         <>
           {/* Header */}
-          <div className="text-center flex justify-center items-center gap-4">
-            <h1 className="text-3xl font-bold tracking-tight mb-3">
-              Grocery List
-            </h1>
-            <Button
-              variant="outline"
-              className="gap-2 text-muted-foreground"
-              onClick={() => window.print()}
-            >
-              <Printer className="size-4" />
-              Print
-            </Button>
-          </div>
+          <h1 className="text-3xl text-center font-bold tracking-tight mb-8">
+            Grocery List
+          </h1>
 
           {/* Add Item Form */}
           <div>

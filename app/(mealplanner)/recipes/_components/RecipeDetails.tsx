@@ -37,7 +37,7 @@ const RecipeDetails = ({ menuId }: RecipeDetailsProps) => {
 
   return (
     <div className="mx-auto">
-      <h1 className="text-4xl font-bold mb-8 text-center">
+      <h1 className="text-3xl font-bold mb-8 text-center">
         {menuId ? "Menu Recipes" : "My Recipes"}
       </h1>
       <Tabs value={currentTab} onValueChange={setCurrentTab} className="w-full">
