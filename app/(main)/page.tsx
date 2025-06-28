@@ -18,6 +18,8 @@ import {
   Sparkles,
   Star,
   Users,
+  Utensils,
+  Zap,
 } from "lucide-react";
 import { Metadata } from "next";
 import Link from "next/link";
@@ -30,65 +32,126 @@ export const metadata: Metadata = {
 
 const Home = async () => {
   return (
-    <div className="min-h-screen">
+    <div className="min-h-screen relative overflow-hidden">
+      {/* Background Effects */}
+      <div className="fixed inset-0 -z-10">
+        <div className="absolute top-0 -left-4 w-72 h-72 bg-blue-400/30 rounded-full mix-blend-multiply filter blur-xl animate-pulse"></div>
+        <div className="absolute top-0 -right-4 w-72 h-72 bg-blue-600/20 rounded-full mix-blend-multiply filter blur-xl animate-pulse delay-1000"></div>
+        <div className="absolute -bottom-8 left-20 w-72 h-72 bg-blue-500/20 rounded-full mix-blend-multiply filter blur-xl animate-pulse delay-2000"></div>
+      </div>
+
       {/* Hero Section */}
-      <section className="relative py-24 px-4">
+      <section className="relative py-32 px-4">
         <div className="max-w-6xl mx-auto text-center">
-          <div className="inline-flex items-center gap-2 mb-6 px-4 py-2 bg-primary/10 rounded-full">
-            <Sparkles className="w-4 h-4 text-primary" />
-            <span className="text-sm font-medium text-primary">
-              AI-Powered Recipe Generation
+          {/* Floating Badge */}
+          <div className="inline-flex items-center gap-2 mb-8 px-6 py-3 bg-gradient-to-r from-blue-600/10 to-blue-400/10 dark:from-blue-400/10 dark:to-blue-300/10 border border-blue-200/50 dark:border-blue-400/20 rounded-full backdrop-blur-sm">
+            <Sparkles className="w-5 h-5 text-blue-600 dark:text-blue-400" />
+            <span className="text-sm font-semibold bg-gradient-to-r from-blue-600 to-blue-400 dark:from-blue-400 dark:to-blue-300 bg-clip-text text-transparent">
+              Powered by Advanced AI Technology
             </span>
           </div>
 
-          <h1 className="text-5xl md:text-7xl font-bold mb-8 bg-gradient-to-r from-primary to-primary/60 bg-clip-text text-transparent">
-            Your AI Culinary
-            <br />
-            Assistant
-          </h1>
+          {/* Main Hero Title with Bubu AI Emphasis */}
+          <div className="mb-8">
+            <div className="flex items-center justify-center gap-4 mb-4">
+              <div className="relative">
+                <div className="absolute inset-0 bg-gradient-to-r from-blue-600 to-blue-400 dark:from-blue-400 dark:to-blue-300 rounded-2xl blur-lg opacity-30"></div>
+                <div className="relative bg-gradient-to-r from-blue-600 to-blue-400 dark:from-blue-400 dark:to-blue-300 p-4 rounded-2xl">
+                  <ChefHat className="w-12 h-12 text-white" />
+                </div>
+              </div>
+            </div>
 
-          <p className="text-xl md:text-2xl text-muted-foreground mb-12 max-w-3xl mx-auto leading-relaxed">
-            Generate personalized recipes with AI, organize your meal planning,
-            and discover new flavors. Transform your cooking experience with
-            intelligent recipe recommendations.
+            <h1 className="text-6xl md:text-8xl font-bold mb-4">
+              <span className="relative inline-block">
+                <span className="text-zinc-900 dark:text-white">Bubu</span>
+                <span className="ml-3 bg-gradient-to-r from-blue-600 to-blue-400 dark:from-blue-400 dark:to-blue-300 bg-clip-text text-transparent font-bold">
+                  AI
+                </span>
+                {/* Animated underline */}
+                <div className="absolute -bottom-2 left-1/2 transform -translate-x-1/2 w-24 h-1 bg-gradient-to-r from-blue-600 to-blue-400 dark:from-blue-400 dark:to-blue-300 rounded-full animate-pulse"></div>
+              </span>
+            </h1>
+
+            <h2 className="text-3xl md:text-5xl font-semibold text-muted-foreground">
+              Your Intelligent
+              <span className="block bg-gradient-to-r from-blue-600 to-blue-400 dark:from-blue-400 dark:to-blue-300 bg-clip-text text-transparent">
+                Culinary Assistant
+              </span>
+            </h2>
+          </div>
+
+          <p className="text-xl md:text-2xl text-muted-foreground mb-12 max-w-4xl mx-auto leading-relaxed">
+            Experience the future of cooking with{" "}
+            <span className="font-semibold bg-gradient-to-r from-blue-600 to-blue-400 dark:from-blue-400 dark:to-blue-300 bg-clip-text text-transparent">
+              Bubu AI
+            </span>
+            . Generate personalized recipes, create intelligent meal plans, and
+            discover endless culinary possibilities with our advanced AI
+            technology.
           </p>
 
-          <div className="flex flex-col sm:flex-row gap-4 justify-center items-center mb-16">
+          <div className="flex flex-col sm:flex-row gap-6 justify-center items-center mb-20">
             <Link href="/bubu-ai">
-              <Button size="lg" className="text-lg px-8 py-6 rounded-xl">
-                <ChefHat className="w-5 h-5 mr-2" />
-                Start Cooking with AI
+              <Button
+                size="lg"
+                className="text-lg px-10 py-7 rounded-2xl bg-gradient-to-r from-blue-600 to-blue-400 hover:from-blue-700 hover:to-blue-500 text-white border-0 shadow-xl hover:shadow-2xl transform hover:scale-105 transition-all duration-300"
+              >
+                <Zap className="w-6 h-6 mr-3" />
+                Experience Bubu AI
               </Button>
             </Link>
             <Button
               variant="outline"
               size="lg"
-              className="text-lg px-8 py-6 rounded-xl"
+              className="text-lg px-10 py-7 rounded-2xl border-2 border-blue-200 dark:border-blue-400/30 hover:border-blue-400 dark:hover:border-blue-400 hover:bg-blue-50 dark:hover:bg-blue-400/10 transition-all duration-300"
             >
-              <BookOpen className="w-5 h-5 mr-2" />
+              <BookOpen className="w-6 h-6 mr-3" />
               Explore Recipes
             </Button>
           </div>
 
-          {/* Hero Image Placeholder */}
-          <div className="relative mx-auto max-w-4xl">
-            <div className="aspect-video bg-gradient-to-br from-primary/20 to-secondary/20 rounded-2xl border-2 border-border flex items-center justify-center">
+          {/* Enhanced Hero Visual */}
+          <div className="relative mx-auto max-w-5xl">
+            <div className="aspect-video bg-gradient-to-br from-blue-600/20 via-blue-400/10 to-blue-300/20 rounded-3xl border-2 border-blue-200/50 dark:border-blue-400/30 flex items-center justify-center shadow-2xl backdrop-blur-sm">
               <div className="text-center">
-                <ChefHat className="w-16 h-16 mx-auto mb-4 text-primary" />
-                <p className="text-muted-foreground">Recipe Generation Demo</p>
+                <div className="relative mb-6">
+                  <div className="absolute inset-0 bg-gradient-to-r from-blue-600 to-blue-400 dark:from-blue-400 dark:to-blue-300 rounded-full blur-lg opacity-50"></div>
+                  <div className="relative bg-gradient-to-r from-blue-600 to-blue-400 dark:from-blue-400 dark:to-blue-300 p-6 rounded-full">
+                    <Utensils className="w-16 h-16 text-white" />
+                  </div>
+                </div>
+                <h3 className="text-xl font-semibold mb-2">
+                  <span className="bg-gradient-to-r from-blue-600 to-blue-400 dark:from-blue-400 dark:to-blue-300 bg-clip-text text-transparent">
+                    Bubu AI
+                  </span>{" "}
+                  Recipe Generation
+                </h3>
+                <p className="text-muted-foreground">
+                  Watch AI create your perfect recipe
+                </p>
               </div>
             </div>
-            {/* Floating Cards */}
-            <div className="absolute -top-4 -left-4 bg-card border rounded-lg p-3 shadow-lg">
-              <div className="flex items-center gap-2">
-                <Clock className="w-4 h-4 text-primary" />
-                <span className="text-sm font-medium">5 min</span>
+
+            {/* Enhanced Floating Cards */}
+            <div className="absolute -top-6 -left-6 bg-white/90 dark:bg-zinc-900/90 border-2 border-blue-200/50 dark:border-blue-400/30 rounded-2xl p-4 shadow-xl backdrop-blur-sm">
+              <div className="flex items-center gap-3">
+                <Clock className="w-5 h-5 text-blue-600 dark:text-blue-400" />
+                <span className="font-semibold">5 min</span>
               </div>
             </div>
-            <div className="absolute -top-4 -right-4 bg-card border rounded-lg p-3 shadow-lg">
-              <div className="flex items-center gap-2">
-                <Users className="w-4 h-4 text-primary" />
-                <span className="text-sm font-medium">4 servings</span>
+            <div className="absolute -top-6 -right-6 bg-white/90 dark:bg-zinc-900/90 border-2 border-blue-200/50 dark:border-blue-400/30 rounded-2xl p-4 shadow-xl backdrop-blur-sm">
+              <div className="flex items-center gap-3">
+                <Users className="w-5 h-5 text-blue-600 dark:text-blue-400" />
+                <span className="font-semibold">4 servings</span>
+              </div>
+            </div>
+            <div className="absolute -bottom-6 left-1/2 transform -translate-x-1/2 bg-white/90 dark:bg-zinc-900/90 border-2 border-blue-200/50 dark:border-blue-400/30 rounded-2xl p-4 shadow-xl backdrop-blur-sm">
+              <div className="flex items-center gap-3">
+                <Sparkles className="w-5 h-5 text-blue-600 dark:text-blue-400" />
+                <span className="font-semibold bg-gradient-to-r from-blue-600 to-blue-400 dark:from-blue-400 dark:to-blue-300 bg-clip-text text-transparent">
+                  AI Generated
+                </span>
               </div>
             </div>
           </div>
@@ -96,82 +159,119 @@ const Home = async () => {
       </section>
 
       {/* Features Section */}
-      <section className="py-24 px-4 bg-muted/30">
+      <section className="py-32 px-4 bg-gradient-to-b from-blue-50/50 to-transparent dark:from-blue-950/20 dark:to-transparent">
         <div className="max-w-6xl mx-auto">
-          <div className="text-center mb-16">
-            <h2 className="text-4xl md:text-5xl font-bold mb-6">
+          <div className="text-center mb-20">
+            <div className="inline-flex items-center gap-2 mb-6 px-4 py-2 bg-gradient-to-r from-blue-600/10 to-blue-400/10 dark:from-blue-400/10 dark:to-blue-300/10 border border-blue-200/50 dark:border-blue-400/20 rounded-full">
+              <span className="text-sm font-semibold bg-gradient-to-r from-blue-600 to-blue-400 dark:from-blue-400 dark:to-blue-300 bg-clip-text text-transparent">
+                Bubu AI Features
+              </span>
+            </div>
+            <h2 className="text-5xl md:text-6xl font-bold mb-8">
               Everything You Need for
-              <span className="text-primary"> Smart Cooking</span>
+              <span className="block bg-gradient-to-r from-blue-600 to-blue-400 dark:from-blue-400 dark:to-blue-300 bg-clip-text text-transparent">
+                Smart Cooking
+              </span>
             </h2>
-            <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
-              From AI recipe generation to grocery list management, we&apos;ve
-              got your culinary journey covered.
+            <p className="text-xl text-muted-foreground max-w-3xl mx-auto">
+              From AI recipe generation to grocery list management,{" "}
+              <span className="font-semibold bg-gradient-to-r from-blue-600 to-blue-400 dark:from-blue-400 dark:to-blue-300 bg-clip-text text-transparent">
+                Bubu AI
+              </span>{" "}
+              has got your entire culinary journey covered.
             </p>
           </div>
 
           <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
             {/* AI Recipe Generation */}
-            <Card className="border-2 hover:border-primary/50 transition-all duration-300 hover:shadow-lg">
+            <Card className="border-2 border-blue-200/50 dark:border-blue-400/20 hover:border-blue-400 dark:hover:border-blue-400 transition-all duration-300 hover:shadow-2xl group bg-white/50 dark:bg-zinc-900/50 backdrop-blur-sm">
               <CardHeader>
-                <div className="w-12 h-12 bg-primary/10 rounded-lg flex items-center justify-center mb-4">
-                  <Sparkles className="w-6 h-6 text-primary" />
+                <div className="w-14 h-14 bg-gradient-to-r from-blue-600/10 to-blue-400/10 dark:from-blue-400/10 dark:to-blue-300/10 rounded-2xl flex items-center justify-center mb-6 group-hover:scale-110 transition-transform duration-300">
+                  <Sparkles className="w-7 h-7 text-blue-600 dark:text-blue-400" />
                 </div>
-                <CardTitle className="text-xl">AI Recipe Generation</CardTitle>
+                <CardTitle className="text-xl">
+                  <span className="bg-gradient-to-r from-blue-600 to-blue-400 dark:from-blue-400 dark:to-blue-300 bg-clip-text text-transparent">
+                    Bubu AI
+                  </span>{" "}
+                  Recipe Generation
+                </CardTitle>
                 <CardDescription>
                   Generate detailed recipes with step-by-step instructions,
-                  ingredients, and nutritional information using AI.
+                  ingredients, and nutritional information using advanced AI.
                 </CardDescription>
               </CardHeader>
               <CardContent>
-                <div className="space-y-2">
-                  <div className="flex items-center gap-2 text-sm">
+                <div className="space-y-3">
+                  <div className="flex items-center gap-3 text-sm">
                     <CheckCircle className="w-4 h-4 text-green-500" />
                     <span>Detailed instructions</span>
                   </div>
-                  <div className="flex items-center gap-2 text-sm">
+                  <div className="flex items-center gap-3 text-sm">
                     <CheckCircle className="w-4 h-4 text-green-500" />
                     <span>Nutritional breakdown</span>
                   </div>
-                  <div className="flex items-center gap-2 text-sm">
+                  <div className="flex items-center gap-3 text-sm">
                     <CheckCircle className="w-4 h-4 text-green-500" />
-                    <span>Image generation</span>
+                    <span>AI-generated images</span>
                   </div>
                 </div>
               </CardContent>
             </Card>
 
             {/* Recipe Management */}
-            <Card className="border-2 hover:border-primary/50 transition-all duration-300 hover:shadow-lg">
+            <Card className="border-2 border-blue-200/50 dark:border-blue-400/20 hover:border-blue-400 dark:hover:border-blue-400 transition-all duration-300 hover:shadow-2xl group bg-white/50 dark:bg-zinc-900/50 backdrop-blur-sm">
               <CardHeader>
-                <div className="w-12 h-12 bg-primary/10 rounded-lg flex items-center justify-center mb-4">
-                  <BookOpen className="w-6 h-6 text-primary" />
+                <div className="w-14 h-14 bg-gradient-to-r from-blue-600/10 to-blue-400/10 dark:from-blue-400/10 dark:to-blue-300/10 rounded-2xl flex items-center justify-center mb-6 group-hover:scale-110 transition-transform duration-300">
+                  <BookOpen className="w-7 h-7 text-blue-600 dark:text-blue-400" />
                 </div>
-                <CardTitle className="text-xl">Recipe Management</CardTitle>
+                <CardTitle className="text-xl">
+                  Smart Recipe Management
+                </CardTitle>
                 <CardDescription>
-                  Save, organize, and access your recipes with categorized
-                  sections for different meal types.
+                  Save, organize, and access your recipes with intelligent
+                  categorization for different meal types and occasions.
                 </CardDescription>
               </CardHeader>
               <CardContent>
                 <div className="flex flex-wrap gap-2">
-                  <Badge variant="secondary">Breakfast</Badge>
-                  <Badge variant="secondary">Lunch</Badge>
-                  <Badge variant="secondary">Dinner</Badge>
-                  <Badge variant="secondary">Other</Badge>
+                  <Badge
+                    variant="secondary"
+                    className="bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300 border-blue-200 dark:border-blue-700"
+                  >
+                    Breakfast
+                  </Badge>
+                  <Badge
+                    variant="secondary"
+                    className="bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300 border-blue-200 dark:border-blue-700"
+                  >
+                    Lunch
+                  </Badge>
+                  <Badge
+                    variant="secondary"
+                    className="bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300 border-blue-200 dark:border-blue-700"
+                  >
+                    Dinner
+                  </Badge>
+                  <Badge
+                    variant="secondary"
+                    className="bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300 border-blue-200 dark:border-blue-700"
+                  >
+                    Other
+                  </Badge>
                 </div>
               </CardContent>
             </Card>
 
             {/* Menu Creation */}
-            <Card className="border-2 hover:border-primary/50 transition-all duration-300 hover:shadow-lg">
+            <Card className="border-2 border-blue-200/50 dark:border-blue-400/20 hover:border-blue-400 dark:hover:border-blue-400 transition-all duration-300 hover:shadow-2xl group bg-white/50 dark:bg-zinc-900/50 backdrop-blur-sm">
               <CardHeader>
-                <div className="w-12 h-12 bg-primary/10 rounded-lg flex items-center justify-center mb-4">
-                  <Heart className="w-6 h-6 text-primary" />
+                <div className="w-14 h-14 bg-gradient-to-r from-blue-600/10 to-blue-400/10 dark:from-blue-400/10 dark:to-blue-300/10 rounded-2xl flex items-center justify-center mb-6 group-hover:scale-110 transition-transform duration-300">
+                  <Heart className="w-7 h-7 text-blue-600 dark:text-blue-400" />
                 </div>
-                <CardTitle className="text-xl">Custom Menus</CardTitle>
+                <CardTitle className="text-xl">Custom Menu Planning</CardTitle>
                 <CardDescription>
                   Create personalized menus for different occasions and add your
-                  favorite recipes to them.
+                  favorite recipes with AI-powered suggestions.
                 </CardDescription>
               </CardHeader>
               <CardContent>
@@ -184,28 +284,30 @@ const Home = async () => {
             </Card>
 
             {/* Grocery List Sync */}
-            <Card className="border-2 hover:border-primary/50 transition-all duration-300 hover:shadow-lg">
+            <Card className="border-2 border-blue-200/50 dark:border-blue-400/20 hover:border-blue-400 dark:hover:border-blue-400 transition-all duration-300 hover:shadow-2xl group bg-white/50 dark:bg-zinc-900/50 backdrop-blur-sm">
               <CardHeader>
-                <div className="w-12 h-12 bg-primary/10 rounded-lg flex items-center justify-center mb-4">
-                  <ShoppingCart className="w-6 h-6 text-primary" />
+                <div className="w-14 h-14 bg-gradient-to-r from-blue-600/10 to-blue-400/10 dark:from-blue-400/10 dark:to-blue-300/10 rounded-2xl flex items-center justify-center mb-6 group-hover:scale-110 transition-transform duration-300">
+                  <ShoppingCart className="w-7 h-7 text-blue-600 dark:text-blue-400" />
                 </div>
-                <CardTitle className="text-xl">Smart Grocery Lists</CardTitle>
+                <CardTitle className="text-xl">
+                  Intelligent Grocery Lists
+                </CardTitle>
                 <CardDescription>
                   Automatically sync ingredients from your recipes to organized
-                  grocery lists for easy shopping.
+                  grocery lists with smart quantity management.
                 </CardDescription>
               </CardHeader>
               <CardContent>
-                <div className="space-y-2">
-                  <div className="flex items-center gap-2 text-sm">
+                <div className="space-y-3">
+                  <div className="flex items-center gap-3 text-sm">
                     <CheckCircle className="w-4 h-4 text-green-500" />
                     <span>Auto-ingredient sync</span>
                   </div>
-                  <div className="flex items-center gap-2 text-sm">
+                  <div className="flex items-center gap-3 text-sm">
                     <CheckCircle className="w-4 h-4 text-green-500" />
-                    <span>Quantity tracking</span>
+                    <span>Smart quantity tracking</span>
                   </div>
-                  <div className="flex items-center gap-2 text-sm">
+                  <div className="flex items-center gap-3 text-sm">
                     <CheckCircle className="w-4 h-4 text-green-500" />
                     <span>Completion tracking</span>
                   </div>
@@ -214,15 +316,15 @@ const Home = async () => {
             </Card>
 
             {/* Recipe Search */}
-            <Card className="border-2 hover:border-primary/50 transition-all duration-300 hover:shadow-lg">
+            <Card className="border-2 border-blue-200/50 dark:border-blue-400/20 hover:border-blue-400 dark:hover:border-blue-400 transition-all duration-300 hover:shadow-2xl group bg-white/50 dark:bg-zinc-900/50 backdrop-blur-sm">
               <CardHeader>
-                <div className="w-12 h-12 bg-primary/10 rounded-lg flex items-center justify-center mb-4">
-                  <Search className="w-6 h-6 text-primary" />
+                <div className="w-14 h-14 bg-gradient-to-r from-blue-600/10 to-blue-400/10 dark:from-blue-400/10 dark:to-blue-300/10 rounded-2xl flex items-center justify-center mb-6 group-hover:scale-110 transition-transform duration-300">
+                  <Search className="w-7 h-7 text-blue-600 dark:text-blue-400" />
                 </div>
-                <CardTitle className="text-xl">Smart Search</CardTitle>
+                <CardTitle className="text-xl">AI-Powered Search</CardTitle>
                 <CardDescription>
-                  Find recipes by ingredients, categories, dietary preferences,
-                  or cooking time.
+                  Find recipes intelligently by ingredients, categories, dietary
+                  preferences, or cooking time with advanced AI search.
                 </CardDescription>
               </CardHeader>
               <CardContent>
@@ -233,21 +335,21 @@ const Home = async () => {
             </Card>
 
             {/* Theme Customization */}
-            <Card className="border-2 hover:border-primary/50 transition-all duration-300 hover:shadow-lg">
+            <Card className="border-2 border-blue-200/50 dark:border-blue-400/20 hover:border-blue-400 dark:hover:border-blue-400 transition-all duration-300 hover:shadow-2xl group bg-white/50 dark:bg-zinc-900/50 backdrop-blur-sm">
               <CardHeader>
-                <div className="w-12 h-12 bg-primary/10 rounded-lg flex items-center justify-center mb-4">
-                  <Star className="w-6 h-6 text-primary" />
+                <div className="w-14 h-14 bg-gradient-to-r from-blue-600/10 to-blue-400/10 dark:from-blue-400/10 dark:to-blue-300/10 rounded-2xl flex items-center justify-center mb-6 group-hover:scale-110 transition-transform duration-300">
+                  <Star className="w-7 h-7 text-blue-600 dark:text-blue-400" />
                 </div>
-                <CardTitle className="text-xl">Theme Customization</CardTitle>
+                <CardTitle className="text-xl">Beautiful Themes</CardTitle>
                 <CardDescription>
-                  Personalize your experience with beautiful dark and light
-                  themes that adapt to your preference.
+                  Personalize your cooking experience with stunning dark and
+                  light themes that adapt perfectly to your preference.
                 </CardDescription>
               </CardHeader>
               <CardContent>
-                <div className="flex gap-2">
-                  <div className="w-8 h-8 bg-background border-2 border-border rounded-md"></div>
-                  <div className="w-8 h-8 bg-foreground border-2 border-border rounded-md"></div>
+                <div className="flex gap-3">
+                  <div className="w-10 h-10 bg-background border-2 border-blue-200/50 dark:border-blue-400/30 rounded-xl shadow-sm"></div>
+                  <div className="w-10 h-10 bg-foreground border-2 border-blue-200/50 dark:border-blue-400/30 rounded-xl shadow-sm"></div>
                 </div>
               </CardContent>
             </Card>
@@ -256,62 +358,91 @@ const Home = async () => {
       </section>
 
       {/* Pricing Section */}
-      <section className="py-24 px-4">
+      <section className="py-32 px-4">
         <div className="max-w-4xl mx-auto text-center">
-          <h2 className="text-4xl md:text-5xl font-bold mb-6">
-            Simple, Transparent Pricing
+          <div className="inline-flex items-center gap-2 mb-6 px-4 py-2 bg-gradient-to-r from-blue-600/10 to-blue-400/10 dark:from-blue-400/10 dark:to-blue-300/10 border border-blue-200/50 dark:border-blue-400/20 rounded-full">
+            <span className="text-sm font-semibold bg-gradient-to-r from-blue-600 to-blue-400 dark:from-blue-400 dark:to-blue-300 bg-clip-text text-transparent">
+              Bubu AI Pricing
+            </span>
+          </div>
+          <h2 className="text-5xl md:text-6xl font-bold mb-8">
+            Simple, Transparent
+            <span className="block bg-gradient-to-r from-blue-600 to-blue-400 dark:from-blue-400 dark:to-blue-300 bg-clip-text text-transparent">
+              Pricing
+            </span>
           </h2>
-          <p className="text-xl text-muted-foreground mb-12">
-            Start your culinary journey with our affordable subscription plan
+          <p className="text-xl text-muted-foreground mb-16">
+            Start your culinary journey with{" "}
+            <span className="font-semibold bg-gradient-to-r from-blue-600 to-blue-400 dark:from-blue-400 dark:to-blue-300 bg-clip-text text-transparent">
+              Bubu AI
+            </span>{" "}
+            today
           </p>
 
-          <Card className="border-2 border-primary/20 max-w-md mx-auto">
+          <Card className="border-2 border-blue-200/50 dark:border-blue-400/20 max-w-lg mx-auto bg-white/50 dark:bg-zinc-900/50 backdrop-blur-sm shadow-2xl">
             <CardHeader className="text-center">
-              <div className="w-16 h-16 bg-primary/10 rounded-full flex items-center justify-center mx-auto mb-4">
-                <ChefHat className="w-8 h-8 text-primary" />
+              <div className="relative w-20 h-20 mx-auto mb-6">
+                <div className="absolute inset-0 bg-gradient-to-r from-blue-600 to-blue-400 dark:from-blue-400 dark:to-blue-300 rounded-2xl blur-lg opacity-30"></div>
+                <div className="relative bg-gradient-to-r from-blue-600 to-blue-400 dark:from-blue-400 dark:to-blue-300 rounded-2xl flex items-center justify-center w-full h-full">
+                  <ChefHat className="w-10 h-10 text-white" />
+                </div>
               </div>
-              <CardTitle className="text-2xl">Bubu AI Premium</CardTitle>
-              <div className="text-4xl font-bold text-primary mb-2">
+              <CardTitle className="text-3xl">
+                <span className="bg-gradient-to-r from-blue-600 to-blue-400 dark:from-blue-400 dark:to-blue-300 bg-clip-text text-transparent">
+                  Bubu AI
+                </span>{" "}
+                Premium
+              </CardTitle>
+              <div className="text-5xl font-bold bg-gradient-to-r from-blue-600 to-blue-400 dark:from-blue-400 dark:to-blue-300 bg-clip-text text-transparent mb-2">
                 $4.99
                 <span className="text-lg text-muted-foreground font-normal">
                   /month
                 </span>
               </div>
-              <CardDescription>
+              <CardDescription className="text-lg">
                 Billed annually • Cancel anytime
               </CardDescription>
             </CardHeader>
-            <CardContent className="space-y-4">
-              <div className="space-y-3">
-                <div className="flex items-center gap-3">
-                  <CheckCircle className="w-5 h-5 text-green-500 flex-shrink-0" />
-                  <span>AI Recipe Generation with Images</span>
+            <CardContent className="space-y-6">
+              <div className="space-y-4">
+                <div className="flex items-center gap-4">
+                  <CheckCircle className="w-6 h-6 text-green-500 flex-shrink-0" />
+                  <span className="text-lg">
+                    <span className="font-semibold bg-gradient-to-r from-blue-600 to-blue-400 dark:from-blue-400 dark:to-blue-300 bg-clip-text text-transparent">
+                      Bubu AI
+                    </span>{" "}
+                    Recipe Generation with Images
+                  </span>
                 </div>
-                <div className="flex items-center gap-3">
-                  <CheckCircle className="w-5 h-5 text-green-500 flex-shrink-0" />
-                  <span>Dynamic Menu Planning</span>
+                <div className="flex items-center gap-4">
+                  <CheckCircle className="w-6 h-6 text-green-500 flex-shrink-0" />
+                  <span className="text-lg">Dynamic Menu Planning</span>
                 </div>
-                <div className="flex items-center gap-3">
-                  <CheckCircle className="w-5 h-5 text-green-500 flex-shrink-0" />
-                  <span>Save Your Favorite Recipes</span>
+                <div className="flex items-center gap-4">
+                  <CheckCircle className="w-6 h-6 text-green-500 flex-shrink-0" />
+                  <span className="text-lg">Save Your Favorite Recipes</span>
                 </div>
-                <div className="flex items-center gap-3">
-                  <CheckCircle className="w-5 h-5 text-green-500 flex-shrink-0" />
-                  <span>Smart Grocery List Sync</span>
+                <div className="flex items-center gap-4">
+                  <CheckCircle className="w-6 h-6 text-green-500 flex-shrink-0" />
+                  <span className="text-lg">Smart Grocery List Sync</span>
                 </div>
-                <div className="flex items-center gap-3">
-                  <CheckCircle className="w-5 h-5 text-green-500 flex-shrink-0" />
-                  <span>Advanced Recipe Search</span>
+                <div className="flex items-center gap-4">
+                  <CheckCircle className="w-6 h-6 text-green-500 flex-shrink-0" />
+                  <span className="text-lg">Advanced Recipe Search</span>
                 </div>
-                <div className="flex items-center gap-3">
-                  <CheckCircle className="w-5 h-5 text-green-500 flex-shrink-0" />
-                  <span>Nutritional Information</span>
+                <div className="flex items-center gap-4">
+                  <CheckCircle className="w-6 h-6 text-green-500 flex-shrink-0" />
+                  <span className="text-lg">Nutritional Information</span>
                 </div>
               </div>
 
               <Link href="/bubu-ai" className="block">
-                <Button className="w-full text-lg py-6 mt-6" size="lg">
-                  Get Started Today
+                <Button
+                  className="w-full text-lg py-7 mt-8 rounded-2xl bg-gradient-to-r from-blue-600 to-blue-400 hover:from-blue-700 hover:to-blue-500 text-white border-0 shadow-xl hover:shadow-2xl transform hover:scale-105 transition-all duration-300"
+                  size="lg"
+                >
+                  <Zap className="w-5 h-5 mr-2" />
+                  Get Started with Bubu AI
                 </Button>
               </Link>
             </CardContent>
@@ -320,30 +451,40 @@ const Home = async () => {
       </section>
 
       {/* CTA Section */}
-      <section className="py-24 px-4 bg-gradient-to-r from-primary/10 to-secondary/10">
+      <section className="py-32 px-4 bg-gradient-to-r from-blue-600/10 via-blue-400/5 to-blue-300/10 dark:from-blue-600/20 dark:via-blue-400/10 dark:to-blue-300/20">
         <div className="max-w-4xl mx-auto text-center">
-          <h2 className="text-4xl md:text-5xl font-bold mb-6">
-            Ready to Transform Your Cooking?
+          <h2 className="text-5xl md:text-6xl font-bold mb-8">
+            Ready to Transform Your
+            <span className="block bg-gradient-to-r from-blue-600 to-blue-400 dark:from-blue-400 dark:to-blue-300 bg-clip-text text-transparent">
+              Cooking Experience?
+            </span>
           </h2>
-          <p className="text-xl text-muted-foreground mb-12 max-w-2xl mx-auto">
-            Join thousands of home cooks who are already using AI to create
-            amazing meals. Start your culinary adventure today.
+          <p className="text-xl text-muted-foreground mb-16 max-w-3xl mx-auto">
+            Join thousands of home cooks who are already using{" "}
+            <span className="font-semibold bg-gradient-to-r from-blue-600 to-blue-400 dark:from-blue-400 dark:to-blue-300 bg-clip-text text-transparent">
+              Bubu AI
+            </span>{" "}
+            to create amazing meals. Start your intelligent culinary adventure
+            today.
           </p>
 
-          <div className="flex flex-col sm:flex-row gap-4 justify-center">
+          <div className="flex flex-col sm:flex-row gap-6 justify-center">
             <Link href="/bubu-ai">
-              <Button size="lg" className="text-lg px-8 py-6 rounded-xl">
-                <Sparkles className="w-5 h-5 mr-2" />
-                Start Your Free Trial
+              <Button
+                size="lg"
+                className="text-lg px-10 py-7 rounded-2xl bg-gradient-to-r from-blue-600 to-blue-400 hover:from-blue-700 hover:to-blue-500 text-white border-0 shadow-xl hover:shadow-2xl transform hover:scale-105 transition-all duration-300"
+              >
+                <Sparkles className="w-6 h-6 mr-3" />
+                Start with Bubu AI
               </Button>
             </Link>
             <Link href="/recipes">
               <Button
                 variant="outline"
                 size="lg"
-                className="text-lg px-8 py-6 rounded-xl"
+                className="text-lg px-10 py-7 rounded-2xl border-2 border-blue-200 dark:border-blue-400/30 hover:border-blue-400 dark:hover:border-blue-400 hover:bg-blue-50 dark:hover:bg-blue-400/10 transition-all duration-300"
               >
-                <Search className="w-5 h-5 mr-2" />
+                <Search className="w-6 h-6 mr-3" />
                 Browse Recipes
               </Button>
             </Link>
@@ -352,27 +493,44 @@ const Home = async () => {
       </section>
 
       {/* Footer */}
-      <footer className="py-12 px-4 border-t bg-muted/30">
+      <footer className="py-16 px-4 border-t border-blue-200/50 dark:border-blue-400/20 bg-gradient-to-b from-blue-50/30 to-transparent dark:from-blue-950/20 dark:to-transparent">
         <div className="max-w-6xl mx-auto">
           <div className="grid md:grid-cols-4 gap-8">
             <div>
-              <h3 className="text-2xl font-bold mb-4">Bubu AI</h3>
+              <div className="flex items-center gap-3 mb-4">
+                <div className="relative">
+                  <div className="absolute inset-0 bg-gradient-to-r from-blue-600 to-blue-400 dark:from-blue-400 dark:to-blue-300 rounded-xl blur-md opacity-30"></div>
+                  <div className="relative bg-gradient-to-r from-blue-600 to-blue-400 dark:from-blue-400 dark:to-blue-300 p-2 rounded-xl">
+                    <ChefHat className="w-6 h-6 text-white" />
+                  </div>
+                </div>
+                <h3 className="text-2xl font-bold">
+                  <span className="text-zinc-900 dark:text-white">Bubu</span>
+                  <span className="bg-gradient-to-r from-blue-600 to-blue-400 dark:from-blue-400 dark:to-blue-300 bg-clip-text text-transparent ml-1">
+                    AI
+                  </span>
+                </h3>
+              </div>
               <p className="text-muted-foreground">
                 Your AI-powered culinary assistant for endless recipe
-                possibilities.
+                possibilities and intelligent cooking.
               </p>
             </div>
             <div>
-              <h4 className="font-semibold mb-4">Features</h4>
+              <h4 className="font-semibold mb-4 text-blue-700 dark:text-blue-300">
+                Features
+              </h4>
               <div className="space-y-2 text-sm text-muted-foreground">
-                <p>Recipe Generation</p>
-                <p>Menu Planning</p>
-                <p>Grocery Lists</p>
-                <p>Recipe Search</p>
+                <p>AI Recipe Generation</p>
+                <p>Smart Menu Planning</p>
+                <p>Intelligent Grocery Lists</p>
+                <p>Advanced Recipe Search</p>
               </div>
             </div>
             <div>
-              <h4 className="font-semibold mb-4">Support</h4>
+              <h4 className="font-semibold mb-4 text-blue-700 dark:text-blue-300">
+                Support
+              </h4>
               <div className="space-y-2 text-sm text-muted-foreground">
                 <p>Help Center</p>
                 <p>Contact Us</p>
@@ -381,7 +539,9 @@ const Home = async () => {
               </div>
             </div>
             <div>
-              <h4 className="font-semibold mb-4">Company</h4>
+              <h4 className="font-semibold mb-4 text-blue-700 dark:text-blue-300">
+                Company
+              </h4>
               <div className="space-y-2 text-sm text-muted-foreground">
                 <p>About Us</p>
                 <p>Privacy Policy</p>
@@ -390,8 +550,14 @@ const Home = async () => {
               </div>
             </div>
           </div>
-          <div className="border-t mt-8 pt-8 text-center text-muted-foreground">
-            <p>&copy; 2024 Bubu AI. All rights reserved.</p>
+          <div className="border-t border-blue-200/50 dark:border-blue-400/20 mt-12 pt-8 text-center text-muted-foreground">
+            <p>
+              &copy; 2024{" "}
+              <span className="font-semibold bg-gradient-to-r from-blue-600 to-blue-400 dark:from-blue-400 dark:to-blue-300 bg-clip-text text-transparent">
+                Bubu AI
+              </span>
+              . All rights reserved.
+            </p>
           </div>
         </div>
       </footer>
