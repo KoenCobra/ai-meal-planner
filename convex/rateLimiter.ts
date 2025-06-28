@@ -99,6 +99,12 @@ export const rateLimiter = new RateLimiter(components.rateLimiter, {
     period: HOUR,
     capacity: 120,
   },
+  generateNutritionalValuesAI: {
+    kind: "token bucket",
+    rate: 60,
+    period: HOUR,
+    capacity: 120,
+  },
 });
 
 export { HOUR, MINUTE, SECOND } from "@convex-dev/rate-limiter";

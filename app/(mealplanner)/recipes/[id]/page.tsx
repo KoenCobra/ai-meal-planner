@@ -9,14 +9,7 @@ import type { Id } from "@/convex/_generated/dataModel";
 import { convexQuery } from "@convex-dev/react-query";
 import { useQuery } from "@tanstack/react-query";
 import { AnimatePresence, motion } from "framer-motion";
-import {
-  BookmarkPlus,
-  Clock,
-  Loader2,
-  Plus,
-  ShoppingCart,
-  Users,
-} from "lucide-react";
+import { Clock, Loader2, Plus, ShoppingCart, Users } from "lucide-react";
 import Image from "next/image";
 import { useParams } from "next/navigation";
 import { useState } from "react";
@@ -29,6 +22,7 @@ import {
   titleVariants,
 } from "@/lib/animation";
 import AddToMenuDialog from "../../_components/AddToMenuDialog";
+import NutritionTab from "../../_components/NutritionTab";
 import { useAddToMenuDialogStore } from "../../_stores/useAddToMenuDialogStore";
 import { useSyncIngredients } from "../_hooks/useSyncIngredients";
 
@@ -41,6 +35,12 @@ const RecipeDetails = () => {
   const { data: recipe, isLoading } = useQuery({
     ...convexQuery(api.recipes.getRecipe, {
       id: params.id as Id<"recipes">,
+    }),
+  });
+
+  const { data: nutritionalValues, isLoading: isLoadingNutrition } = useQuery({
+    ...convexQuery(api.recipes.getNutritionalValues, {
+      recipeId: params.id as Id<"recipes">,
     }),
   });
 
@@ -281,24 +281,11 @@ const RecipeDetails = () => {
 
                     {activeTab === "nutrition" && (
                       <TabsContent value="nutrition">
-                        <motion.div
-                          key="nutrition-content"
-                          variants={staggerContainer}
-                          initial="hidden"
-                          animate="visible"
-                          className="text-center py-12"
-                        >
-                          <div className="bg-muted rounded-full p-6 inline-flex mb-6">
-                            <BookmarkPlus className="h-12 w-12 text-muted-foreground" />
-                          </div>
-                          <h3 className="text-xl font-semibold mb-2">
-                            Nutrition information coming soon
-                          </h3>
-                          <p className="text-muted-foreground max-w-md mx-auto">
-                            We&apos;re working on adding detailed nutritional
-                            information for all recipes.
-                          </p>
-                        </motion.div>
+                        <NutritionTab
+                          nutritionalValues={nutritionalValues}
+                          isLoading={isLoadingNutrition}
+                          servings={recipe?.servings}
+                        />
                       </TabsContent>
                     )}
                   </AnimatePresence>

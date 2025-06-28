@@ -73,3 +73,28 @@ export const checkImageAnalysisLimit = mutation({
     }
   },
 });
+
+export const checkNutritionalValuesGenerationLimit = mutation({
+  args: {
+    userId: v.string(),
+  },
+  handler: async (ctx, args) => {
+    try {
+      await rateLimiter.limit(ctx, "generateNutritionalValuesAI", {
+        key: args.userId,
+        throws: true,
+      });
+
+      return { success: true };
+    } catch (error) {
+      if (error instanceof ConvexError && error.data?.kind === "RateLimited") {
+        return {
+          success: false,
+          retryAfter: error.data.retryAfter,
+          message:
+            "Rate limit exceeded for nutritional values generation. Please try again later.",
+        };
+      }
+    }
+  },
+});

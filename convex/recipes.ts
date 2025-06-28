@@ -149,6 +149,7 @@ export const deleteRecipe = mutation({
     if (!recipe) throw new ConvexError("Recipe not found");
     if (recipe.userId !== userId) throw new ConvexError("Not authorized");
 
+    // Delete menu associations
     const menuAssociations = await ctx.db
       .query("menusOnRecipes")
       .withIndex("by_recipe", (q) => q.eq("recipeId", args.id))
@@ -156,6 +157,16 @@ export const deleteRecipe = mutation({
 
     for (const association of menuAssociations) {
       await ctx.db.delete(association._id);
+    }
+
+    // Delete nutritional values
+    const nutritionalValues = await ctx.db
+      .query("nutritionalValues")
+      .withIndex("by_recipe", (q) => q.eq("recipeId", args.id))
+      .collect();
+
+    for (const nutrition of nutritionalValues) {
+      await ctx.db.delete(nutrition._id);
     }
 
     await ctx.db.delete(args.id);
@@ -280,5 +291,73 @@ export const syncIngredientsToGroceryList = mutation({
     }
 
     return null;
+  },
+});
+
+export const saveNutritionalValues = mutation({
+  args: {
+    recipeId: v.id("recipes"),
+    calories: v.optional(v.number()),
+    protein: v.optional(v.number()),
+    totalFat: v.optional(v.number()),
+    saturatedFat: v.optional(v.number()),
+    polyunsaturatedFat: v.optional(v.number()),
+    totalCarbohydrates: v.optional(v.number()),
+    sugars: v.optional(v.number()),
+    cholesterol: v.optional(v.number()),
+    sodium: v.optional(v.number()),
+  },
+  handler: async (ctx, args) => {
+    const userId = (await ctx.auth.getUserIdentity())?.subject;
+    if (!userId) {
+      console.error("Unauthorized when saving nutritional values");
+      throw new Error("Unauthorized when saving nutritional values");
+    }
+
+    await rateLimiter.limit(ctx, "createRecipe", {
+      key: userId,
+      throws: true,
+    });
+
+    const recipe = await ctx.db.get(args.recipeId);
+    if (!recipe) throw new ConvexError("Recipe not found");
+    if (recipe.userId !== userId) throw new ConvexError("Not authorized");
+
+    return await ctx.db.insert("nutritionalValues", {
+      recipeId: args.recipeId,
+      calories: args.calories,
+      protein: args.protein,
+      totalFat: args.totalFat,
+      saturatedFat: args.saturatedFat,
+      polyunsaturatedFat: args.polyunsaturatedFat,
+      totalCarbohydrates: args.totalCarbohydrates,
+      sugars: args.sugars,
+      cholesterol: args.cholesterol,
+      sodium: args.sodium,
+    });
+  },
+});
+
+export const getNutritionalValues = query({
+  args: {
+    recipeId: v.id("recipes"),
+  },
+  handler: async (ctx, args) => {
+    const userId = (await ctx.auth.getUserIdentity())?.subject;
+    if (!userId) {
+      console.error("Unauthorized when getting nutritional values");
+      throw new Error("Unauthorized when getting nutritional values");
+    }
+
+    const recipe = await ctx.db.get(args.recipeId);
+    if (!recipe) throw new ConvexError("Recipe not found");
+    if (recipe.userId !== userId) throw new ConvexError("Not authorized");
+
+    const nutritionalValues = await ctx.db
+      .query("nutritionalValues")
+      .withIndex("by_recipe", (q) => q.eq("recipeId", args.recipeId))
+      .first();
+
+    return nutritionalValues;
   },
 });

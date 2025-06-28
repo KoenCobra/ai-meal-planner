@@ -6,6 +6,7 @@ export const useClearAiCache = () => {
   const clearAiCache = () => {
     queryClient.setQueryData(["generate-recipe"], null);
     queryClient.setQueryData(["generate-image"], null);
+    queryClient.setQueryData(["generate-nutritional-values"], null);
   };
 
   return {

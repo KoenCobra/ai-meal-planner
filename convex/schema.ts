@@ -39,6 +39,19 @@ const applicationTables = {
       filterFields: ["userId"],
     }),
 
+  nutritionalValues: defineTable({
+    recipeId: v.id("recipes"),
+    calories: v.optional(v.number()),
+    protein: v.optional(v.number()),
+    totalFat: v.optional(v.number()),
+    saturatedFat: v.optional(v.number()),
+    polyunsaturatedFat: v.optional(v.number()),
+    totalCarbohydrates: v.optional(v.number()),
+    sugars: v.optional(v.number()),
+    cholesterol: v.optional(v.number()),
+    sodium: v.optional(v.number()),
+  }).index("by_recipe", ["recipeId"]),
+
   menus: defineTable({
     userId: v.string(),
     name: v.string(),

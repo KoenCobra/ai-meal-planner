@@ -29,6 +29,7 @@ import {
   generateRecipeSchema,
 } from "@/lib/validation";
 import { useAnalyzeImage } from "../_hooks/useAnylizeImage";
+import { useGenerateNutritionalValues } from "../_hooks/useGenerateNutritionalValues";
 import { useGenerateRecipe } from "../_hooks/useGenerateRecipe";
 import { useBubuAi } from "../BubuAiContext";
 import { useClearAiCache } from "../utils/clearAiCache";
@@ -59,6 +60,11 @@ const BibiAiForm = ({
 
   const { generateRecipeMutation, abort } = useGenerateRecipe();
   const { analyzeImageMutation, abort: abortAnalyzeImage } = useAnalyzeImage();
+  const {
+    generateNutritionalValues,
+    isGeneratingNutritionalValues,
+    abort: abortNutritionalValues,
+  } = useGenerateNutritionalValues();
   const { clearAiCache } = useClearAiCache();
 
   const textareaRef = useRef<HTMLTextAreaElement>(null);
@@ -74,7 +80,8 @@ const BibiAiForm = ({
   const isProcessing =
     generateRecipeMutation.isPending ||
     isGeneratingImage ||
-    analyzeImageMutation.isPending;
+    analyzeImageMutation.isPending ||
+    isGeneratingNutritionalValues;
 
   const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files && e.target.files[0]) {
@@ -111,10 +118,12 @@ const BibiAiForm = ({
       }
 
       if (!recipe.error) {
-        await generateImage({
+        generateImage({
           recipeTitle: recipe.title,
           recipeSummary: recipe.summary,
         });
+
+        generateNutritionalValues(recipe.ingredients, recipe.servings);
       }
     } catch (error) {
       if (error instanceof Error && error.name === "AbortError") {
@@ -317,6 +326,7 @@ const BibiAiForm = ({
                         abort();
                         abortAnalyzeImage();
                         abortImage();
+                        abortNutritionalValues();
                       }}
                       className="rounded-full text-red-500 hover:text-red-600 hover:bg-red-50 dark:hover:bg-red-950/20"
                     >

@@ -108,3 +108,50 @@ export const recipeJsonSchema = {
   ],
   additionalProperties: false,
 };
+
+export const nutritionalValuesResponseSchema = {
+  type: "object",
+  properties: {
+    calories: {
+      type: ["number", "null"],
+      description: "Total calories for the entire recipe",
+    },
+    protein: {
+      type: ["number", "null"],
+      description: "Total protein content in grams",
+    },
+    totalFat: {
+      type: ["number", "null"],
+      description: "Total fat content in grams",
+    },
+    saturatedFat: {
+      type: ["number", "null"],
+      description: "Total saturated fat content in grams",
+    },
+    polyunsaturatedFat: {
+      type: ["number", "null"],
+      description: "Total polyunsaturated fat content in grams",
+    },
+    totalCarbohydrates: {
+      type: ["number", "null"],
+      description: "Total carbohydrates content in grams",
+    },
+    sugars: {
+      type: ["number", "null"],
+      description: "Total sugar content in grams",
+    },
+    cholesterol: {
+      type: ["number", "null"],
+      description: "Total cholesterol content in milligrams",
+    },
+    sodium: {
+      type: ["number", "null"],
+      description: "Total sodium content in milligrams",
+    },
+    error: {
+      type: ["string", "null"],
+      description: "Error message if nutritional analysis fails",
+    },
+  },
+  additionalProperties: false,
+};

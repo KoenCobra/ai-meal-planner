@@ -8,10 +8,12 @@ type BubuAiContextType = {
   selectedImage: File | null;
   imagePreview: string | null;
   savedRecipeId: Id<"recipes"> | null;
+  isGeneratingNutritionalValues: boolean;
   setDescription: (description: string) => void;
   setSelectedImage: (image: File | null) => void;
   setImagePreview: (preview: string | null) => void;
   setSavedRecipeId: (id: Id<"recipes"> | null) => void;
+  setIsGeneratingNutritionalValues: (isGenerating: boolean) => void;
   clearForm: () => void;
 };
 
@@ -24,12 +26,15 @@ export const BubuAiProvider = ({ children }: { children: ReactNode }) => {
   const [savedRecipeId, setSavedRecipeId] = useState<Id<"recipes"> | null>(
     null,
   );
+  const [isGeneratingNutritionalValues, setIsGeneratingNutritionalValues] =
+    useState<boolean>(false);
 
   const clearForm = () => {
     setDescription("");
     setSelectedImage(null);
     setImagePreview(null);
     setSavedRecipeId(null);
+    setIsGeneratingNutritionalValues(false);
   };
 
   return (
@@ -39,10 +44,12 @@ export const BubuAiProvider = ({ children }: { children: ReactNode }) => {
         selectedImage,
         imagePreview,
         savedRecipeId,
+        isGeneratingNutritionalValues,
         setDescription,
         setSelectedImage,
         setImagePreview,
         setSavedRecipeId,
+        setIsGeneratingNutritionalValues,
         clearForm,
       }}
     >

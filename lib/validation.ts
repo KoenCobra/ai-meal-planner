@@ -61,3 +61,21 @@ export const createMenuSchema = z.object({
 });
 
 export type CreateMenuInput = z.infer<typeof createMenuSchema>;
+
+export const generateNutritionalValuesSchema = z.object({
+  ingredients: z.array(
+    z.object({
+      name: z
+        .string()
+        .min(1, "Ingredient name is required")
+        .max(100, "Ingredient name must be at most 100 characters"),
+      amount: z.number().positive("Amount must be positive"),
+      unit: z.string(),
+    }),
+  ),
+  servings: z.number().positive("Servings must be positive"),
+});
+
+export type GenerateNutritionalValuesInput = z.infer<
+  typeof generateNutritionalValuesSchema
+>;

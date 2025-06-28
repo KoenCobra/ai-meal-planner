@@ -39,6 +39,7 @@ import Image from "next/image";
 import { useState } from "react";
 import { toast } from "sonner";
 import AddToMenuDialog from "../../_components/AddToMenuDialog";
+import NutritionTab from "../../_components/NutritionTab";
 import { useAddToMenuDialogStore } from "../../_stores/useAddToMenuDialogStore";
 import { useSyncIngredients } from "../../recipes/_hooks/useSyncIngredients";
 import { useUploadImage } from "../_hooks/useUploadImage";
@@ -47,6 +48,19 @@ import { useClearAiCache } from "../utils/clearAiCache";
 
 interface BubuAiResponseProps {
   isGeneratingImage: boolean;
+}
+
+interface NutritionalValuesResponse {
+  calories?: number;
+  protein?: number;
+  totalFat?: number;
+  saturatedFat?: number;
+  polyunsaturatedFat?: number;
+  totalCarbohydrates?: number;
+  sugars?: number;
+  cholesterol?: number;
+  sodium?: number;
+  error?: string;
 }
 
 const BubuAiResponse = ({ isGeneratingImage }: BubuAiResponseProps) => {
@@ -69,8 +83,13 @@ const BubuAiResponse = ({ isGeneratingImage }: BubuAiResponseProps) => {
     queryKey: ["generate-image"],
   });
 
+  const { data: nutritionalValues } = useQuery<NutritionalValuesResponse>({
+    queryKey: ["generate-nutritional-values"],
+  });
+
   const createRecipe = useMutation(api.recipes.createRecipe);
   const deleteRecipe = useMutation(api.recipes.deleteRecipe);
+  const saveNutritionalValues = useMutation(api.recipes.saveNutritionalValues);
 
   const { open, recipeId, openDialog, closeDialog } = useAddToMenuDialogStore();
   const { handleSyncIngredients } = useSyncIngredients();
@@ -99,6 +118,22 @@ const BubuAiResponse = ({ isGeneratingImage }: BubuAiResponseProps) => {
       });
 
       setSavedRecipeId(newRecipeId);
+
+      // Save nutritional values if available
+      if (nutritionalValues && !nutritionalValues.error) {
+        await saveNutritionalValues({
+          recipeId: newRecipeId,
+          calories: nutritionalValues.calories,
+          protein: nutritionalValues.protein,
+          totalFat: nutritionalValues.totalFat,
+          saturatedFat: nutritionalValues.saturatedFat,
+          polyunsaturatedFat: nutritionalValues.polyunsaturatedFat,
+          totalCarbohydrates: nutritionalValues.totalCarbohydrates,
+          sugars: nutritionalValues.sugars,
+          cholesterol: nutritionalValues.cholesterol,
+          sodium: nutritionalValues.sodium,
+        });
+      }
 
       // Invalidate recipe caches to show the new recipe
       queryClient.invalidateQueries({
@@ -359,9 +394,12 @@ const BubuAiResponse = ({ isGeneratingImage }: BubuAiResponseProps) => {
                 value={activeTab}
                 onValueChange={setActiveTab}
               >
-                <TabsList className="grid grid-cols-2 mb-6">
+                <TabsList className="grid grid-cols-3 mb-6">
                   <TabsTrigger value="ingredients">Ingredients</TabsTrigger>
                   <TabsTrigger value="instructions">Instructions</TabsTrigger>
+                  <TabsTrigger value="nutrition" className="relative">
+                    Nutrition
+                  </TabsTrigger>
                 </TabsList>
 
                 <AnimatePresence mode="wait">
@@ -434,6 +472,20 @@ const BubuAiResponse = ({ isGeneratingImage }: BubuAiResponseProps) => {
                           </motion.div>
                         ))}
                       </motion.div>
+                    </TabsContent>
+                  )}
+
+                  {activeTab === "nutrition" && (
+                    <TabsContent value="nutrition">
+                      <NutritionTab
+                        nutritionalValues={
+                          nutritionalValues && !nutritionalValues.error
+                            ? nutritionalValues
+                            : null
+                        }
+                        isLoading={!nutritionalValues}
+                        servings={recipe?.servings}
+                      />
                     </TabsContent>
                   )}
                 </AnimatePresence>
