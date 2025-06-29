@@ -134,12 +134,12 @@ const Home = async () => {
       </section>
 
       {/* Features Section */}
-      <section className="py-16 px-4 bg-gradient-to-b from-blue-50/50 to-transparent dark:from-blue-950/20 dark:to-transparent">
+      <section className="py-16 px-4 bg-gradient-to-b from-blue-50/50 to-transparent dark:from-blue-950/20 dark:to-transparent rounded-lg">
         <div className="max-w-6xl mx-auto">
           <div className="text-center mb-20">
             <h2 className="text-5xl md:text-6xl font-bold mb-8">
               Everything You Need for
-              <span className="block bg-gradient-to-r from-blue-600 to-blue-400 dark:from-blue-400 dark:to-blue-300 bg-clip-text text-transparent">
+              <span className="block bg-gradient-to-r from-blue-600 to-blue-400 dark:from-blue-400 dark:to-blue-300 bg-clip-text text-blue-600 dark:text-blue-400">
                 Smart Cooking
               </span>
             </h2>
@@ -292,14 +292,9 @@ const Home = async () => {
       {/* Pricing Section */}
       <section className="py-32 px-4">
         <div className="max-w-4xl mx-auto text-center">
-          <div className="inline-flex items-center gap-2 mb-6 px-4 py-2 bg-gradient-to-r from-blue-600/10 to-blue-400/10 dark:from-blue-400/10 dark:to-blue-300/10 border border-blue-200/50 dark:border-blue-400/20 rounded-full">
-            <span className="text-sm font-semibold bg-gradient-to-r from-blue-600 to-blue-400 dark:from-blue-400 dark:to-blue-300 bg-clip-text text-transparent">
-              Bubu AI Pricing
-            </span>
-          </div>
           <h2 className="text-5xl md:text-6xl font-bold mb-8">
             Simple, Transparent
-            <span className="block bg-gradient-to-r from-blue-600 to-blue-400 dark:from-blue-400 dark:to-blue-300 bg-clip-text text-transparent">
+            <span className="block bg-gradient-to-r from-blue-600 to-blue-400 dark:from-blue-400 dark:to-blue-300 bg-clip-text text-blue-600 dark:text-blue-400">
               Pricing
             </span>
           </h2>
@@ -313,12 +308,12 @@ const Home = async () => {
 
           <Card className="border-2 border-blue-200/50 dark:border-blue-400/20 max-w-lg mx-auto bg-white/50 dark:bg-zinc-900/50 backdrop-blur-sm shadow-2xl">
             <CardHeader className="text-center">
-              <div className="relative w-20 h-20 mx-auto mb-6">
+              {/* <div className="relative w-20 h-20 mx-auto mb-6">
                 <div className="absolute inset-0 bg-gradient-to-r from-blue-600 to-blue-400 dark:from-blue-400 dark:to-blue-300 rounded-2xl blur-lg opacity-30"></div>
                 <div className="relative bg-gradient-to-r from-blue-600 to-blue-400 dark:from-blue-400 dark:to-blue-300 rounded-2xl flex items-center justify-center w-full h-full">
                   <ChefHat className="w-10 h-10 text-white" />
                 </div>
-              </div>
+              </div> */}
               <CardTitle className="text-3xl">
                 <span className="bg-gradient-to-r from-blue-600 to-blue-400 dark:from-blue-400 dark:to-blue-300 bg-clip-text text-transparent">
                   Bubu AI
@@ -326,19 +321,19 @@ const Home = async () => {
                 Premium
               </CardTitle>
               <div className="text-5xl font-bold bg-gradient-to-r from-blue-600 to-blue-400 dark:from-blue-400 dark:to-blue-300 bg-clip-text text-transparent mb-2">
-                $4.99
+                $5.99
                 <span className="text-lg text-muted-foreground font-normal">
                   /month
                 </span>
               </div>
-              <CardDescription className="text-lg">
-                Billed annually • Cancel anytime
-              </CardDescription>
+              <div className="text-sm text-muted-foreground mt-2">
+                Or $4.99/month billed annually • Cancel anytime
+              </div>
             </CardHeader>
             <CardContent className="space-y-6">
               <div className="space-y-4">
                 <div className="flex items-center gap-4">
-                  <CheckCircle className="w-6 h-6 text-green-500 flex-shrink-0" />
+                  <CheckCircle className="w-6 h-6 text-muted-foreground flex-shrink-0" />
                   <span className="text-lg">
                     <span className="font-semibold bg-gradient-to-r from-blue-600 to-blue-400 dark:from-blue-400 dark:to-blue-300 bg-clip-text text-transparent">
                       Bubu AI
@@ -347,23 +342,23 @@ const Home = async () => {
                   </span>
                 </div>
                 <div className="flex items-center gap-4">
-                  <CheckCircle className="w-6 h-6 text-green-500 flex-shrink-0" />
+                  <CheckCircle className="w-6 h-6 text-muted-foreground flex-shrink-0" />
                   <span className="text-lg">Dynamic Menu Planning</span>
                 </div>
                 <div className="flex items-center gap-4">
-                  <CheckCircle className="w-6 h-6 text-green-500 flex-shrink-0" />
+                  <CheckCircle className="w-6 h-6 text-muted-foreground flex-shrink-0" />
                   <span className="text-lg">Save Your Favorite Recipes</span>
                 </div>
                 <div className="flex items-center gap-4">
-                  <CheckCircle className="w-6 h-6 text-green-500 flex-shrink-0" />
+                  <CheckCircle className="w-6 h-6 text-muted-foreground flex-shrink-0" />
                   <span className="text-lg">Smart Grocery List Sync</span>
                 </div>
                 <div className="flex items-center gap-4">
-                  <CheckCircle className="w-6 h-6 text-green-500 flex-shrink-0" />
+                  <CheckCircle className="w-6 h-6 text-muted-foreground flex-shrink-0" />
                   <span className="text-lg">Advanced Recipe Search</span>
                 </div>
                 <div className="flex items-center gap-4">
-                  <CheckCircle className="w-6 h-6 text-green-500 flex-shrink-0" />
+                  <CheckCircle className="w-6 h-6 text-muted-foreground flex-shrink-0" />
                   <span className="text-lg">Nutritional Information</span>
                 </div>
               </div>
@@ -383,7 +378,7 @@ const Home = async () => {
       </section>
 
       {/* CTA Section */}
-      <section className="py-32 px-4 bg-gradient-to-r from-blue-600/10 via-blue-400/5 to-blue-300/10 dark:from-blue-600/20 dark:via-blue-400/10 dark:to-blue-300/20">
+      <section className="py-32 px-4 bg-gradient-to-r from-blue-600/10 via-blue-400/5 to-blue-300/10 dark:from-blue-600/20 dark:via-blue-400/10 dark:to-blue-300/20 rounded-t-lg">
         <div className="max-w-4xl mx-auto text-center">
           <h2 className="text-5xl md:text-6xl font-bold mb-8">
             Ready to Transform Your
@@ -410,16 +405,6 @@ const Home = async () => {
                 Start with Bubu AI
               </Button>
             </Link>
-            <Link href="/recipes">
-              <Button
-                variant="outline"
-                size="lg"
-                className="text-lg px-10 py-7 rounded-2xl border-2 border-blue-200 dark:border-blue-400/30 hover:border-blue-400 dark:hover:border-blue-400 hover:bg-blue-50 dark:hover:bg-blue-400/10 transition-all duration-300"
-              >
-                <Search className="w-6 h-6 mr-3" />
-                Browse Recipes
-              </Button>
-            </Link>
           </div>
         </div>
       </section>
@@ -427,7 +412,7 @@ const Home = async () => {
       {/* Footer */}
       <footer className="py-16 px-4 border-t border-blue-200/50 dark:border-blue-400/20 bg-gradient-to-b from-blue-50/30 to-transparent dark:from-blue-950/20 dark:to-transparent">
         <div className="max-w-6xl mx-auto">
-          <div className="grid md:grid-cols-4 gap-8">
+          <div className="grid md:grid-cols-3 gap-8">
             <div>
               <div className="flex items-center gap-3 mb-4">
                 <div className="relative">
@@ -466,25 +451,12 @@ const Home = async () => {
               <div className="space-y-2 text-sm text-muted-foreground">
                 <p>Help Center</p>
                 <p>Contact Us</p>
-                <p>Community</p>
-                <p>API Docs</p>
-              </div>
-            </div>
-            <div>
-              <h4 className="font-semibold mb-4 text-blue-700 dark:text-blue-300">
-                Company
-              </h4>
-              <div className="space-y-2 text-sm text-muted-foreground">
-                <p>About Us</p>
-                <p>Privacy Policy</p>
-                <p>Terms of Service</p>
-                <p>Blog</p>
               </div>
             </div>
           </div>
           <div className="border-t border-blue-200/50 dark:border-blue-400/20 mt-12 pt-8 text-center text-muted-foreground">
             <p>
-              &copy; 2024{" "}
+              &copy; 2025{" "}
               <span className="font-semibold bg-gradient-to-r from-blue-600 to-blue-400 dark:from-blue-400 dark:to-blue-300 bg-clip-text text-transparent">
                 Bubu AI
               </span>
