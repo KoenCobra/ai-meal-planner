@@ -63,7 +63,7 @@ const Home = async () => {
             <h2 className="text-3xl md:text-5xl font-semibold text-muted-foreground">
               Your Intelligent
               <span className="block bg-gradient-to-r from-blue-600 to-blue-400 dark:from-blue-400 dark:to-blue-300 bg-clip-text text-transparent">
-                Recipe Generator
+                AI-Powered Meal Planner
               </span>
             </h2>
           </div>
