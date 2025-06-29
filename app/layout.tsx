@@ -17,10 +17,14 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Bubu AI",
-  description: "Bubu AI",
-  icons: {
-    icon: "/favicon.ico",
+  title: {
+    default: "Bubu AI",
+    template: "%s | Bubu AI",
+  },
+  description:
+    "Generate, manage, and discover delicious recipes with AI. Create custom menus, sync grocery lists, and explore endless culinary possibilities.",
+  twitter: {
+    card: "summary_large_image",
   },
 };
 

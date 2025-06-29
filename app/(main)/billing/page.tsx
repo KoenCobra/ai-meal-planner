@@ -1,4 +1,10 @@
 import { PricingTable } from "@clerk/nextjs";
+import { Metadata } from "next";
+
+export const metadata: Metadata = {
+  title: "Pricing",
+  description: "Pricing for Bubu AI",
+};
 
 const page = () => {
   return (
