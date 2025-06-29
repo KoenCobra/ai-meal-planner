@@ -45,7 +45,7 @@ const Home = async () => {
       </div>
 
       {/* Hero Section */}
-      <section className="relative py-24 px-4">
+      <section className="relative min-h-screen py-24 px-4">
         <div className="max-w-6xl mx-auto text-center">
           {/* Main Hero Title with Bubu AI Emphasis */}
           <div className="mb-16">
