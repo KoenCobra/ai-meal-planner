@@ -1,17 +1,9 @@
 "use client";
 
-import ThemeToggle from "@/components/ThemeToggle";
-import { Button } from "@/components/ui/button";
 import { SignedIn, SignedOut, UserButton } from "@clerk/nextjs";
-import { Menu } from "lucide-react";
-import Link from "next/link";
-import { useState } from "react";
-import HomeSheet from "./HomeSheet";
 import LoginButton from "./LoginButton";
 
 const Navbar = () => {
-  const [open, setOpen] = useState(false);
-
   return (
     <nav className="sticky top-0 z-1 w-full bg-white/80 dark:bg-zinc-900/30 backdrop-blur-lg border-0 shadow-sm">
       <div className="container px-2 py-3 flex items-center justify-between">
@@ -37,15 +29,7 @@ const Navbar = () => {
         </div>
 
         <div className="flex items-center gap-3">
-          <div className="hidden md:block mr-8">
-            <Link href="/bubu-ai" className="underline">
-              Meal Planner
-            </Link>
-          </div>
           <div className="flex items-center gap-3">
-            <div className="p-1 rounded-lg hover:bg-zinc-100 dark:hover:bg-zinc-800 transition-colors">
-              <ThemeToggle />
-            </div>
             <SignedOut>
               <LoginButton />
             </SignedOut>
@@ -53,14 +37,8 @@ const Navbar = () => {
               <UserButton />
             </SignedIn>
           </div>
-          <div className="md:hidden">
-            <Button onClick={() => setOpen(true)} variant="ghost">
-              <Menu />
-            </Button>
-          </div>
         </div>
       </div>
-      <HomeSheet open={open} setOpen={setOpen} />
     </nav>
   );
 };
