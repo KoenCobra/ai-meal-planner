@@ -6,26 +6,31 @@ export const recipeJsonSchema = {
   properties: {
     title: {
       type: "string",
-      description: "The title of the recipe",
+      description:
+        "The title of the recipe in the language that the user is using",
     },
     summary: {
       type: "string",
-      description: "A short summary of the recipe",
+      description:
+        "A short summary of the recipe in the language that the user is using",
     },
     servings: {
       type: "number",
-      description: "The number of servings the recipe makes",
+      description:
+        "The number of servings the recipe makes in the language that the user is using",
     },
     readyInMinutes: {
       type: "number",
-      description: "The number of minutes it takes to prepare the recipe",
+      description:
+        "The number of minutes it takes to prepare the recipe in the language that the user is using",
     },
     categories: {
       type: "array",
       items: {
         type: "string",
       },
-      description: "The categories the recipe is suitable for",
+      description:
+        "The categories the recipe is suitable for in the language that the user is using",
     },
     instructions: {
       type: "object",
@@ -41,7 +46,8 @@ export const recipeJsonSchema = {
               },
               step: {
                 type: "string",
-                description: "The step description",
+                description:
+                  "The step description in the language that the user is using",
               },
             },
             required: ["number", "step"],
@@ -59,19 +65,21 @@ export const recipeJsonSchema = {
         properties: {
           name: {
             type: "string",
-            description: "The name of the ingredient",
+            description:
+              "The name of the ingredient in the language that the user is using",
           },
           measures: {
             type: "object",
             properties: {
               amount: {
                 type: "number",
-                description: "The amount of the ingredient",
+                description:
+                  "The amount of the ingredient in the language that the user is using",
               },
               unit: {
                 type: "string",
                 description:
-                  "The units of measurement will be based on the user's locale",
+                  "The units of measurement will be based on the user's locale in the language that the user is using",
               },
             },
             required: ["amount", "unit"],
@@ -89,7 +97,8 @@ export const recipeJsonSchema = {
     },
     error: {
       type: ["string", "null"],
-      description: "The error message if the recipe is not generated",
+      description:
+        "The error message if the recipe is not generated in the language that the user is using",
     },
     image: {
       type: ["string", "null"],
