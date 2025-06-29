@@ -45,7 +45,7 @@ const Home = async () => {
       </div>
 
       {/* Hero Section */}
-      <section className="relative min-h-screen py-24 px-4">
+      <section className="relative min-h-screen py-20 px-4">
         <div className="max-w-6xl mx-auto text-center">
           {/* Main Hero Title with Bubu AI Emphasis */}
           <div className="mb-16">
@@ -68,7 +68,7 @@ const Home = async () => {
             </h2>
           </div>
 
-          <p className="text-xl md:text-2xl text-muted-foreground mb-12 max-w-4xl mx-auto leading-relaxed text-balance">
+          <p className="text-xl md:text-2xl text-muted-foreground mb-20 max-w-4xl mx-auto leading-relaxed text-balance">
             Experience the future of cooking with{" "}
             <span className="font-semibold bg-gradient-to-r from-blue-600 to-blue-400 dark:from-blue-400 dark:to-blue-300 bg-clip-text text-transparent">
               Bubu AI
