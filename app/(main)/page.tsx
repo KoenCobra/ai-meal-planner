@@ -11,14 +11,11 @@ import {
   BookOpen,
   CheckCircle,
   ChefHat,
-  Clock,
   Heart,
   Search,
   ShoppingCart,
   Sparkles,
   Star,
-  Users,
-  Utensils,
   Zap,
 } from "lucide-react";
 import { Metadata } from "next";
@@ -95,7 +92,7 @@ const Home = async () => {
           </div>
 
           {/* Enhanced Hero Visual */}
-          <div className="relative mx-auto max-w-5xl">
+          {/* <div className="relative mx-auto max-w-5xl">
             <div className="aspect-video bg-gradient-to-br from-blue-600/20 via-blue-400/10 to-blue-300/20 rounded-3xl border-2 border-blue-200/50 dark:border-blue-400/30 flex items-center justify-center shadow-2xl backdrop-blur-sm">
               <div className="text-center">
                 <div className="relative mb-6">
@@ -116,7 +113,6 @@ const Home = async () => {
               </div>
             </div>
 
-            {/* Enhanced Floating Cards */}
             <div className="absolute -top-6 -left-6 bg-white/90 dark:bg-zinc-900/90 border-2 border-blue-200/50 dark:border-blue-400/30 rounded-2xl p-4 shadow-xl backdrop-blur-sm">
               <div className="flex items-center gap-3">
                 <Clock className="size-5 text-blue-600 dark:text-blue-400" />
@@ -137,7 +133,7 @@ const Home = async () => {
                 </span>
               </div>
             </div>
-          </div>
+          </div>*/}
         </div>
       </section>
 
