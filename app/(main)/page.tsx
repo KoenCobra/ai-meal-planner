@@ -23,7 +23,7 @@ import Link from "next/link";
 export const metadata: Metadata = {
   title: "Bubu AI - Your AI-Powered Recipe Builder",
   description:
-    "Generate, manage, and discover delicious recipes with AI. Create custom menus, sync grocery lists, and explore endless culinary possibilities.",
+    "Generate, manage, and discover delicious recipes with AI. Create custom menus, sync grocery lists, and explore endless culinary possibilities. Ai mealplanner, ai recipe builder",
 };
 
 const Home = async () => {
