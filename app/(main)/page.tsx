@@ -333,7 +333,7 @@ const Home = async () => {
             <CardContent className="space-y-6">
               <div className="space-y-4">
                 <div className="flex items-center gap-4">
-                  <CheckCircle className="w-6 h-6 text-muted-foreground flex-shrink-0" />
+                  <CheckCircle className="size-4 text-muted-foreground flex-shrink-0" />
                   <span className="text-lg">
                     <span className="font-semibold bg-gradient-to-r from-blue-600 to-blue-400 dark:from-blue-400 dark:to-blue-300 bg-clip-text text-transparent">
                       Bubu AI
@@ -342,23 +342,23 @@ const Home = async () => {
                   </span>
                 </div>
                 <div className="flex items-center gap-4">
-                  <CheckCircle className="w-6 h-6 text-muted-foreground flex-shrink-0" />
+                  <CheckCircle className="size-4 text-muted-foreground flex-shrink-0" />
                   <span className="text-lg">Dynamic Menu Planning</span>
                 </div>
                 <div className="flex items-center gap-4">
-                  <CheckCircle className="w-6 h-6 text-muted-foreground flex-shrink-0" />
+                  <CheckCircle className="size-4 text-muted-foreground flex-shrink-0" />
                   <span className="text-lg">Save Your Favorite Recipes</span>
                 </div>
                 <div className="flex items-center gap-4">
-                  <CheckCircle className="w-6 h-6 text-muted-foreground flex-shrink-0" />
+                  <CheckCircle className="size-4 text-muted-foreground flex-shrink-0" />
                   <span className="text-lg">Smart Grocery List Sync</span>
                 </div>
                 <div className="flex items-center gap-4">
-                  <CheckCircle className="w-6 h-6 text-muted-foreground flex-shrink-0" />
+                  <CheckCircle className="size-4 text-muted-foreground flex-shrink-0" />
                   <span className="text-lg">Advanced Recipe Search</span>
                 </div>
                 <div className="flex items-center gap-4">
-                  <CheckCircle className="w-6 h-6 text-muted-foreground flex-shrink-0" />
+                  <CheckCircle className="size-4 text-muted-foreground flex-shrink-0" />
                   <span className="text-lg">Nutritional Information</span>
                 </div>
               </div>
