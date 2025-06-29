@@ -41,27 +41,10 @@ const Home = async () => {
       </div>
 
       {/* Hero Section */}
-      <section className="relative py-32 px-4">
+      <section className="relative py-24 px-4">
         <div className="max-w-6xl mx-auto text-center">
-          {/* Floating Badge */}
-          <div className="inline-flex items-center gap-2 mb-8 px-6 py-3 bg-gradient-to-r from-blue-600/10 to-blue-400/10 dark:from-blue-400/10 dark:to-blue-300/10 border border-blue-200/50 dark:border-blue-400/20 rounded-full backdrop-blur-sm">
-            <Sparkles className="w-5 h-5 text-blue-600 dark:text-blue-400" />
-            <span className="text-sm font-semibold bg-gradient-to-r from-blue-600 to-blue-400 dark:from-blue-400 dark:to-blue-300 bg-clip-text text-transparent">
-              Powered by Advanced AI Technology
-            </span>
-          </div>
-
           {/* Main Hero Title with Bubu AI Emphasis */}
-          <div className="mb-8">
-            <div className="flex items-center justify-center gap-4 mb-4">
-              <div className="relative">
-                <div className="absolute inset-0 bg-gradient-to-r from-blue-600 to-blue-400 dark:from-blue-400 dark:to-blue-300 rounded-2xl blur-lg opacity-30"></div>
-                <div className="relative bg-gradient-to-r from-blue-600 to-blue-400 dark:from-blue-400 dark:to-blue-300 p-4 rounded-2xl">
-                  <ChefHat className="w-12 h-12 text-white" />
-                </div>
-              </div>
-            </div>
-
+          <div className="mb-16">
             <h1 className="text-6xl md:text-8xl font-bold mb-4">
               <span className="relative inline-block">
                 <span className="text-zinc-900 dark:text-white">Bubu</span>
@@ -81,7 +64,7 @@ const Home = async () => {
             </h2>
           </div>
 
-          <p className="text-xl md:text-2xl text-muted-foreground mb-12 max-w-4xl mx-auto leading-relaxed">
+          <p className="text-xl md:text-2xl text-muted-foreground mb-12 max-w-4xl mx-auto leading-relaxed text-balance">
             Experience the future of cooking with{" "}
             <span className="font-semibold bg-gradient-to-r from-blue-600 to-blue-400 dark:from-blue-400 dark:to-blue-300 bg-clip-text text-transparent">
               Bubu AI
@@ -101,14 +84,6 @@ const Home = async () => {
                 Experience Bubu AI
               </Button>
             </Link>
-            <Button
-              variant="outline"
-              size="lg"
-              className="text-lg px-10 py-7 rounded-2xl border-2 border-blue-200 dark:border-blue-400/30 hover:border-blue-400 dark:hover:border-blue-400 hover:bg-blue-50 dark:hover:bg-blue-400/10 transition-all duration-300"
-            >
-              <BookOpen className="w-6 h-6 mr-3" />
-              Explore Recipes
-            </Button>
           </div>
 
           {/* Enhanced Hero Visual */}
@@ -159,14 +134,9 @@ const Home = async () => {
       </section>
 
       {/* Features Section */}
-      <section className="py-32 px-4 bg-gradient-to-b from-blue-50/50 to-transparent dark:from-blue-950/20 dark:to-transparent">
+      <section className="py-16 px-4 bg-gradient-to-b from-blue-50/50 to-transparent dark:from-blue-950/20 dark:to-transparent">
         <div className="max-w-6xl mx-auto">
           <div className="text-center mb-20">
-            <div className="inline-flex items-center gap-2 mb-6 px-4 py-2 bg-gradient-to-r from-blue-600/10 to-blue-400/10 dark:from-blue-400/10 dark:to-blue-300/10 border border-blue-200/50 dark:border-blue-400/20 rounded-full">
-              <span className="text-sm font-semibold bg-gradient-to-r from-blue-600 to-blue-400 dark:from-blue-400 dark:to-blue-300 bg-clip-text text-transparent">
-                Bubu AI Features
-              </span>
-            </div>
             <h2 className="text-5xl md:text-6xl font-bold mb-8">
               Everything You Need for
               <span className="block bg-gradient-to-r from-blue-600 to-blue-400 dark:from-blue-400 dark:to-blue-300 bg-clip-text text-transparent">
@@ -187,7 +157,7 @@ const Home = async () => {
             <Card className="border-2 border-blue-200/50 dark:border-blue-400/20 hover:border-blue-400 dark:hover:border-blue-400 transition-all duration-300 hover:shadow-2xl group bg-white/50 dark:bg-zinc-900/50 backdrop-blur-sm">
               <CardHeader>
                 <div className="w-14 h-14 bg-gradient-to-r from-blue-600/10 to-blue-400/10 dark:from-blue-400/10 dark:to-blue-300/10 rounded-2xl flex items-center justify-center mb-6 group-hover:scale-110 transition-transform duration-300">
-                  <Sparkles className="w-7 h-7 text-blue-600 dark:text-blue-400" />
+                  <Sparkles className="size-7" />
                 </div>
                 <CardTitle className="text-xl">
                   <span className="bg-gradient-to-r from-blue-600 to-blue-400 dark:from-blue-400 dark:to-blue-300 bg-clip-text text-transparent">
@@ -201,19 +171,10 @@ const Home = async () => {
                 </CardDescription>
               </CardHeader>
               <CardContent>
-                <div className="space-y-3">
-                  <div className="flex items-center gap-3 text-sm">
-                    <CheckCircle className="w-4 h-4 text-green-500" />
-                    <span>Detailed instructions</span>
-                  </div>
-                  <div className="flex items-center gap-3 text-sm">
-                    <CheckCircle className="w-4 h-4 text-green-500" />
-                    <span>Nutritional breakdown</span>
-                  </div>
-                  <div className="flex items-center gap-3 text-sm">
-                    <CheckCircle className="w-4 h-4 text-green-500" />
-                    <span>AI-generated images</span>
-                  </div>
+                <div className="space-y-2 text-sm text-muted-foreground">
+                  <p>• Detailed instructions</p>
+                  <p>• Nutritional breakdown</p>
+                  <p>• AI-generated images</p>
                 </div>
               </CardContent>
             </Card>
@@ -222,7 +183,7 @@ const Home = async () => {
             <Card className="border-2 border-blue-200/50 dark:border-blue-400/20 hover:border-blue-400 dark:hover:border-blue-400 transition-all duration-300 hover:shadow-2xl group bg-white/50 dark:bg-zinc-900/50 backdrop-blur-sm">
               <CardHeader>
                 <div className="w-14 h-14 bg-gradient-to-r from-blue-600/10 to-blue-400/10 dark:from-blue-400/10 dark:to-blue-300/10 rounded-2xl flex items-center justify-center mb-6 group-hover:scale-110 transition-transform duration-300">
-                  <BookOpen className="w-7 h-7 text-blue-600 dark:text-blue-400" />
+                  <BookOpen className="size-7" />
                 </div>
                 <CardTitle className="text-xl">
                   Smart Recipe Management
@@ -234,30 +195,10 @@ const Home = async () => {
               </CardHeader>
               <CardContent>
                 <div className="flex flex-wrap gap-2">
-                  <Badge
-                    variant="secondary"
-                    className="bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300 border-blue-200 dark:border-blue-700"
-                  >
-                    Breakfast
-                  </Badge>
-                  <Badge
-                    variant="secondary"
-                    className="bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300 border-blue-200 dark:border-blue-700"
-                  >
-                    Lunch
-                  </Badge>
-                  <Badge
-                    variant="secondary"
-                    className="bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300 border-blue-200 dark:border-blue-700"
-                  >
-                    Dinner
-                  </Badge>
-                  <Badge
-                    variant="secondary"
-                    className="bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300 border-blue-200 dark:border-blue-700"
-                  >
-                    Other
-                  </Badge>
+                  <Badge variant="secondary">Breakfast</Badge>
+                  <Badge variant="secondary">Lunch</Badge>
+                  <Badge variant="secondary">Dinner</Badge>
+                  <Badge variant="secondary">Other</Badge>
                 </div>
               </CardContent>
             </Card>
@@ -266,7 +207,7 @@ const Home = async () => {
             <Card className="border-2 border-blue-200/50 dark:border-blue-400/20 hover:border-blue-400 dark:hover:border-blue-400 transition-all duration-300 hover:shadow-2xl group bg-white/50 dark:bg-zinc-900/50 backdrop-blur-sm">
               <CardHeader>
                 <div className="w-14 h-14 bg-gradient-to-r from-blue-600/10 to-blue-400/10 dark:from-blue-400/10 dark:to-blue-300/10 rounded-2xl flex items-center justify-center mb-6 group-hover:scale-110 transition-transform duration-300">
-                  <Heart className="w-7 h-7 text-blue-600 dark:text-blue-400" />
+                  <Heart className="size-7" />
                 </div>
                 <CardTitle className="text-xl">Custom Menu Planning</CardTitle>
                 <CardDescription>
@@ -287,7 +228,7 @@ const Home = async () => {
             <Card className="border-2 border-blue-200/50 dark:border-blue-400/20 hover:border-blue-400 dark:hover:border-blue-400 transition-all duration-300 hover:shadow-2xl group bg-white/50 dark:bg-zinc-900/50 backdrop-blur-sm">
               <CardHeader>
                 <div className="w-14 h-14 bg-gradient-to-r from-blue-600/10 to-blue-400/10 dark:from-blue-400/10 dark:to-blue-300/10 rounded-2xl flex items-center justify-center mb-6 group-hover:scale-110 transition-transform duration-300">
-                  <ShoppingCart className="w-7 h-7 text-blue-600 dark:text-blue-400" />
+                  <ShoppingCart className="size-7" />
                 </div>
                 <CardTitle className="text-xl">
                   Intelligent Grocery Lists
@@ -298,19 +239,10 @@ const Home = async () => {
                 </CardDescription>
               </CardHeader>
               <CardContent>
-                <div className="space-y-3">
-                  <div className="flex items-center gap-3 text-sm">
-                    <CheckCircle className="w-4 h-4 text-green-500" />
-                    <span>Auto-ingredient sync</span>
-                  </div>
-                  <div className="flex items-center gap-3 text-sm">
-                    <CheckCircle className="w-4 h-4 text-green-500" />
-                    <span>Smart quantity tracking</span>
-                  </div>
-                  <div className="flex items-center gap-3 text-sm">
-                    <CheckCircle className="w-4 h-4 text-green-500" />
-                    <span>Completion tracking</span>
-                  </div>
+                <div className="space-y-2 text-sm text-muted-foreground">
+                  <p>• Auto-ingredient sync</p>
+                  <p>• Smart quantity tracking</p>
+                  <p>• Completion tracking</p>
                 </div>
               </CardContent>
             </Card>
@@ -319,7 +251,7 @@ const Home = async () => {
             <Card className="border-2 border-blue-200/50 dark:border-blue-400/20 hover:border-blue-400 dark:hover:border-blue-400 transition-all duration-300 hover:shadow-2xl group bg-white/50 dark:bg-zinc-900/50 backdrop-blur-sm">
               <CardHeader>
                 <div className="w-14 h-14 bg-gradient-to-r from-blue-600/10 to-blue-400/10 dark:from-blue-400/10 dark:to-blue-300/10 rounded-2xl flex items-center justify-center mb-6 group-hover:scale-110 transition-transform duration-300">
-                  <Search className="w-7 h-7 text-blue-600 dark:text-blue-400" />
+                  <Search className="size-7" />
                 </div>
                 <CardTitle className="text-xl">AI-Powered Search</CardTitle>
                 <CardDescription>
@@ -338,7 +270,7 @@ const Home = async () => {
             <Card className="border-2 border-blue-200/50 dark:border-blue-400/20 hover:border-blue-400 dark:hover:border-blue-400 transition-all duration-300 hover:shadow-2xl group bg-white/50 dark:bg-zinc-900/50 backdrop-blur-sm">
               <CardHeader>
                 <div className="w-14 h-14 bg-gradient-to-r from-blue-600/10 to-blue-400/10 dark:from-blue-400/10 dark:to-blue-300/10 rounded-2xl flex items-center justify-center mb-6 group-hover:scale-110 transition-transform duration-300">
-                  <Star className="w-7 h-7 text-blue-600 dark:text-blue-400" />
+                  <Star className="size-7" />
                 </div>
                 <CardTitle className="text-xl">Beautiful Themes</CardTitle>
                 <CardDescription>
