@@ -381,7 +381,7 @@ const Home = async () => {
       </section>
 
       {/* CTA Section */}
-      <section className="py-32 px-4 bg-gradient-to-r from-blue-600/10 via-blue-400/5 to-blue-300/10 dark:from-blue-600/20 dark:via-blue-400/10 dark:to-blue-300/20 rounded-t-lg">
+      <section className="py-32 px-4 bg-gradient-to-r from-blue-600/10 via-blue-400/5 to-blue-300/10 dark:from-blue-600/20 dark:via-blue-400/10 dark:to-blue-300/20 rounded-t-lg text-balance">
         <div className="max-w-4xl mx-auto text-center">
           <h2 className="text-5xl md:text-6xl font-bold mb-8">
             Ready to Transform Your
@@ -390,7 +390,7 @@ const Home = async () => {
             </span>
           </h2>
           <p className="text-xl text-muted-foreground mb-16 max-w-3xl mx-auto">
-            Join thousands of home cooks who are already using{" "}
+            Join the home cooks who are already using{" "}
             <span className="font-semibold bg-gradient-to-r from-blue-600 to-blue-400 dark:from-blue-400 dark:to-blue-300 bg-clip-text text-transparent">
               Bubu AI
             </span>{" "}
@@ -413,7 +413,7 @@ const Home = async () => {
       </section>
 
       {/* Footer */}
-      <footer className="py-16 px-4 border-t border-blue-200/50 dark:border-blue-400/20 bg-gradient-to-b from-blue-50/30 to-transparent dark:from-blue-950/20 dark:to-transparent">
+      <footer className="py-16 px-4 bg-gradient-to-b from-blue-50/30 to-transparent dark:from-blue-950/20 dark:to-transparent">
         <div className="max-w-6xl mx-auto">
           <div className="grid md:grid-cols-3 gap-8">
             <div>
