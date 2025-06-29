@@ -10,7 +10,6 @@ import {
 import {
   BookOpen,
   CheckCircle,
-  ChefHat,
   Heart,
   Search,
   ShoppingCart,
@@ -419,12 +418,6 @@ const Home = async () => {
           <div className="grid md:grid-cols-3 gap-8">
             <div>
               <div className="flex items-center gap-3 mb-4">
-                <div className="relative">
-                  <div className="absolute inset-0 bg-gradient-to-r from-blue-600 to-blue-400 dark:from-blue-400 dark:to-blue-300 rounded-xl blur-md opacity-30"></div>
-                  <div className="relative bg-gradient-to-r from-blue-600 to-blue-400 dark:from-blue-400 dark:to-blue-300 p-2 rounded-xl">
-                    <ChefHat className="size-6 text-white" />
-                  </div>
-                </div>
                 <h3 className="text-2xl font-bold">
                   <span className="text-zinc-900 dark:text-white">Bubu</span>
                   <span className="bg-gradient-to-r from-blue-600 to-blue-400 dark:from-blue-400 dark:to-blue-300 bg-clip-text text-transparent ml-1">
