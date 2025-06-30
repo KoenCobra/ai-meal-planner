@@ -95,6 +95,7 @@ export async function POST(req: NextRequest) {
         allow_fallbacks: true,
         sort: "latency",
       },
+      temperature: 0.3,
     };
 
     const controller = new AbortController();
