@@ -1,6 +1,8 @@
 "use client";
 
+import { Button } from "@/components/ui/button";
 import { SignedIn, SignedOut, UserButton } from "@clerk/nextjs";
+import Link from "next/link";
 import LoginButton from "./LoginButton";
 
 const Navbar = () => {
@@ -17,9 +19,11 @@ const Navbar = () => {
           }}
         >
           <div className="relative flex items-baseline">
-            <h1 className="text-2xl font-medium tracking-tight text-zinc-900 dark:text-white transition-colors">
-              Bubu
-            </h1>
+            <Link href="/">
+              <h1 className="text-2xl font-medium tracking-tight text-zinc-900 dark:text-white transition-colors">
+                Bubu
+              </h1>
+            </Link>
             <span className="text-2xl font-semibold bg-gradient-to-r from-blue-600 to-blue-400 dark:from-blue-400 dark:to-blue-300 bg-clip-text text-transparent ml-2 transition-all">
               AI
             </span>
@@ -30,6 +34,9 @@ const Navbar = () => {
 
         <div className="flex items-center gap-3">
           <div className="flex items-center gap-3">
+            <Link href="/bubu-ai">
+              <Button variant="link">Meal Planner</Button>
+            </Link>
             <SignedOut>
               <LoginButton />
             </SignedOut>
