@@ -157,6 +157,14 @@ const Home = async () => {
                   <Sparkles className="w-8 h-8 text-white" />
                 </div>
               </div>
+              {/* Mobile arrow (pointing down, next to sparkle) */}
+              <div className="lg:hidden ml-4">
+                <div className="flex flex-col items-center">
+                  <div className="w-0.5 h-12 bg-gradient-to-b from-blue-600 to-blue-400 dark:from-blue-400 dark:to-blue-300"></div>
+                  <div className="w-0 h-0 border-t-6 border-t-blue-600 dark:border-t-blue-400 border-l-3 border-l-transparent border-r-3 border-r-transparent"></div>
+                </div>
+              </div>
+              {/* Desktop arrow (pointing right) */}
               <div className="hidden lg:block ml-4">
                 <div className="flex items-center">
                   <div className="w-12 h-0.5 bg-gradient-to-r from-blue-600 to-blue-400 dark:from-blue-400 dark:to-blue-300"></div>
@@ -273,6 +281,14 @@ const Home = async () => {
                   <Sparkles className="w-8 h-8 text-white" />
                 </div>
               </div>
+              {/* Mobile arrow (pointing down, next to sparkle) */}
+              <div className="lg:hidden ml-4">
+                <div className="flex flex-col items-center">
+                  <div className="w-0.5 h-12 bg-gradient-to-b from-blue-600 to-blue-400 dark:from-blue-400 dark:to-blue-300"></div>
+                  <div className="w-0 h-0 border-t-6 border-t-blue-600 dark:border-t-blue-400 border-l-3 border-l-transparent border-r-3 border-r-transparent"></div>
+                </div>
+              </div>
+              {/* Desktop arrow (pointing right) */}
               <div className="hidden lg:block ml-4">
                 <div className="flex items-center">
                   <div className="w-12 h-0.5 bg-gradient-to-r from-blue-600 to-blue-400 dark:from-blue-400 dark:to-blue-300"></div>
