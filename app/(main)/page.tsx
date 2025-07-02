@@ -92,7 +92,7 @@ const Home = async () => {
       </div>
 
       {/* AI Transformation Showcase */}
-      <div className="relative mx-auto max-w-7xl">
+      <div className="relative mx-auto max-w-7xl mb-32">
         {/* Main Showcase Title */}
         <div className="text-center mb-16">
           <h3 className="text-3xl md:text-4xl font-bold mb-4">
@@ -131,12 +131,12 @@ const Home = async () => {
                       </p>
                     </div>
                   </div>
-                  <div className="aspect-[4/3] bg-gradient-to-br from-emerald-50 to-emerald-100/50 dark:from-emerald-950/50 dark:to-emerald-900/30 rounded-2xl overflow-hidden border-2 border-emerald-200/30 dark:border-emerald-400/20">
+                  <div className="aspect-[4/5] bg-gradient-to-br from-emerald-50 to-emerald-100/50 dark:from-emerald-950/50 dark:to-emerald-900/30 rounded-2xl overflow-hidden border-2 border-emerald-200/30 dark:border-emerald-400/20">
                     <Image
                       src="/images/handwrittenrecipe.webp"
                       alt="Handwritten thumbprint cookies recipe on wooden cutting board"
                       width={500}
-                      height={375}
+                      height={625}
                       quality={70}
                       className="w-full h-full object-cover hover:scale-110 transition-transform duration-700"
                     />
@@ -188,14 +188,14 @@ const Home = async () => {
                       </p>
                     </div>
                   </div>
-                  <div className="aspect-[4/3] bg-gradient-to-br from-blue-50 to-blue-100/50 dark:from-blue-950/50 dark:to-blue-900/30 rounded-2xl overflow-hidden border-2 border-blue-200/30 dark:border-blue-400/20">
+                  <div className="aspect-[4/5] bg-gradient-to-br from-blue-50 to-blue-100/50 dark:from-blue-950/50 dark:to-blue-900/30 rounded-2xl overflow-hidden border-2 border-blue-200/30 dark:border-blue-400/20">
                     <Image
                       src="/images/handwrittenrecipeoutput.png"
                       alt="AI generated thumbprint cookies recipe with detailed information"
                       width={500}
-                      height={375}
+                      height={625}
                       quality={70}
-                      className="w-full h-full object-cover hover:scale-110 transition-transform duration-700"
+                      className="w-full h-full object-cover scale-110 hover:scale-115 transition-transform duration-700"
                     />
                   </div>
                 </div>
@@ -247,12 +247,12 @@ const Home = async () => {
                       </p>
                     </div>
                   </div>
-                  <div className="aspect-[4/3] bg-gradient-to-br from-orange-50 to-orange-100/50 dark:from-orange-950/50 dark:to-orange-900/30 rounded-2xl overflow-hidden border-2 border-orange-200/30 dark:border-orange-400/20">
+                  <div className="aspect-[4/5] bg-gradient-to-br from-orange-50 to-orange-100/50 dark:from-orange-950/50 dark:to-orange-900/30 rounded-2xl overflow-hidden border-2 border-orange-200/30 dark:border-orange-400/20">
                     <Image
                       src="/images/ingredientsImage.jpg"
                       alt="Fresh vegetables including cucumbers, carrots, avocados, and lettuce in refrigerator"
                       width={500}
-                      height={375}
+                      height={625}
                       quality={70}
                       className="w-full h-full object-cover hover:scale-110 transition-transform duration-700"
                     />
@@ -304,14 +304,14 @@ const Home = async () => {
                       </p>
                     </div>
                   </div>
-                  <div className="aspect-[4/3] bg-gradient-to-br from-blue-50 to-blue-100/50 dark:from-blue-950/50 dark:to-blue-900/30 rounded-2xl overflow-hidden border-2 border-blue-200/30 dark:border-blue-400/20">
+                  <div className="aspect-[4/5] bg-gradient-to-br from-blue-50 to-blue-100/50 dark:from-blue-950/50 dark:to-blue-900/30 rounded-2xl overflow-hidden border-2 border-blue-200/30 dark:border-blue-400/20">
                     <Image
                       src="/images/ingredientsImageOutput.png"
                       alt="AI generated fresh garden salad recipe with ingredients and nutrition info"
                       width={500}
-                      height={375}
+                      height={625}
                       quality={70}
-                      className="w-full h-full object-cover hover:scale-110 transition-transform duration-700"
+                      className="w-full h-full object-cover scale-102 hover:scale-110 transition-transform duration-700"
                     />
                   </div>
                 </div>
