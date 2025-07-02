@@ -117,11 +117,6 @@ const Home = async () => {
               <div className="relative bg-white/90 dark:bg-zinc-900/90 border-2 border-blue-200/50 dark:border-blue-400/30 rounded-3xl p-6 shadow-2xl backdrop-blur-sm hover:shadow-3xl transition-all duration-500 group-hover:scale-105">
                 <div className="mb-4">
                   <div className="flex items-center gap-3 mb-4">
-                    <div className="w-10 h-10 bg-gradient-to-r from-emerald-600/10 to-emerald-400/10 dark:from-emerald-400/10 dark:to-emerald-300/10 rounded-xl flex items-center justify-center">
-                      <span className="text-emerald-600 dark:text-emerald-400 font-bold text-lg">
-                        📝
-                      </span>
-                    </div>
                     <div>
                       <h3 className="text-lg font-semibold">
                         Handwritten Recipe
@@ -131,7 +126,7 @@ const Home = async () => {
                       </p>
                     </div>
                   </div>
-                  <div className="aspect-[4/5] bg-gradient-to-br from-emerald-50 to-emerald-100/50 dark:from-emerald-950/50 dark:to-emerald-900/30 rounded-2xl overflow-hidden border-2 border-emerald-200/30 dark:border-emerald-400/20">
+                  <div className="aspect-[4/5] bg-gradient-to-br from-blue-50 to-blue-100/50 dark:from-blue-950/50 dark:to-blue-900/30 rounded-2xl overflow-hidden border-2 border-blue-200/30 dark:border-blue-400/20">
                     <Image
                       src="/images/handwrittenrecipe.webp"
                       alt="Handwritten thumbprint cookies recipe on wooden cutting board"
@@ -142,7 +137,7 @@ const Home = async () => {
                     />
                   </div>
                 </div>
-                <div className="text-xs text-muted-foreground text-center bg-emerald-50/50 dark:bg-emerald-950/30 rounded-lg p-2">
+                <div className="text-xs text-muted-foreground text-center bg-blue-50/50 dark:bg-blue-950/30 rounded-lg p-2">
                   <span className="font-medium">Upload:</span> Handwritten
                   recipes, cookbook pages, recipe cards
                 </div>
@@ -179,11 +174,6 @@ const Home = async () => {
               <div className="relative bg-white/90 dark:bg-zinc-900/90 border-2 border-blue-200/50 dark:border-blue-400/30 rounded-3xl p-6 shadow-2xl backdrop-blur-sm hover:shadow-3xl transition-all duration-500 group-hover:scale-105">
                 <div className="mb-4">
                   <div className="flex items-center gap-3 mb-4">
-                    <div className="w-10 h-10 bg-gradient-to-r from-blue-600/10 to-blue-400/10 dark:from-blue-400/10 dark:to-blue-300/10 rounded-xl flex items-center justify-center">
-                      <span className="text-blue-600 dark:text-blue-400 font-bold text-lg">
-                        ✨
-                      </span>
-                    </div>
                     <div>
                       <h3 className="text-lg font-semibold">
                         <span className="bg-gradient-to-r from-blue-600 to-blue-400 dark:from-blue-400 dark:to-blue-300 bg-clip-text text-transparent">
@@ -237,15 +227,10 @@ const Home = async () => {
           <div className="grid lg:grid-cols-5 gap-6 items-center">
             {/* Input: Ingredients Image */}
             <div className="lg:col-span-2 relative group">
-              <div className="absolute inset-0 bg-gradient-to-r from-orange-600/20 to-orange-400/20 dark:from-orange-400/20 dark:to-orange-300/20 rounded-3xl blur-xl opacity-50 group-hover:opacity-75 transition-opacity duration-500"></div>
-              <div className="relative bg-white/90 dark:bg-zinc-900/90 border-2 border-orange-200/50 dark:border-orange-400/30 rounded-3xl p-6 shadow-2xl backdrop-blur-sm hover:shadow-3xl transition-all duration-500 group-hover:scale-105">
+              <div className="absolute inset-0 bg-gradient-to-r from-blue-600/20 to-blue-400/20 dark:from-blue-400/20 dark:to-blue-300/20 rounded-3xl blur-xl opacity-50 group-hover:opacity-75 transition-opacity duration-500"></div>
+              <div className="relative bg-white/90 dark:bg-zinc-900/90 border-2 border-blue-200/50 dark:border-blue-400/30 rounded-3xl p-6 shadow-2xl backdrop-blur-sm hover:shadow-3xl transition-all duration-500 group-hover:scale-105">
                 <div className="mb-4">
                   <div className="flex items-center gap-3 mb-4">
-                    <div className="w-10 h-10 bg-gradient-to-r from-orange-600/10 to-orange-400/10 dark:from-orange-400/10 dark:to-orange-300/10 rounded-xl flex items-center justify-center">
-                      <span className="text-orange-600 dark:text-orange-400 font-bold text-lg">
-                        🥬
-                      </span>
-                    </div>
                     <div>
                       <h3 className="text-lg font-semibold">
                         Fresh Ingredients
@@ -255,7 +240,7 @@ const Home = async () => {
                       </p>
                     </div>
                   </div>
-                  <div className="aspect-[4/5] bg-gradient-to-br from-orange-50 to-orange-100/50 dark:from-orange-950/50 dark:to-orange-900/30 rounded-2xl overflow-hidden border-2 border-orange-200/30 dark:border-orange-400/20">
+                  <div className="aspect-[4/5] bg-gradient-to-br from-blue-50 to-blue-100/50 dark:from-blue-950/50 dark:to-blue-900/30 rounded-2xl overflow-hidden border-2 border-blue-200/30 dark:border-blue-400/20">
                     <Image
                       src="/images/ingredientsImage.jpg"
                       alt="Fresh vegetables including cucumbers, carrots, avocados, and lettuce in refrigerator"
@@ -266,7 +251,7 @@ const Home = async () => {
                     />
                   </div>
                 </div>
-                <div className="text-xs text-muted-foreground text-center bg-orange-50/50 dark:bg-orange-950/30 rounded-lg p-2">
+                <div className="text-xs text-muted-foreground text-center bg-blue-50/50 dark:bg-blue-950/30 rounded-lg p-2">
                   <span className="font-medium">Upload:</span> Ingredient
                   photos, fridge contents, pantry items
                 </div>
@@ -303,11 +288,6 @@ const Home = async () => {
               <div className="relative bg-white/90 dark:bg-zinc-900/90 border-2 border-blue-200/50 dark:border-blue-400/30 rounded-3xl p-6 shadow-2xl backdrop-blur-sm hover:shadow-3xl transition-all duration-500 group-hover:scale-105">
                 <div className="mb-4">
                   <div className="flex items-center gap-3 mb-4">
-                    <div className="w-10 h-10 bg-gradient-to-r from-blue-600/10 to-blue-400/10 dark:from-blue-400/10 dark:to-blue-300/10 rounded-xl flex items-center justify-center">
-                      <span className="text-blue-600 dark:text-blue-400 font-bold text-lg">
-                        🥗
-                      </span>
-                    </div>
                     <div>
                       <h3 className="text-lg font-semibold">
                         <span className="bg-gradient-to-r from-blue-600 to-blue-400 dark:from-blue-400 dark:to-blue-300 bg-clip-text text-transparent">
@@ -349,6 +329,120 @@ const Home = async () => {
                       Nutrition
                     </div>
                     <div className="text-muted-foreground">Full analysis</div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {/* Example 3: Manual Recipe Input */}
+        <div className="mb-20">
+          <div className="grid lg:grid-cols-5 gap-6 items-center">
+            {/* Input: Manual Recipe Input */}
+            <div className="lg:col-span-2 relative group">
+              <div className="absolute inset-0 bg-gradient-to-r from-blue-600/20 to-blue-400/20 dark:from-blue-400/20 dark:to-blue-300/20 rounded-3xl blur-xl opacity-50 group-hover:opacity-75 transition-opacity duration-500"></div>
+              <div className="relative bg-white/90 dark:bg-zinc-900/90 border-2 border-blue-200/50 dark:border-blue-400/30 rounded-3xl p-6 shadow-2xl backdrop-blur-sm hover:shadow-3xl transition-all duration-500 group-hover:scale-105">
+                <div className="mb-4">
+                  <div className="flex items-center gap-3 mb-4">
+                    <div>
+                      <h3 className="text-lg font-semibold">
+                        Manual Recipe Input
+                      </h3>
+                      <p className="text-sm text-muted-foreground">
+                        Type your own recipe ideas
+                      </p>
+                    </div>
+                  </div>
+                  <div className="aspect-[4/5] bg-gradient-to-br from-blue-50 to-blue-100/50 dark:from-blue-950/50 dark:to-blue-900/30 rounded-2xl overflow-hidden border-2 border-blue-200/30 dark:border-blue-400/20">
+                    <Image
+                      src="/images/manualinput.png"
+                      alt="Manual recipe input interface showing text input for custom recipe creation"
+                      width={500}
+                      height={625}
+                      quality={100}
+                      className="w-full h-full object-cover hover:scale-110 transition-transform duration-700"
+                    />
+                  </div>
+                </div>
+                <div className="text-xs text-muted-foreground text-center bg-blue-50/50 dark:bg-blue-950/30 rounded-lg p-2">
+                  <span className="font-medium">Type:</span> Recipe ideas,
+                  cooking concepts, meal descriptions
+                </div>
+              </div>
+            </div>
+
+            {/* Transformation Arrow */}
+            <div className="lg:col-span-1 flex justify-center items-center">
+              <div className="relative">
+                <div className="absolute inset-0 bg-gradient-to-r from-blue-600 to-blue-400 dark:from-blue-400 dark:to-blue-300 rounded-full blur-lg opacity-30 animate-pulse"></div>
+                <div className="relative bg-gradient-to-r from-blue-600 to-blue-400 dark:from-blue-400 dark:to-blue-300 p-6 rounded-full shadow-xl">
+                  <Sparkles className="w-8 h-8 text-white" />
+                </div>
+              </div>
+              {/* Mobile arrow (pointing down, next to sparkle) */}
+              <div className="lg:hidden ml-4">
+                <div className="flex flex-col items-center">
+                  <div className="w-0.5 h-12 bg-gradient-to-b from-blue-600 to-blue-400 dark:from-blue-400 dark:to-blue-300"></div>
+                  <div className="w-0 h-0 border-t-6 border-t-blue-600 dark:border-t-blue-400 border-l-3 border-l-transparent border-r-3 border-r-transparent"></div>
+                </div>
+              </div>
+              {/* Desktop arrow (pointing right) */}
+              <div className="hidden lg:block ml-4">
+                <div className="flex items-center">
+                  <div className="w-12 h-0.5 bg-gradient-to-r from-blue-600 to-blue-400 dark:from-blue-400 dark:to-blue-300"></div>
+                  <div className="w-0 h-0 border-l-6 border-l-blue-600 dark:border-l-blue-400 border-t-3 border-t-transparent border-b-3 border-b-transparent"></div>
+                </div>
+              </div>
+            </div>
+
+            {/* Output: AI Enhanced Recipe */}
+            <div className="lg:col-span-2 relative group">
+              <div className="absolute inset-0 bg-gradient-to-r from-blue-600/20 to-blue-400/20 dark:from-blue-400/20 dark:to-blue-300/20 rounded-3xl blur-xl opacity-50 group-hover:opacity-75 transition-opacity duration-500"></div>
+              <div className="relative bg-white/90 dark:bg-zinc-900/90 border-2 border-blue-200/50 dark:border-blue-400/30 rounded-3xl p-6 shadow-2xl backdrop-blur-sm hover:shadow-3xl transition-all duration-500 group-hover:scale-105">
+                <div className="mb-4">
+                  <div className="flex items-center gap-3 mb-4">
+                    <div>
+                      <h3 className="text-lg font-semibold">
+                        <span className="bg-gradient-to-r from-blue-600 to-blue-400 dark:from-blue-400 dark:to-blue-300 bg-clip-text text-transparent">
+                          Bubu AI
+                        </span>{" "}
+                        Enhanced Recipe
+                      </h3>
+                      <p className="text-sm text-muted-foreground">
+                        Avocado and Strawberry Smoothie
+                      </p>
+                    </div>
+                  </div>
+                  <div className="aspect-[4/5] bg-gradient-to-br from-blue-50 to-blue-100/50 dark:from-blue-950/50 dark:to-blue-900/30 rounded-2xl overflow-hidden border-2 border-blue-200/30 dark:border-blue-400/20">
+                    <Image
+                      src="/images/manualInputOutput.png"
+                      alt="AI enhanced avocado and strawberry smoothie recipe with complete details and nutrition"
+                      width={500}
+                      height={625}
+                      quality={70}
+                      className="w-full h-full object-cover scale-102 hover:scale-110 transition-transform duration-700"
+                    />
+                  </div>
+                </div>
+                <div className="grid grid-cols-3 gap-2 text-xs text-center">
+                  <div className="bg-blue-50/50 dark:bg-blue-950/30 rounded-lg p-2 border border-blue-200/30 dark:border-blue-400/20">
+                    <div className="font-semibold text-blue-600 dark:text-blue-400">
+                      Enhanced
+                    </div>
+                    <div className="text-muted-foreground">Full details</div>
+                  </div>
+                  <div className="bg-blue-50/50 dark:bg-blue-950/30 rounded-lg p-2 border border-blue-200/30 dark:border-blue-400/20">
+                    <div className="font-semibold text-blue-600 dark:text-blue-400">
+                      Image
+                    </div>
+                    <div className="text-muted-foreground">AI generated</div>
+                  </div>
+                  <div className="bg-blue-50/50 dark:bg-blue-950/30 rounded-lg p-2 border border-blue-200/30 dark:border-blue-400/20">
+                    <div className="font-semibold text-blue-600 dark:text-blue-400">
+                      Nutrition
+                    </div>
+                    <div className="text-muted-foreground">Complete info</div>
                   </div>
                 </div>
               </div>
