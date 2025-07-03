@@ -69,11 +69,11 @@ export const generateNutritionalValuesSchema = z.object({
         .string()
         .min(1, "Ingredient name is required")
         .max(100, "Ingredient name must be at most 100 characters"),
-      amount: z.number().positive("Amount must be positive"),
+      amount: z.number(),
       unit: z.string(),
     }),
   ),
-  servings: z.number().positive("Servings must be positive"),
+  servings: z.number(),
 });
 
 export type GenerateNutritionalValuesInput = z.infer<

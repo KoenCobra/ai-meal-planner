@@ -132,7 +132,7 @@ const Home = async () => {
                       alt="Handwritten thumbprint cookies recipe on wooden cutting board"
                       width={500}
                       height={625}
-                      quality={70}
+                      quality={100}
                       className="w-full h-full object-cover hover:scale-110 transition-transform duration-700"
                     />
                   </div>
@@ -192,7 +192,7 @@ const Home = async () => {
                       alt="AI generated thumbprint cookies recipe with detailed information"
                       width={500}
                       height={625}
-                      quality={70}
+                      quality={100}
                       className="w-full h-full object-cover scale-110 hover:scale-115 transition-transform duration-700"
                     />
                   </div>
@@ -246,7 +246,7 @@ const Home = async () => {
                       alt="Fresh vegetables including cucumbers, carrots, avocados, and lettuce in refrigerator"
                       width={500}
                       height={625}
-                      quality={70}
+                      quality={100}
                       className="w-full h-full object-cover hover:scale-110 transition-transform duration-700"
                     />
                   </div>
@@ -306,7 +306,7 @@ const Home = async () => {
                       alt="AI generated fresh garden salad recipe with ingredients and nutrition info"
                       width={500}
                       height={625}
-                      quality={70}
+                      quality={100}
                       className="w-full h-full object-cover scale-102 hover:scale-110 transition-transform duration-700"
                     />
                   </div>
@@ -356,6 +356,123 @@ const Home = async () => {
           </div>
         </div>
       </div>
+
+      {/* Multi-Platform & Multi-Language Showcase */}
+      <section className="py-32 px-4 bg-gradient-to-b from-blue-50/30 to-transparent dark:from-blue-950/20 dark:to-transparent">
+        <div className="max-w-7xl mx-auto">
+          {/* Section Header */}
+          <div className="text-center mb-20">
+            <h2 className="text-4xl md:text-5xl font-bold mb-6">
+              <span className="bg-gradient-to-r from-blue-600 to-blue-400 dark:from-blue-400 dark:to-blue-300 bg-clip-text text-transparent">
+                Bubu AI
+              </span>{" "}
+              Works on Any Device
+              <span className="block text-3xl md:text-4xl mt-2">
+                Understands Any Language
+              </span>
+            </h2>
+            <p className="text-lg md:text-xl text-muted-foreground max-w-3xl mx-auto">
+              Type your recipe requests in any language you&apos;re comfortable
+              with.{" "}
+              <span className="font-semibold bg-gradient-to-r from-blue-600 to-blue-400 dark:from-blue-400 dark:to-blue-300 bg-clip-text text-transparent">
+                Bubu AI
+              </span>{" "}
+              understands any language and works seamlessly across all your
+              devices.
+            </p>
+          </div>
+
+          {/* Device Showcase */}
+          <div className="grid lg:grid-cols-3 gap-8 items-start">
+            {/* Mobile */}
+            <div className="relative group">
+              <div className="absolute inset-0 bg-gradient-to-r from-blue-600/20 to-blue-400/20 dark:from-blue-400/20 dark:to-blue-300/20 rounded-3xl blur-xl opacity-50 group-hover:opacity-75 transition-all duration-500"></div>
+              <div className="relative bg-white/90 dark:bg-zinc-900/90 border-2 border-blue-200/50 dark:border-blue-400/30 rounded-3xl p-6 shadow-2xl backdrop-blur-sm hover:shadow-3xl transition-all duration-500 group-hover:scale-105">
+                <div className="text-center mb-6">
+                  <div className="inline-flex items-center gap-2 bg-blue-50 dark:bg-blue-950/50 px-4 py-2 rounded-full border border-blue-200/50 dark:border-blue-400/30 mb-4">
+                    <div className="w-3 h-3 bg-gradient-to-r from-blue-600 to-blue-400 dark:from-blue-400 dark:to-blue-300 rounded-full"></div>
+                    <span className="text-sm font-semibold bg-gradient-to-r from-blue-600 to-blue-400 dark:from-blue-400 dark:to-blue-300 bg-clip-text text-transparent">
+                      Mobile
+                    </span>
+                  </div>
+                  <h3 className="text-xl font-bold mb-2">On-the-Go Cooking</h3>
+                  <p className="text-sm text-muted-foreground">
+                    Create recipes anywhere, anytime
+                  </p>
+                </div>
+                <div className="bg-gradient-to-br from-blue-50 to-blue-100/50 dark:from-blue-950/50 dark:to-blue-900/30 rounded-2xl overflow-hidden border-2 border-blue-200/30 dark:border-blue-400/20">
+                  <Image
+                    src="/images/english-mobile-phone.png"
+                    alt="Bubu AI mobile app showing recipe generation interface"
+                    width={400}
+                    height={711}
+                    quality={100}
+                    className="w-full h-auto object-contain hover:scale-105 transition-transform duration-700"
+                  />
+                </div>
+              </div>
+            </div>
+
+            {/* Tablet */}
+            <div className="relative group">
+              <div className="absolute inset-0 bg-gradient-to-r from-blue-600/20 to-blue-400/20 dark:from-blue-400/20 dark:to-blue-300/20 rounded-3xl blur-xl opacity-50 group-hover:opacity-75 transition-all duration-500"></div>
+              <div className="relative bg-white/90 dark:bg-zinc-900/90 border-2 border-blue-200/50 dark:border-blue-400/30 rounded-3xl p-6 shadow-2xl backdrop-blur-sm hover:shadow-3xl transition-all duration-500 group-hover:scale-105">
+                <div className="text-center mb-6">
+                  <div className="inline-flex items-center gap-2 bg-blue-50 dark:bg-blue-950/50 px-4 py-2 rounded-full border border-blue-200/50 dark:border-blue-400/30 mb-4">
+                    <div className="w-3 h-3 bg-gradient-to-r from-blue-600 to-blue-400 dark:from-blue-400 dark:to-blue-300 rounded-full"></div>
+                    <span className="text-sm font-semibold bg-gradient-to-r from-blue-600 to-blue-400 dark:from-blue-400 dark:to-blue-300 bg-clip-text text-transparent">
+                      Tablet
+                    </span>
+                  </div>
+                  <h3 className="text-xl font-bold mb-2">Kitchen Companion</h3>
+                  <p className="text-sm text-muted-foreground">
+                    Perfect for following recipes while cooking
+                  </p>
+                </div>
+                <div className="bg-gradient-to-br from-blue-50 to-blue-100/50 dark:from-blue-950/50 dark:to-blue-900/30 rounded-2xl overflow-hidden border-2 border-blue-200/30 dark:border-blue-400/20">
+                  <Image
+                    src="/images/italian-tablet.png"
+                    alt="Bubu AI tablet interface showing pasta recipe generation"
+                    width={640}
+                    height={480}
+                    quality={100}
+                    className="w-full h-auto object-contain hover:scale-105 transition-transform duration-700"
+                  />
+                </div>
+              </div>
+            </div>
+
+            {/* Desktop */}
+            <div className="relative group">
+              <div className="absolute inset-0 bg-gradient-to-r from-blue-600/20 to-blue-400/20 dark:from-blue-400/20 dark:to-blue-300/20 rounded-3xl blur-xl opacity-50 group-hover:opacity-75 transition-all duration-500"></div>
+              <div className="relative bg-white/90 dark:bg-zinc-900/90 border-2 border-blue-200/50 dark:border-blue-400/30 rounded-3xl p-6 shadow-2xl backdrop-blur-sm hover:shadow-3xl transition-all duration-500 group-hover:scale-105">
+                <div className="text-center mb-6">
+                  <div className="inline-flex items-center gap-2 bg-blue-50 dark:bg-blue-950/50 px-4 py-2 rounded-full border border-blue-200/50 dark:border-blue-400/30 mb-4">
+                    <div className="w-3 h-3 bg-gradient-to-r from-blue-600 to-blue-400 dark:from-blue-400 dark:to-blue-300 rounded-full"></div>
+                    <span className="text-sm font-semibold bg-gradient-to-r from-blue-600 to-blue-400 dark:from-blue-400 dark:to-blue-300 bg-clip-text text-transparent">
+                      Desktop
+                    </span>
+                  </div>
+                  <h3 className="text-xl font-bold mb-2">Full Experience</h3>
+                  <p className="text-sm text-muted-foreground">
+                    Complete meal planning and recipe management
+                  </p>
+                </div>
+                <div className="bg-gradient-to-br from-blue-50 to-blue-100/50 dark:from-blue-950/50 dark:to-blue-900/30 rounded-2xl overflow-hidden border-2 border-blue-200/30 dark:border-blue-400/20">
+                  <Image
+                    src="/images/spanish-desktop.png"
+                    alt="Bubu AI desktop interface showing comprehensive recipe features"
+                    width={640}
+                    height={400}
+                    quality={100}
+                    className="w-full h-auto object-contain hover:scale-105 transition-transform duration-700"
+                  />
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
 
       {/* Features Section */}
       <section className="py-16 px-4 bg-gradient-to-b from-blue-50/50 to-transparent dark:from-blue-950/20 dark:to-transparent rounded-lg">
