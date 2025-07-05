@@ -76,6 +76,27 @@ const BillingPage = () => {
         )}
       </div>
 
+      {/* Payment Completion Notice */}
+      <div className="p-6 bg-card border rounded-lg">
+        <div className="flex items-start space-x-3">
+          <div>
+            <h3 className="text-sm font-semibold  mb-1">
+              Important: Check Your Email After Payment
+            </h3>
+            <p className="text-sm text-muted-foreground">
+              After completing your payment, please check your email for a
+              confirmation message and access details.
+              <strong className="font-medium">
+                {" "}
+                Don&apos;t forget to check your spam or junk folder
+              </strong>{" "}
+              if you don&apos;t see the email in your inbox within a few
+              minutes.
+            </p>
+          </div>
+        </div>
+      </div>
+
       {/* Footer Section */}
       <footer className="border-t pt-8 pb-8">
         <div className="text-center text-sm text-muted-foreground">
