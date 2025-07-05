@@ -1,4 +1,6 @@
 import ConvexClientProvider from "@/components/ConvexClientProvider";
+import CookieConsent from "@/components/CookieConsent";
+import { CookieConsentProvider } from "@/components/CookieConsentContext";
 import { Toaster } from "@/components/ui/sonner";
 import { ClerkProvider } from "@clerk/nextjs";
 import { dark } from "@clerk/themes";
@@ -54,17 +56,20 @@ export default function RootLayout({
               enableSystem
               disableTransitionOnChange
             >
-              <main>{children}</main>
-              <Toaster
-                position="top-center"
-                duration={2000}
-                className="md:hidden"
-              />
-              <Toaster
-                position="bottom-right"
-                duration={2000}
-                className="hidden md:block"
-              />
+              <CookieConsentProvider>
+                <main>{children}</main>
+                <Toaster
+                  position="top-center"
+                  duration={2000}
+                  className="md:hidden"
+                />
+                <Toaster
+                  position="bottom-right"
+                  duration={2000}
+                  className="hidden md:block"
+                />
+                <CookieConsent />
+              </CookieConsentProvider>
             </ThemeProvider>
           </ConvexClientProvider>
         </ClerkProvider>
