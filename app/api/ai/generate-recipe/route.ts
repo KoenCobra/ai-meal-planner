@@ -45,12 +45,16 @@ export async function POST(req: NextRequest) {
       models: ["google/gemini-2.5-flash", "openai/gpt-4.1-mini"],
       messages: [
         {
-          role: "user",
-          content: `You will always answer in the language that the user is using.Please provide a recipe from this description: ${description}
+          role: "system",
+          content: `Make sure to generate all the output in the language that is used in the input.
           If the input has nothing to do with food, or will cause even the slightest bit of harm, please return an error message with the error prop in the shema output.
           If the recipe would cause harm any way to the person's health, please return an error message with the error prop in the shema output.
           Be very detailed and elaborate with the ingredients and steps.
           Smoothies are by default in the "other" dishType.`,
+        },
+        {
+          role: "user",
+          content: `Please provide a recipe from this description: ${description}`,
         },
       ],
       response_format: {
