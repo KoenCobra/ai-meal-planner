@@ -1,12 +1,13 @@
+"use client";
+
+import { Checkbox } from "@/components/ui/checkbox";
 import { PricingTable } from "@clerk/nextjs";
-import { Metadata } from "next";
+import Link from "next/link";
+import { useState } from "react";
 
-export const metadata: Metadata = {
-  title: "Pricing",
-  description: "Pricing for Bubu AI",
-};
+const BillingPage = () => {
+  const [tosAccepted, setTosAccepted] = useState(false);
 
-const page = () => {
   return (
     <div className="max-w-4xl mt-8 mx-auto px-4">
       {/* Header Section */}
@@ -21,9 +22,60 @@ const page = () => {
         </p>
       </div>
 
+      {/* Terms Agreement Section */}
+      <div className="mb-8 p-6 bg-card border rounded-lg">
+        <div className="flex items-start space-x-3">
+          <Checkbox
+            id="tos-agreement"
+            checked={tosAccepted}
+            onCheckedChange={(checked) => setTosAccepted(checked === true)}
+          />
+          <div className="grid gap-1.5 leading-none">
+            <label
+              htmlFor="tos-agreement"
+              className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70 cursor-pointer"
+            >
+              I agree to the{" "}
+              <Link
+                href="/terms-of-service"
+                className="text-primary underline font-semibold"
+                rel="noopener noreferrer"
+              >
+                Terms of Service
+              </Link>
+            </label>
+            <p className="text-xs text-muted-foreground">
+              By subscribing, you agree to our Terms of Service and understand
+              your subscription terms.
+            </p>
+          </div>
+        </div>
+      </div>
+
       {/* Pricing Table */}
-      <div className="mb-16">
-        <PricingTable />
+      <div className="mb-16 relative">
+        <div
+          className={`transition-opacity duration-300 ${
+            tosAccepted ? "opacity-100" : "opacity-50"
+          }`}
+          style={{
+            pointerEvents: tosAccepted ? "auto" : "none",
+          }}
+        >
+          <PricingTable />
+        </div>
+        {!tosAccepted && (
+          <div className="absolute inset-0 flex items-center justify-center bg-background/80 backdrop-blur-sm rounded-lg">
+            <div className="text-center p-6">
+              <p className="text-sm text-muted-foreground mb-2">
+                Please accept the Terms of Service to continue
+              </p>
+              <p className="text-xs text-muted-foreground">
+                Check the box above to enable the pricing table
+              </p>
+            </div>
+          </div>
+        )}
       </div>
 
       {/* Footer Section */}
@@ -44,4 +96,4 @@ const page = () => {
   );
 };
 
-export default page;
+export default BillingPage;
