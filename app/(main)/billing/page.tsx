@@ -57,11 +57,8 @@ const BillingPage = () => {
       <div className="mb-16 relative">
         <div
           className={`transition-opacity duration-300 ${
-            tosAccepted ? "opacity-100" : "opacity-50"
+            tosAccepted ? "opacity-100" : "opacity-50 pointer-events-none"
           }`}
-          style={{
-            pointerEvents: tosAccepted ? "auto" : "none",
-          }}
         >
           <PricingTable />
         </div>
