@@ -32,7 +32,7 @@ export function EmailTemplate({ name }: EmailTemplateProps) {
         }}
       >
         {/* Welcome Section */}
-        <div style={{ padding: "50px 40px" }}>
+        <div style={{ padding: "50px 40px", marginTop: "20px" }}>
           <h2
             style={{
               fontSize: "32px",
