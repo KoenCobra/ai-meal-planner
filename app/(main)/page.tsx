@@ -832,7 +832,22 @@ const Home = async () => {
                 Support
               </h4>
               <div className="space-y-2 text-sm text-muted-foreground">
-                <p>Contact Us</p>
+                <p>
+                  <a
+                    href="mailto:info@bubuaimealplanner.com"
+                    className="underline font-semibold"
+                    rel="noopener noreferrer"
+                  >
+                    Contact our support team
+                  </a>
+                </p>
+                <a
+                  href="/terms-of-service"
+                  className="underline font-semibold"
+                  rel="noopener noreferrer"
+                >
+                  Terms of Service
+                </a>
               </div>
             </div>
           </div>
