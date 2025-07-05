@@ -1,6 +1,7 @@
 import ConvexClientProvider from "@/components/ConvexClientProvider";
 import { Toaster } from "@/components/ui/sonner";
 import { ClerkProvider } from "@clerk/nextjs";
+import { dark } from "@clerk/themes";
 import type { Metadata } from "next";
 import { ThemeProvider } from "next-themes";
 import { Geist, Geist_Mono } from "next/font/google";
@@ -40,7 +41,12 @@ export default function RootLayout({
         suppressHydrationWarning
         className={`${geistSans.variable} ${geistMono.variable} antialiased min-h-svh`}
       >
-        <ClerkProvider dynamic>
+        <ClerkProvider
+          dynamic
+          appearance={{
+            baseTheme: dark,
+          }}
+        >
           <ConvexClientProvider>
             <ThemeProvider
               attribute="class"
