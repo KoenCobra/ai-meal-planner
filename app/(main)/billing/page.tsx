@@ -40,6 +40,7 @@ const BillingPage = () => {
                 href="/terms-of-service"
                 className="text-primary underline font-semibold"
                 rel="noopener noreferrer"
+                target="_blank"
               >
                 Terms of Service
               </Link>
@@ -84,8 +85,9 @@ const BillingPage = () => {
           <p className="mb-2">
             Have questions about our pricing?
             <a
-              href="mailto:support@bubu-ai.com"
+              href="mailto:info@bubuaimealplanner.com"
               className="ml-1 text-primary hover:underline"
+              target="_blank"
             >
               Contact our support team
             </a>

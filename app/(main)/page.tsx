@@ -837,6 +837,7 @@ const Home = async () => {
                     href="mailto:info@bubuaimealplanner.com"
                     className="underline font-semibold"
                     rel="noopener noreferrer"
+                    target="_blank"
                   >
                     Contact our support team
                   </a>
@@ -846,6 +847,7 @@ const Home = async () => {
                     href="/privacy-policy"
                     className="underline font-semibold"
                     rel="noopener noreferrer"
+                    target="_blank"
                   >
                     Privacy Policy
                   </a>
@@ -854,6 +856,7 @@ const Home = async () => {
                   href="/terms-of-service"
                   className="underline font-semibold"
                   rel="noopener noreferrer"
+                  target="_blank"
                 >
                   Terms of Service
                 </a>
