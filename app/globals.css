@@ -233,6 +233,246 @@
       transform: translateX(-20px) translateY(-110px) scale(1.05);
     }
   }
+
+  /* Carousel animations */
+  .animate-carousel {
+    animation: carousel-slide 12s linear infinite;
+  }
+
+  .animate-dot-1 {
+    animation: dot-pulse-1 12s linear infinite;
+  }
+
+  .animate-dot-2 {
+    animation: dot-pulse-2 12s linear infinite;
+  }
+
+  .animate-dot-3 {
+    animation: dot-pulse-3 12s linear infinite;
+  }
+
+  @keyframes carousel-slide {
+    0% {
+      transform: translateX(0%);
+    }
+    25% {
+      transform: translateX(0%);
+    }
+    33.33% {
+      transform: translateX(-100%);
+    }
+    58.33% {
+      transform: translateX(-100%);
+    }
+    66.66% {
+      transform: translateX(-200%);
+    }
+    91.66% {
+      transform: translateX(-200%);
+    }
+    100% {
+      transform: translateX(-300%);
+    }
+  }
+
+  @keyframes dot-pulse-1 {
+    0% {
+      background-color: rgb(37 99 235);
+      transform: scale(1);
+    }
+    25% {
+      background-color: rgb(37 99 235);
+      transform: scale(1.2);
+    }
+    33.33% {
+      background-color: rgb(147 197 253);
+      transform: scale(1);
+    }
+    58.33% {
+      background-color: rgb(147 197 253);
+      transform: scale(1);
+    }
+    66.66% {
+      background-color: rgb(147 197 253);
+      transform: scale(1);
+    }
+    91.66% {
+      background-color: rgb(147 197 253);
+      transform: scale(1);
+    }
+    100% {
+      background-color: rgb(37 99 235);
+      transform: scale(1);
+    }
+  }
+
+  @keyframes dot-pulse-2 {
+    0% {
+      background-color: rgb(147 197 253);
+      transform: scale(1);
+    }
+    25% {
+      background-color: rgb(147 197 253);
+      transform: scale(1);
+    }
+    33.33% {
+      background-color: rgb(37 99 235);
+      transform: scale(1.2);
+    }
+    58.33% {
+      background-color: rgb(37 99 235);
+      transform: scale(1.2);
+    }
+    66.66% {
+      background-color: rgb(147 197 253);
+      transform: scale(1);
+    }
+    91.66% {
+      background-color: rgb(147 197 253);
+      transform: scale(1);
+    }
+    100% {
+      background-color: rgb(147 197 253);
+      transform: scale(1);
+    }
+  }
+
+  @keyframes dot-pulse-3 {
+    0% {
+      background-color: rgb(147 197 253);
+      transform: scale(1);
+    }
+    25% {
+      background-color: rgb(147 197 253);
+      transform: scale(1);
+    }
+    33.33% {
+      background-color: rgb(147 197 253);
+      transform: scale(1);
+    }
+    58.33% {
+      background-color: rgb(147 197 253);
+      transform: scale(1);
+    }
+    66.66% {
+      background-color: rgb(37 99 235);
+      transform: scale(1.2);
+    }
+    91.66% {
+      background-color: rgb(37 99 235);
+      transform: scale(1.2);
+    }
+    100% {
+      background-color: rgb(147 197 253);
+      transform: scale(1);
+    }
+  }
+
+  /* Dark mode dot animations */
+  .dark .animate-dot-1 {
+    animation: dot-pulse-1-dark 12s linear infinite;
+  }
+
+  .dark .animate-dot-2 {
+    animation: dot-pulse-2-dark 12s linear infinite;
+  }
+
+  .dark .animate-dot-3 {
+    animation: dot-pulse-3-dark 12s linear infinite;
+  }
+
+  @keyframes dot-pulse-1-dark {
+    0% {
+      background-color: rgb(96 165 250);
+      transform: scale(1);
+    }
+    25% {
+      background-color: rgb(96 165 250);
+      transform: scale(1.2);
+    }
+    33.33% {
+      background-color: rgb(29 78 216);
+      transform: scale(1);
+    }
+    58.33% {
+      background-color: rgb(29 78 216);
+      transform: scale(1);
+    }
+    66.66% {
+      background-color: rgb(29 78 216);
+      transform: scale(1);
+    }
+    91.66% {
+      background-color: rgb(29 78 216);
+      transform: scale(1);
+    }
+    100% {
+      background-color: rgb(96 165 250);
+      transform: scale(1);
+    }
+  }
+
+  @keyframes dot-pulse-2-dark {
+    0% {
+      background-color: rgb(29 78 216);
+      transform: scale(1);
+    }
+    25% {
+      background-color: rgb(29 78 216);
+      transform: scale(1);
+    }
+    33.33% {
+      background-color: rgb(96 165 250);
+      transform: scale(1.2);
+    }
+    58.33% {
+      background-color: rgb(96 165 250);
+      transform: scale(1.2);
+    }
+    66.66% {
+      background-color: rgb(29 78 216);
+      transform: scale(1);
+    }
+    91.66% {
+      background-color: rgb(29 78 216);
+      transform: scale(1);
+    }
+    100% {
+      background-color: rgb(29 78 216);
+      transform: scale(1);
+    }
+  }
+
+  @keyframes dot-pulse-3-dark {
+    0% {
+      background-color: rgb(29 78 216);
+      transform: scale(1);
+    }
+    25% {
+      background-color: rgb(29 78 216);
+      transform: scale(1);
+    }
+    33.33% {
+      background-color: rgb(29 78 216);
+      transform: scale(1);
+    }
+    58.33% {
+      background-color: rgb(29 78 216);
+      transform: scale(1);
+    }
+    66.66% {
+      background-color: rgb(96 165 250);
+      transform: scale(1.2);
+    }
+    91.66% {
+      background-color: rgb(96 165 250);
+      transform: scale(1.2);
+    }
+    100% {
+      background-color: rgb(29 78 216);
+      transform: scale(1);
+    }
+  }
 }
 
 .cl-drawerRoot {
