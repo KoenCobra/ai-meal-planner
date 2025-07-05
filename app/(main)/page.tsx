@@ -417,7 +417,7 @@ const Home = async () => {
       </div>
 
       {/* Multi-Platform & Multi-Language Showcase */}
-      <section className="py-24 px-4 bg-gradient-to-b from-blue-50/30 to-transparent dark:from-blue-950/20 dark:to-transparent text-balance">
+      <section className="py-24 px-4 bg-gradient-to-b from-blue-50/30 to-transparent dark:from-blue-950/20 dark:to-transparent text-balance rounded-t-lg">
         <div className="max-w-7xl mx-auto">
           {/* Section Header */}
           <div className="text-center mb-20">
@@ -771,7 +771,7 @@ const Home = async () => {
         <div className="max-w-4xl mx-auto text-center">
           <h2 className="text-5xl md:text-6xl font-bold mb-8">
             Ready to Transform Your
-            <span className="block bg-gradient-to-r from-blue-600 to-blue-400 dark:from-blue-400 dark:to-blue-300 bg-clip-text text-transparent">
+            <span className="block bg-gradient-to-r from-blue-600 to-blue-400 dark:from-blue-400 dark:to-blue-300 bg-clip-text text-blue-600 dark:text-blue-400">
               Cooking Experience?
             </span>
           </h2>
@@ -832,7 +832,6 @@ const Home = async () => {
                 Support
               </h4>
               <div className="space-y-2 text-sm text-muted-foreground">
-                <p>Help Center</p>
                 <p>Contact Us</p>
               </div>
             </div>
