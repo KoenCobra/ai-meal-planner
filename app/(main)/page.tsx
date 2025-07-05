@@ -108,62 +108,310 @@ const Home = async () => {
           </p>
         </div>
 
-        {/* Simple Stacked Collage */}
-        <div className="relative w-full max-w-md mx-auto min-h-[500px] md:min-h-[600px]">
-          {/* Search Layer */}
-          <div className="absolute top-0 left-8 z-10">
-            <div className="bg-white/95 dark:bg-zinc-900/95 border-2 border-blue-200/60 dark:border-blue-400/40 rounded-2xl shadow-xl backdrop-blur-sm overflow-hidden w-56 md:w-64 rotate-[-8deg]">
-              <Image
-                src="/images/search720x1500.jpeg"
-                alt="Recipe search interface with smoothie results"
-                width={720}
-                height={1500}
-                quality={100}
-                className="w-full h-auto"
-              />
+        {/* Example 1: Handwritten Recipe Transformation */}
+        <div className="mb-20">
+          <div className="grid lg:grid-cols-5 gap-6 items-center">
+            {/* Input: Handwritten Recipe */}
+            <div className="lg:col-span-2 relative group">
+              <div className="absolute inset-0 bg-gradient-to-r from-blue-600/20 to-blue-400/20 dark:from-blue-400/20 dark:to-blue-300/20 rounded-3xl blur-xl opacity-50 group-hover:opacity-75 transition-opacity duration-500"></div>
+              <div className="relative bg-white/90 dark:bg-zinc-900/90 border-2 border-blue-200/50 dark:border-blue-400/30 rounded-3xl p-6 shadow-2xl backdrop-blur-sm hover:shadow-3xl transition-all duration-500 group-hover:scale-105">
+                <div className="mb-4">
+                  <div className="flex items-center gap-3 mb-4">
+                    <div>
+                      <h3 className="text-lg font-semibold">
+                        Handwritten Recipe
+                      </h3>
+                      <p className="text-sm text-muted-foreground">
+                        Traditional family recipe
+                      </p>
+                    </div>
+                  </div>
+                  <div className="aspect-[4/5] bg-gradient-to-br from-blue-50 to-blue-100/50 dark:from-blue-950/50 dark:to-blue-900/30 rounded-2xl overflow-hidden border-2 border-blue-200/30 dark:border-blue-400/20">
+                    <Image
+                      src="/images/handwrittenrecipe.webp"
+                      alt="Handwritten thumbprint cookies recipe on wooden cutting board"
+                      width={500}
+                      height={625}
+                      quality={100}
+                      className="w-full h-full object-cover hover:scale-105 transition-transform duration-700"
+                    />
+                  </div>
+                </div>
+                <div className="text-xs text-muted-foreground text-center bg-blue-50/50 dark:bg-blue-950/30 rounded-lg p-2">
+                  <span className="font-medium">Upload:</span> Handwritten
+                  recipes, cookbook pages, recipe cards
+                </div>
+              </div>
+            </div>
+
+            {/* Transformation Arrow */}
+            <div className="lg:col-span-1 flex justify-center items-center">
+              <div className="relative">
+                <div className="absolute inset-0 bg-gradient-to-r from-blue-600 to-blue-400 dark:from-blue-400 dark:to-blue-300 rounded-full blur-lg opacity-30 animate-pulse"></div>
+                <div className="relative bg-gradient-to-r from-blue-600 to-blue-400 dark:from-blue-400 dark:to-blue-300 p-6 rounded-full shadow-xl">
+                  <Sparkles className="w-8 h-8 text-white" />
+                </div>
+              </div>
+              {/* Mobile arrow (pointing down, next to sparkle) */}
+              <div className="lg:hidden ml-4">
+                <div className="flex flex-col items-center">
+                  <div className="w-0.5 h-12 bg-gradient-to-b from-blue-600 to-blue-400 dark:from-blue-400 dark:to-blue-300"></div>
+                  <div className="w-0 h-0 border-t-6 border-t-blue-600 dark:border-t-blue-400 border-l-3 border-l-transparent border-r-3 border-r-transparent"></div>
+                </div>
+              </div>
+              {/* Desktop arrow (pointing right) */}
+              <div className="hidden lg:block ml-4">
+                <div className="flex items-center">
+                  <div className="w-12 h-0.5 bg-gradient-to-r from-blue-600 to-blue-400 dark:from-blue-400 dark:to-blue-300"></div>
+                  <div className="w-0 h-0 border-l-6 border-l-blue-600 dark:border-l-blue-400 border-t-3 border-t-transparent border-b-3 border-b-transparent"></div>
+                </div>
+              </div>
+            </div>
+
+            {/* Output: AI Generated Recipe */}
+            <div className="lg:col-span-2 relative group">
+              <div className="absolute inset-0 bg-gradient-to-r from-blue-600/20 to-blue-400/20 dark:from-blue-400/20 dark:to-blue-300/20 rounded-3xl blur-xl opacity-50 group-hover:opacity-75 transition-opacity duration-500"></div>
+              <div className="relative bg-white/90 dark:bg-zinc-900/90 border-2 border-blue-200/50 dark:border-blue-400/30 rounded-3xl p-6 shadow-2xl backdrop-blur-sm hover:shadow-3xl transition-all duration-500 group-hover:scale-105">
+                <div className="mb-4">
+                  <div className="flex items-center gap-3 mb-4">
+                    <div>
+                      <h3 className="text-lg font-semibold">
+                        <span className="bg-gradient-to-r from-blue-600 to-blue-400 dark:from-blue-400 dark:to-blue-300 bg-clip-text text-transparent">
+                          Bubu AI
+                        </span>{" "}
+                        Generated Recipe
+                      </h3>
+                      <p className="text-sm text-muted-foreground">
+                        Complete digital recipe
+                      </p>
+                    </div>
+                  </div>
+                  <div className="aspect-[4/5] bg-gradient-to-br from-blue-50 to-blue-100/50 dark:from-blue-950/50 dark:to-blue-900/30 rounded-2xl overflow-hidden border-2 border-blue-200/30 dark:border-blue-400/20">
+                    <Image
+                      src="/images/handwrittenrecipeoutput.png"
+                      alt="AI generated thumbprint cookies recipe with detailed information"
+                      width={500}
+                      height={625}
+                      quality={100}
+                      className="w-full h-full object-cover hover:scale-105 transition-transform duration-700"
+                    />
+                  </div>
+                </div>
+                <div className="grid grid-cols-3 gap-2 text-xs text-center">
+                  <div className="bg-blue-50/50 dark:bg-blue-950/30 rounded-lg p-2 border border-blue-200/30 dark:border-blue-400/20">
+                    <div className="font-semibold text-blue-600 dark:text-blue-400">
+                      Nutrition
+                    </div>
+                    <div className="text-muted-foreground">Complete values</div>
+                  </div>
+                  <div className="bg-blue-50/50 dark:bg-blue-950/30 rounded-lg p-2 border border-blue-200/30 dark:border-blue-400/20">
+                    <div className="font-semibold text-blue-600 dark:text-blue-400">
+                      Ingredients
+                    </div>
+                    <div className="text-muted-foreground">Auto-parsed</div>
+                  </div>
+                  <div className="bg-blue-50/50 dark:bg-blue-950/30 rounded-lg p-2 border border-blue-200/30 dark:border-blue-400/20">
+                    <div className="font-semibold text-blue-600 dark:text-blue-400">
+                      Instructions
+                    </div>
+                    <div className="text-muted-foreground">Step-by-step</div>
+                  </div>
+                </div>
+              </div>
             </div>
           </div>
+        </div>
 
-          {/* Grocery List Layer */}
-          <div className="absolute top-12 right-4 z-20">
-            <div className="bg-white/95 dark:bg-zinc-900/95 border-2 border-blue-200/60 dark:border-blue-400/40 rounded-2xl shadow-xl backdrop-blur-sm overflow-hidden w-56 md:w-64 rotate-[6deg]">
-              <Image
-                src="/images/grocery720x1500.jpeg"
-                alt="Smart grocery list with ingredient tracking"
-                width={720}
-                height={1500}
-                quality={100}
-                className="w-full h-auto"
-              />
+        {/* Example 2: Ingredients Image Transformation */}
+        <div className="mb-12">
+          <div className="grid lg:grid-cols-5 gap-6 items-center">
+            {/* Input: Ingredients Image */}
+            <div className="lg:col-span-2 relative group">
+              <div className="absolute inset-0 bg-gradient-to-r from-blue-600/20 to-blue-400/20 dark:from-blue-400/20 dark:to-blue-300/20 rounded-3xl blur-xl opacity-50 group-hover:opacity-75 transition-opacity duration-500"></div>
+              <div className="relative bg-white/90 dark:bg-zinc-900/90 border-2 border-blue-200/50 dark:border-blue-400/30 rounded-3xl p-6 shadow-2xl backdrop-blur-sm hover:shadow-3xl transition-all duration-500 group-hover:scale-105">
+                <div className="mb-4">
+                  <div className="flex items-center gap-3 mb-4">
+                    <div>
+                      <h3 className="text-lg font-semibold">
+                        Fresh Ingredients
+                      </h3>
+                      <p className="text-sm text-muted-foreground">
+                        What&apos;s in your fridge?
+                      </p>
+                    </div>
+                  </div>
+                  <div className="aspect-[4/5] bg-gradient-to-br from-blue-50 to-blue-100/50 dark:from-blue-950/50 dark:to-blue-900/30 rounded-2xl overflow-hidden border-2 border-blue-200/30 dark:border-blue-400/20">
+                    <Image
+                      src="/images/ingredientsImage.jpg"
+                      alt="Fresh vegetables including cucumbers, carrots, avocados, and lettuce in refrigerator"
+                      width={500}
+                      height={625}
+                      quality={100}
+                      className="w-full h-full object-cover hover:scale-105 transition-transform duration-700"
+                    />
+                  </div>
+                </div>
+                <div className="text-xs text-muted-foreground text-center bg-blue-50/50 dark:bg-blue-950/30 rounded-lg p-2">
+                  <span className="font-medium">Upload:</span> Ingredient
+                  photos, fridge contents, pantry items
+                </div>
+              </div>
+            </div>
+
+            {/* Transformation Arrow */}
+            <div className="lg:col-span-1 flex justify-center items-center">
+              <div className="relative">
+                <div className="absolute inset-0 bg-gradient-to-r from-blue-600 to-blue-400 dark:from-blue-400 dark:to-blue-300 rounded-full blur-lg opacity-30 animate-pulse"></div>
+                <div className="relative bg-gradient-to-r from-blue-600 to-blue-400 dark:from-blue-400 dark:to-blue-300 p-6 rounded-full shadow-xl">
+                  <Sparkles className="w-8 h-8 text-white" />
+                </div>
+              </div>
+              {/* Mobile arrow (pointing down, next to sparkle) */}
+              <div className="lg:hidden ml-4">
+                <div className="flex flex-col items-center">
+                  <div className="w-0.5 h-12 bg-gradient-to-b from-blue-600 to-blue-400 dark:from-blue-400 dark:to-blue-300"></div>
+                  <div className="w-0 h-0 border-t-6 border-t-blue-600 dark:border-t-blue-400 border-l-3 border-l-transparent border-r-3 border-r-transparent"></div>
+                </div>
+              </div>
+              {/* Desktop arrow (pointing right) */}
+              <div className="hidden lg:block ml-4">
+                <div className="flex items-center">
+                  <div className="w-12 h-0.5 bg-gradient-to-r from-blue-600 to-blue-400 dark:from-blue-400 dark:to-blue-300"></div>
+                  <div className="w-0 h-0 border-l-6 border-l-blue-600 dark:border-l-blue-400 border-t-3 border-t-transparent border-b-3 border-b-transparent"></div>
+                </div>
+              </div>
+            </div>
+
+            {/* Output: AI Generated Recipe from Ingredients */}
+            <div className="lg:col-span-2 relative group">
+              <div className="absolute inset-0 bg-gradient-to-r from-blue-600/20 to-blue-400/20 dark:from-blue-400/20 dark:to-blue-300/20 rounded-3xl blur-xl opacity-50 group-hover:opacity-75 transition-opacity duration-500"></div>
+              <div className="relative bg-white/90 dark:bg-zinc-900/90 border-2 border-blue-200/50 dark:border-blue-400/30 rounded-3xl p-6 shadow-2xl backdrop-blur-sm hover:shadow-3xl transition-all duration-500 group-hover:scale-105">
+                <div className="mb-4">
+                  <div className="flex items-center gap-3 mb-4">
+                    <div>
+                      <h3 className="text-lg font-semibold">
+                        <span className="bg-gradient-to-r from-blue-600 to-blue-400 dark:from-blue-400 dark:to-blue-300 bg-clip-text text-transparent">
+                          Bubu AI
+                        </span>{" "}
+                        Suggests Recipe
+                      </h3>
+                      <p className="text-sm text-muted-foreground">
+                        Fresh Garden Salad
+                      </p>
+                    </div>
+                  </div>
+                  <div className="aspect-[4/5] bg-gradient-to-br from-blue-50 to-blue-100/50 dark:from-blue-950/50 dark:to-blue-900/30 rounded-2xl overflow-hidden border-2 border-blue-200/30 dark:border-blue-400/20">
+                    <Image
+                      src="/images/ingredientsImageOutput.png"
+                      alt="AI generated fresh garden salad recipe with ingredients and nutrition info"
+                      width={500}
+                      height={625}
+                      quality={100}
+                      className="w-full h-full object-cover scale-101 hover:scale-105 transition-transform duration-700"
+                    />
+                  </div>
+                </div>
+                <div className="grid grid-cols-3 gap-2 text-xs text-center">
+                  <div className="bg-blue-50/50 dark:bg-blue-950/30 rounded-lg p-2 border border-blue-200/30 dark:border-blue-400/20">
+                    <div className="font-semibold text-blue-600 dark:text-blue-400">
+                      Ingredients
+                    </div>
+                    <div className="text-muted-foreground">AI detected</div>
+                  </div>
+                  <div className="bg-blue-50/50 dark:bg-blue-950/30 rounded-lg p-2 border border-blue-200/30 dark:border-blue-400/20">
+                    <div className="font-semibold text-blue-600 dark:text-blue-400">
+                      Recipe
+                    </div>
+                    <div className="text-muted-foreground">Custom created</div>
+                  </div>
+                  <div className="bg-blue-50/50 dark:bg-blue-950/30 rounded-lg p-2 border border-blue-200/30 dark:border-blue-400/20">
+                    <div className="font-semibold text-blue-600 dark:text-blue-400">
+                      Nutrition
+                    </div>
+                    <div className="text-muted-foreground">Full analysis</div>
+                  </div>
+                </div>
+              </div>
             </div>
           </div>
+        </div>
 
-          {/* Menus Layer */}
-          <div className="absolute top-24 left-12 z-30">
-            <div className="bg-white/95 dark:bg-zinc-900/95 border-2 border-blue-200/70 dark:border-blue-400/50 rounded-2xl shadow-xl backdrop-blur-sm overflow-hidden w-52 md:w-60 rotate-[-4deg]">
-              <Image
-                src="/images/menus720x1500.jpeg"
-                alt="Menu planning interface with organized meal categories"
-                width={720}
-                height={1500}
-                quality={100}
-                className="w-full h-auto"
-              />
+        {/* Floating Feature Badges */}
+        <div className="flex justify-center gap-4 flex-wrap">
+          <div className="bg-white/90 dark:bg-zinc-900/90 border-2 border-blue-200/50 dark:border-blue-400/30 rounded-2xl p-4 shadow-xl backdrop-blur-sm">
+            <div className="flex items-center gap-3">
+              <Sparkles className="size-5 text-blue-600 dark:text-blue-400" />
+              <span className="font-semibold bg-gradient-to-r from-blue-600 to-blue-400 dark:from-blue-400 dark:to-blue-300 bg-clip-text text-transparent">
+                AI Powered Recognition
+              </span>
             </div>
           </div>
-
-          {/* Recipes (Dark Theme) Layer */}
-          <div className="absolute top-36 right-8 z-40">
-            <div className="bg-white/95 dark:bg-zinc-900/95 border-2 border-blue-200/70 dark:border-blue-400/50 rounded-2xl shadow-xl backdrop-blur-sm overflow-hidden w-52 md:w-56 rotate-[3deg]">
-              <Image
-                src="/images/dark720x1500.jpeg"
-                alt="Recipe collection with dark theme showing oatmeal cookies"
-                width={720}
-                height={1500}
-                quality={100}
-                className="w-full h-auto"
-              />
+          <div className="bg-white/90 dark:bg-zinc-900/90 border-2 border-green-200/50 dark:border-green-400/30 rounded-2xl p-4 shadow-xl backdrop-blur-sm">
+            <div className="flex items-center gap-3">
+              <Heart className="size-5 text-green-600 dark:text-green-400" />
+              <span className="font-semibold text-green-600 dark:text-green-400">
+                Instant Nutrition Analysis
+              </span>
             </div>
+          </div>
+        </div>
+      </div>
+
+      {/* Simple Stacked Collage */}
+      <div className="relative w-full max-w-md mx-auto min-h-[500px] md:min-h-[600px]">
+        {/* Search Layer */}
+        <div className="absolute top-0 left-8 z-10">
+          <div className="bg-white/95 dark:bg-zinc-900/95 border-2 border-blue-200/60 dark:border-blue-400/40 rounded-2xl shadow-xl backdrop-blur-sm overflow-hidden w-56 md:w-64 rotate-[-8deg]">
+            <Image
+              src="/images/search720x1500.jpeg"
+              alt="Recipe search interface with smoothie results"
+              width={720}
+              height={1500}
+              quality={100}
+              className="w-full h-auto"
+            />
+          </div>
+        </div>
+
+        {/* Grocery List Layer */}
+        <div className="absolute top-12 right-4 z-20">
+          <div className="bg-white/95 dark:bg-zinc-900/95 border-2 border-blue-200/60 dark:border-blue-400/40 rounded-2xl shadow-xl backdrop-blur-sm overflow-hidden w-56 md:w-64 rotate-[6deg]">
+            <Image
+              src="/images/grocery720x1500.jpeg"
+              alt="Smart grocery list with ingredient tracking"
+              width={720}
+              height={1500}
+              quality={100}
+              className="w-full h-auto"
+            />
+          </div>
+        </div>
+
+        {/* Menus Layer */}
+        <div className="absolute top-24 left-12 z-30">
+          <div className="bg-white/95 dark:bg-zinc-900/95 border-2 border-blue-200/70 dark:border-blue-400/50 rounded-2xl shadow-xl backdrop-blur-sm overflow-hidden w-52 md:w-60 rotate-[-4deg]">
+            <Image
+              src="/images/menus720x1500.jpeg"
+              alt="Menu planning interface with organized meal categories"
+              width={720}
+              height={1500}
+              quality={100}
+              className="w-full h-auto"
+            />
+          </div>
+        </div>
+
+        {/* Recipes (Dark Theme) Layer */}
+        <div className="absolute top-36 right-8 z-40">
+          <div className="bg-white/95 dark:bg-zinc-900/95 border-2 border-blue-200/70 dark:border-blue-400/50 rounded-2xl shadow-xl backdrop-blur-sm overflow-hidden w-52 md:w-56 rotate-[3deg]">
+            <Image
+              src="/images/dark720x1500.jpeg"
+              alt="Recipe collection with dark theme showing oatmeal cookies"
+              width={720}
+              height={1500}
+              quality={100}
+              className="w-full h-auto"
+            />
           </div>
         </div>
       </div>
@@ -298,7 +546,7 @@ const Home = async () => {
             {/* AI Recipe Generation */}
             <Card className="border-2 border-blue-200/50 dark:border-blue-400/20 hover:border-blue-400 dark:hover:border-blue-400 transition-all duration-300 hover:shadow-2xl group bg-white/50 dark:bg-zinc-900/50 backdrop-blur-sm">
               <CardHeader>
-                <div className="w-14 h-14 bg-gradient-to-r from-blue-600/10 to-blue-400/10 dark:from-blue-400/10 dark:to-blue-300/10 rounded-2xl flex items-center justify-center mb-6 group-hover:scale-110 transition-transform duration-300">
+                <div className="w-14 h-14 bg-gradient-to-r from-blue-600/10 to-blue-400/10 dark:from-blue-400/10 dark:to-blue-300/10 rounded-2xl flex items-center justify-center mb-6 group-hover:scale-105 transition-transform duration-300">
                   <Sparkles className="size-7" />
                 </div>
                 <CardTitle className="text-xl">
@@ -325,7 +573,7 @@ const Home = async () => {
             {/* Recipe Management */}
             <Card className="border-2 border-blue-200/50 dark:border-blue-400/20 hover:border-blue-400 dark:hover:border-blue-400 transition-all duration-300 hover:shadow-2xl group bg-white/50 dark:bg-zinc-900/50 backdrop-blur-sm">
               <CardHeader>
-                <div className="w-14 h-14 bg-gradient-to-r from-blue-600/10 to-blue-400/10 dark:from-blue-400/10 dark:to-blue-300/10 rounded-2xl flex items-center justify-center mb-6 group-hover:scale-110 transition-transform duration-300">
+                <div className="w-14 h-14 bg-gradient-to-r from-blue-600/10 to-blue-400/10 dark:from-blue-400/10 dark:to-blue-300/10 rounded-2xl flex items-center justify-center mb-6 group-hover:scale-105 transition-transform duration-300">
                   <BookOpen className="size-7" />
                 </div>
                 <CardTitle className="text-xl">
@@ -349,7 +597,7 @@ const Home = async () => {
             {/* Menu Creation */}
             <Card className="border-2 border-blue-200/50 dark:border-blue-400/20 hover:border-blue-400 dark:hover:border-blue-400 transition-all duration-300 hover:shadow-2xl group bg-white/50 dark:bg-zinc-900/50 backdrop-blur-sm">
               <CardHeader>
-                <div className="w-14 h-14 bg-gradient-to-r from-blue-600/10 to-blue-400/10 dark:from-blue-400/10 dark:to-blue-300/10 rounded-2xl flex items-center justify-center mb-6 group-hover:scale-110 transition-transform duration-300">
+                <div className="w-14 h-14 bg-gradient-to-r from-blue-600/10 to-blue-400/10 dark:from-blue-400/10 dark:to-blue-300/10 rounded-2xl flex items-center justify-center mb-6 group-hover:scale-105 transition-transform duration-300">
                   <Heart className="size-7" />
                 </div>
                 <CardTitle className="text-xl">Custom Menu Planning</CardTitle>
@@ -370,7 +618,7 @@ const Home = async () => {
             {/* Grocery List Sync */}
             <Card className="border-2 border-blue-200/50 dark:border-blue-400/20 hover:border-blue-400 dark:hover:border-blue-400 transition-all duration-300 hover:shadow-2xl group bg-white/50 dark:bg-zinc-900/50 backdrop-blur-sm">
               <CardHeader>
-                <div className="w-14 h-14 bg-gradient-to-r from-blue-600/10 to-blue-400/10 dark:from-blue-400/10 dark:to-blue-300/10 rounded-2xl flex items-center justify-center mb-6 group-hover:scale-110 transition-transform duration-300">
+                <div className="w-14 h-14 bg-gradient-to-r from-blue-600/10 to-blue-400/10 dark:from-blue-400/10 dark:to-blue-300/10 rounded-2xl flex items-center justify-center mb-6 group-hover:scale-105 transition-transform duration-300">
                   <ShoppingCart className="size-7" />
                 </div>
                 <CardTitle className="text-xl">
@@ -393,7 +641,7 @@ const Home = async () => {
             {/* Recipe Search */}
             <Card className="border-2 border-blue-200/50 dark:border-blue-400/20 hover:border-blue-400 dark:hover:border-blue-400 transition-all duration-300 hover:shadow-2xl group bg-white/50 dark:bg-zinc-900/50 backdrop-blur-sm">
               <CardHeader>
-                <div className="w-14 h-14 bg-gradient-to-r from-blue-600/10 to-blue-400/10 dark:from-blue-400/10 dark:to-blue-300/10 rounded-2xl flex items-center justify-center mb-6 group-hover:scale-110 transition-transform duration-300">
+                <div className="w-14 h-14 bg-gradient-to-r from-blue-600/10 to-blue-400/10 dark:from-blue-400/10 dark:to-blue-300/10 rounded-2xl flex items-center justify-center mb-6 group-hover:scale-105 transition-transform duration-300">
                   <Search className="size-7" />
                 </div>
                 <CardTitle className="text-xl">AI-Powered Search</CardTitle>
@@ -412,7 +660,7 @@ const Home = async () => {
             {/* Theme Customization */}
             <Card className="border-2 border-blue-200/50 dark:border-blue-400/20 hover:border-blue-400 dark:hover:border-blue-400 transition-all duration-300 hover:shadow-2xl group bg-white/50 dark:bg-zinc-900/50 backdrop-blur-sm">
               <CardHeader>
-                <div className="w-14 h-14 bg-gradient-to-r from-blue-600/10 to-blue-400/10 dark:from-blue-400/10 dark:to-blue-300/10 rounded-2xl flex items-center justify-center mb-6 group-hover:scale-110 transition-transform duration-300">
+                <div className="w-14 h-14 bg-gradient-to-r from-blue-600/10 to-blue-400/10 dark:from-blue-400/10 dark:to-blue-300/10 rounded-2xl flex items-center justify-center mb-6 group-hover:scale-105 transition-transform duration-300">
                   <Star className="size-7" />
                 </div>
                 <CardTitle className="text-xl">Beautiful Themes</CardTitle>
