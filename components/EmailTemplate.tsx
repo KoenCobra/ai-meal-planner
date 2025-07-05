@@ -198,7 +198,7 @@ export function EmailTemplate({ name }: EmailTemplateProps) {
                 style={{
                   fontSize: "18px",
                   fontWeight: "bold",
-                  color: "#0ea5e9",
+                  color: "#60a5fa",
                   marginBottom: "16px",
                 }}
               >
