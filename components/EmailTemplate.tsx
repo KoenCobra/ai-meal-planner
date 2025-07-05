@@ -16,72 +16,6 @@ export function EmailTemplate({ name }: EmailTemplateProps) {
         minHeight: "100vh",
       }}
     >
-      {/* Animated Background Effects */}
-      <div
-        style={{
-          position: "fixed",
-          top: "0",
-          left: "0",
-          right: "0",
-          bottom: "0",
-          background:
-            "radial-gradient(circle at 20% 20%, rgba(59, 130, 246, 0.1) 0%, transparent 50%), radial-gradient(circle at 80% 80%, rgba(37, 99, 235, 0.1) 0%, transparent 50%)",
-          zIndex: 0,
-        }}
-      ></div>
-
-      {/* Header */}
-      <div
-        style={{
-          background:
-            "linear-gradient(135deg, #1e40af 0%, #3b82f6 50%, #60a5fa 100%)",
-          padding: "60px 20px",
-          textAlign: "center" as const,
-          position: "relative" as const,
-          overflow: "hidden",
-        }}
-      >
-        {/* Header Background Pattern */}
-        <div
-          style={{
-            position: "absolute",
-            top: "0",
-            left: "0",
-            right: "0",
-            bottom: "0",
-            background:
-              "radial-gradient(circle at 30% 30%, rgba(255, 255, 255, 0.1) 0%, transparent 50%), radial-gradient(circle at 70% 70%, rgba(255, 255, 255, 0.05) 0%, transparent 50%)",
-            zIndex: 1,
-          }}
-        ></div>
-
-        <div style={{ position: "relative", zIndex: 2 }}>
-          <h1
-            style={{
-              fontSize: "42px",
-              fontWeight: "bold",
-              color: "#ffffff",
-              margin: "0 0 16px 0",
-              textShadow: "0 2px 4px rgba(0, 0, 0, 0.1)",
-            }}
-          >
-            <span style={{ color: "#ffffff" }}>Bubu</span>
-            <span style={{ color: "#dbeafe", marginLeft: "12px" }}>AI</span>
-          </h1>
-          <p
-            style={{
-              fontSize: "20px",
-              color: "#e0f2fe",
-              margin: "0",
-              fontWeight: "500",
-              opacity: "0.9",
-            }}
-          >
-            Your Intelligent AI-Powered Meal Planning Assistant
-          </p>
-        </div>
-      </div>
-
       {/* Main Content */}
       <div
         style={{
@@ -106,7 +40,6 @@ export function EmailTemplate({ name }: EmailTemplateProps) {
               color: "#f8fafc",
               marginBottom: "20px",
               textAlign: "center" as const,
-              background: "linear-gradient(135deg, #60a5fa, #3b82f6)",
               WebkitBackgroundClip: "text",
               WebkitTextFillColor: "transparent",
             }}
@@ -126,7 +59,6 @@ export function EmailTemplate({ name }: EmailTemplateProps) {
             Congratulations on subscribing to{" "}
             <strong
               style={{
-                background: "linear-gradient(135deg, #3b82f6, #60a5fa)",
                 WebkitBackgroundClip: "text",
                 WebkitTextFillColor: "transparent",
                 fontWeight: "bold",
@@ -218,7 +150,7 @@ export function EmailTemplate({ name }: EmailTemplateProps) {
               >
                 <li style={{ marginBottom: "8px" }}>
                   Open Chrome browser and go to{" "}
-                  <strong style={{ color: "#60a5fa" }}>
+                  <strong style={{ color: "#fff" }}>
                     bubuaimealplanner.com
                   </strong>
                 </li>
@@ -282,7 +214,7 @@ export function EmailTemplate({ name }: EmailTemplateProps) {
               >
                 <li style={{ marginBottom: "8px" }}>
                   Open Safari browser and go to{" "}
-                  <strong style={{ color: "#60a5fa" }}>
+                  <strong style={{ color: "#fff" }}>
                     bubuaimealplanner.com
                   </strong>
                 </li>
@@ -441,7 +373,6 @@ export function EmailTemplate({ name }: EmailTemplateProps) {
           © 2025{" "}
           <strong
             style={{
-              background: "linear-gradient(135deg, #3b82f6, #60a5fa)",
               WebkitBackgroundClip: "text",
               WebkitTextFillColor: "transparent",
             }}
