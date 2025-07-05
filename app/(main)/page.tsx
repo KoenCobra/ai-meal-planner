@@ -92,7 +92,7 @@ const Home = async () => {
       </div>
 
       {/* App Features Showcase Collage */}
-      <div className="relative mx-auto max-w-7xl mb-32">
+      <div className="relative mx-auto max-w-5xl mb-32">
         {/* Main Showcase Title */}
         <div className="text-center mb-16">
           <h3 className="text-3xl md:text-4xl font-bold mb-4">
