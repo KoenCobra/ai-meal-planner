@@ -28,10 +28,10 @@ interface CookieConsentContextType {
   updateConsent: (
     updates: Partial<Omit<CookieConsent, "timestamp" | "version">>,
   ) => void;
+  updateCategories: (categories: CookieCategory[]) => void;
   openSettings: () => void;
   closeSettings: () => void;
   closeBanner: () => void;
-  resetConsent: () => void;
 }
 
 const CookieConsentContext = createContext<
@@ -198,6 +198,10 @@ export function CookieConsentProvider({
     }
   };
 
+  const updateCategories = (categories: CookieCategory[]) => {
+    setCategories(categories);
+  };
+
   const openSettings = () => {
     setShowSettings(true);
   };
@@ -210,13 +214,6 @@ export function CookieConsentProvider({
     setShowBanner(false);
   };
 
-  const resetConsent = () => {
-    setConsent(null);
-    setShowBanner(true);
-    setShowSettings(false);
-    setCategories(COOKIE_CATEGORIES);
-  };
-
   const value: CookieConsentContextType = {
     consent,
     categories,
@@ -225,10 +222,10 @@ export function CookieConsentProvider({
     acceptAll,
     declineAll,
     updateConsent,
+    updateCategories,
     openSettings,
     closeSettings,
     closeBanner,
-    resetConsent,
   };
 
   return (

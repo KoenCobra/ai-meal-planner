@@ -48,7 +48,6 @@ function CookieConsentBanner() {
                 <Link
                   href="/privacy-policy"
                   className="underline hover:text-foreground"
-                  target="_blank"
                   rel="noopener noreferrer"
                 >
                   Learn more
@@ -95,13 +94,23 @@ function CookieConsentBanner() {
 
 // Cookie settings modal component
 function CookieSettingsModal() {
-  const { showSettings, closeSettings, categories, updateConsent, consent } =
-    useCookieConsent();
+  const {
+    showSettings,
+    closeSettings,
+    categories,
+    updateConsent,
+    updateCategories,
+    consent,
+  } = useCookieConsent();
 
   const handleCategoryToggle = (categoryId: string, enabled: boolean) => {
-    updateConsent({
-      [categoryId]: enabled,
-    });
+    // Update local categories state without closing the dialog
+    const updatedCategories = categories.map((category) =>
+      category.id === categoryId ? { ...category, enabled } : category,
+    );
+
+    // Update the categories in the context without closing the dialog
+    updateCategories(updatedCategories);
   };
 
   const handleSavePreferences = () => {

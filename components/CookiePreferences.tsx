@@ -1,7 +1,6 @@
 "use client";
 
-import { clearConsent } from "@/lib/cookie-consent";
-import { Cookie, RefreshCw, Trash2 } from "lucide-react";
+import { Cookie, RefreshCw } from "lucide-react";
 import { useCookieConsent } from "./CookieConsentContext";
 import { Button } from "./ui/button";
 import {
@@ -13,12 +12,7 @@ import {
 } from "./ui/card";
 
 export default function CookiePreferences() {
-  const { consent, openSettings, resetConsent } = useCookieConsent();
-
-  const handleResetConsent = () => {
-    clearConsent();
-    resetConsent();
-  };
+  const { consent, openSettings } = useCookieConsent();
 
   return (
     <Card>
@@ -84,22 +78,10 @@ export default function CookiePreferences() {
           </div>
         )}
 
-        <div className="flex flex-col gap-2 sm:flex-row">
-          <Button onClick={openSettings} className="flex items-center gap-2">
-            <RefreshCw className="size-4" />
-            Update Preferences
-          </Button>
-          {consent && (
-            <Button
-              variant="outline"
-              onClick={handleResetConsent}
-              className="flex items-center gap-2"
-            >
-              <Trash2 className="size-4" />
-              Reset All
-            </Button>
-          )}
-        </div>
+        <Button onClick={openSettings} className="flex items-center gap-2">
+          <RefreshCw className="size-4" />
+          Update Preferences
+        </Button>
       </CardContent>
     </Card>
   );

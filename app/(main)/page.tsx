@@ -841,6 +841,15 @@ const Home = async () => {
                     Contact our support team
                   </a>
                 </p>
+                <p>
+                  <a
+                    href="/privacy-policy"
+                    className="underline font-semibold"
+                    rel="noopener noreferrer"
+                  >
+                    Privacy Policy
+                  </a>
+                </p>
                 <a
                   href="/terms-of-service"
                   className="underline font-semibold"
