@@ -518,16 +518,15 @@ const TermsOfServicePage = () => {
           <h3 className="text-lg font-semibold">Governing Law</h3>
           <p className="leading-relaxed">
             These Terms are governed by and construed in accordance with the
-            laws of [Your Jurisdiction], without regard to conflict of law
-            principles.
+            law, without regard to conflict of law principles.
           </p>
 
           <h3 className="text-lg font-semibold">Dispute Resolution</h3>
           <p className="leading-relaxed">
             Any disputes arising from these Terms or your use of the Application
             shall be resolved through binding arbitration in accordance with the
-            rules of [Arbitration Organization]. You waive any right to
-            participate in class-action lawsuits or class-wide arbitration.
+            law. You waive any right to participate in class-action lawsuits or
+            class-wide arbitration.
           </p>
         </CardContent>
       </Card>
