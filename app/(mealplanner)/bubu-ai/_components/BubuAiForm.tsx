@@ -92,6 +92,13 @@ const BibiAiForm = ({
       }
       setSelectedImage(file);
 
+      // Clear textarea when new image is uploaded
+      form.setValue("description", "");
+      setDescription("");
+      if (textareaRef.current) {
+        textareaRef.current.style.height = "auto";
+      }
+
       // Create preview
       const reader = new FileReader();
       reader.onloadend = () => {
