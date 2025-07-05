@@ -398,7 +398,7 @@ const Home = async () => {
                         width={720}
                         height={1500}
                         quality={100}
-                        className="w-full h-auto object-cover"
+                        className="w-full object-cover"
                       />
                     </div>
                   </div>
@@ -412,7 +412,7 @@ const Home = async () => {
                         width={720}
                         height={1500}
                         quality={100}
-                        className="w-full h-auto object-cover"
+                        className="w-full object-cover"
                       />
                     </div>
                   </div>
@@ -426,7 +426,7 @@ const Home = async () => {
                         width={720}
                         height={1500}
                         quality={100}
-                        className="w-full h-auto object-cover"
+                        className="w-full object-cover"
                       />
                     </div>
                   </div>
@@ -440,7 +440,7 @@ const Home = async () => {
                         width={720}
                         height={1500}
                         quality={100}
-                        className="w-full h-auto object-cover"
+                        className="w-full object-cover"
                       />
                     </div>
                   </div>
