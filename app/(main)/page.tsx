@@ -407,7 +407,7 @@ const Home = async () => {
                   <div className="w-full flex-shrink-0">
                     <div className="relative">
                       <Image
-                        src="/images/italian720x1500.jpeg"
+                        src="/images/italian720x1500.jpg"
                         alt="Bubu AI generating recipe in Italian - Lasagna con Prosciutto e Spinaci"
                         width={720}
                         height={1500}
@@ -421,7 +421,7 @@ const Home = async () => {
                   <div className="w-full flex-shrink-0">
                     <div className="relative">
                       <Image
-                        src="/images/spanish720x1500.jpeg"
+                        src="/images/spanish720x1500.jpg"
                         alt="Bubu AI generating recipe in Spanish - Paella Mixta Tradicional"
                         width={720}
                         height={1500}
