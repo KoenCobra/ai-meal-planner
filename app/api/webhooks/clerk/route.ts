@@ -1,8 +1,11 @@
-import { WebhookEvent } from "@clerk/nextjs/server";
+import { EmailTemplate } from "@/components/EmailTemplate";
+import { clerkClient, WebhookEvent } from "@clerk/nextjs/server";
 import { headers } from "next/headers";
+import { Resend } from "resend";
 import { Webhook } from "svix";
 
-const webhookSecret = process.env.CLERK_WEBHOOK_SECRET || ``;
+const webhookSecret = process.env.CLERK_WEBHOOK_SECRET || "";
+const resend = new Resend(process.env.RESEND_API_KEY || "");
 
 // Types for payment events
 interface PaymentAttemptData {
@@ -178,12 +181,28 @@ export async function POST(request: Request) {
           );
         }
 
-        // TODO: Add your business logic here
-        // For example:
-        // - Update user's subscription status in your database
-        // - Send confirmation email
-        // - Grant access to premium features
-        // - Update user role/permissions
+        const { data: emailData, error } = await resend.emails.send({
+          from: "Bubu AI <info@bubuaimealplanner.com>",
+          to: [data.payer.email],
+          subject: "Welcome to Bubu AI",
+          react: EmailTemplate({
+            name: `${data.payer.first_name || ""} ${data.payer.last_name || ""}`.trim(),
+          }),
+        });
+
+        await (
+          await clerkClient()
+        ).users.updateUserMetadata(data.payer.user_id, {
+          privateMetadata: {
+            agreed_to_bubu_ai_terms_of_service: true,
+          },
+        });
+
+        if (error) {
+          console.error(`[PAYMENT] ❌ Error sending email: ${error}`);
+        } else {
+          console.log(`[PAYMENT] ✅ Email sent successfully: ${emailData}`);
+        }
       } else if (data.status === "failed" && data.failed_at) {
         console.warn(
           `[PAYMENT] ❌ Payment failed for user: ${data.payer.user_id}`,
@@ -196,11 +215,6 @@ export async function POST(request: Request) {
         if (data.failed_reason) {
           console.warn(`[PAYMENT] 🔍 Failure reason: ${data.failed_reason}`);
         }
-
-        // TODO: Handle failed payment
-        // - Send failure notification
-        // - Update user status
-        // - Retry logic if appropriate
       } else {
         console.log(
           `[PAYMENT] ⏳ Payment in progress - Status: ${data.status}`,

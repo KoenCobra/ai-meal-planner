@@ -5,7 +5,7 @@ const TermsOfServicePage = () => {
     <div className="container mx-auto px-4 py-8 max-w-4xl">
       <div className="mb-8">
         <h1 className="text-4xl font-bold mb-2">Terms of Service</h1>
-        <p className="text-muted-foreground">bubuaimealplanner.com</p>
+        <p className="text-muted-foreground">bubuai.com</p>
         <p className="text-sm text-muted-foreground mt-2">
           Latest update: January 15, 2025
         </p>
@@ -41,12 +41,12 @@ const TermsOfServicePage = () => {
         </CardHeader>
         <CardContent>
           <p className="leading-relaxed">
-            By accessing and using bubuaimealplanner.com (&quot;the
-            Service&quot;, &quot;the Application&quot;, &quot;we&quot;,
-            &quot;us&quot;, or &quot;our&quot;), you agree to be bound by these
-            Terms of Service (&quot;Terms&quot;). If you do not agree to these
-            Terms, you must not use this Service. Your use of the Service
-            constitutes acceptance of these Terms.
+            By accessing and using bubuai.com (&quot;the Service&quot;,
+            &quot;the Application&quot;, &quot;we&quot;, &quot;us&quot;, or
+            &quot;our&quot;), you agree to be bound by these Terms of Service
+            (&quot;Terms&quot;). If you do not agree to these Terms, you must
+            not use this Service. Your use of the Service constitutes acceptance
+            of these Terms.
           </p>
         </CardContent>
       </Card>
@@ -1045,7 +1045,7 @@ const TermsOfServicePage = () => {
           </p>
           <div className="mt-4 p-4 bg-gray-50 rounded-lg">
             <p className="font-semibold">Legal Department</p>
-            <p>bubuaimealplanner.com</p>
+            <p>bubuai.com</p>
             <p>Email: legal@bubuaimealplanner.com</p>
             <p>
               Please allow 5-10 business days for response to legal inquiries.
