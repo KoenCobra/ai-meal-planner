@@ -393,7 +393,7 @@ const Home = async () => {
                   <div className="w-full flex-shrink-0">
                     <div className="relative">
                       <Image
-                        src="/images/english720x1500.png"
+                        src="/images/english720x1500.jpg"
                         alt="Bubu AI generating recipe in English - Avocado and Strawberry Smoothie"
                         width={720}
                         height={1500}
@@ -435,7 +435,7 @@ const Home = async () => {
                   <div className="w-full flex-shrink-0">
                     <div className="relative">
                       <Image
-                        src="/images/english720x1500.png"
+                        src="/images/english720x1500.jpg"
                         alt="Bubu AI generating recipe in English - Avocado and Strawberry Smoothie"
                         width={720}
                         height={1500}
