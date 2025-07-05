@@ -386,61 +386,61 @@ const Home = async () => {
           <div className="flex justify-center items-center">
             <div className="relative w-full max-w-sm mx-auto">
               {/* Carousel Container */}
-              <div className="relative overflow-hidden rounded-3xl shadow-2xl border-4 border-blue-200/30 dark:border-blue-400/20 bg-white/10 dark:bg-zinc-900/10 backdrop-blur-sm">
+              <div className="relative overflow-hidden rounded-3xl shadow-2xl border-4 border-blue-200/30 dark:border-blue-400/20 bg-white/10 dark:bg-zinc-900/10 backdrop-blur-sm aspect-[9/18.75] h-[600px] mx-auto">
                 {/* Carousel Track */}
-                <div className="flex animate-carousel">
+                <div className="flex animate-carousel h-full">
                   {/* English Screenshot */}
-                  <div className="w-full flex-shrink-0">
-                    <div className="relative">
+                  <div className="w-full flex-shrink-0 h-full">
+                    <div className="relative h-full">
                       <Image
                         src="/images/english720x1500.png"
                         alt="Bubu AI generating recipe in English - Avocado and Strawberry Smoothie"
                         width={720}
                         height={1500}
                         quality={100}
-                        className="w-full object-cover"
+                        className="w-full h-full object-cover"
                       />
                     </div>
                   </div>
 
                   {/* Italian Screenshot */}
-                  <div className="w-full flex-shrink-0">
-                    <div className="relative">
+                  <div className="w-full flex-shrink-0 h-full">
+                    <div className="relative h-full">
                       <Image
                         src="/images/italian720x1500.jpeg"
                         alt="Bubu AI generating recipe in Italian - Lasagna con Prosciutto e Spinaci"
                         width={720}
                         height={1500}
                         quality={100}
-                        className="w-full object-cover"
+                        className="w-full h-full object-cover"
                       />
                     </div>
                   </div>
 
                   {/* Spanish Screenshot */}
-                  <div className="w-full flex-shrink-0">
-                    <div className="relative">
+                  <div className="w-full flex-shrink-0 h-full">
+                    <div className="relative h-full">
                       <Image
                         src="/images/spanish720x1500.jpeg"
                         alt="Bubu AI generating recipe in Spanish - Paella Mixta Tradicional"
                         width={720}
                         height={1500}
                         quality={100}
-                        className="w-full object-cover"
+                        className="w-full h-full object-cover"
                       />
                     </div>
                   </div>
 
                   {/* Duplicate first image for seamless loop */}
-                  <div className="w-full flex-shrink-0">
-                    <div className="relative">
+                  <div className="w-full flex-shrink-0 h-full">
+                    <div className="relative h-full">
                       <Image
                         src="/images/english720x1500.png"
                         alt="Bubu AI generating recipe in English - Avocado and Strawberry Smoothie"
                         width={720}
                         height={1500}
                         quality={100}
-                        className="w-full object-cover"
+                        className="w-full h-full object-cover"
                       />
                     </div>
                   </div>
