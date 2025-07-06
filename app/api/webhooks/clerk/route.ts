@@ -181,27 +181,35 @@ export async function POST(request: Request) {
           );
         }
 
-        const { data: emailData, error } = await resend.emails.send({
-          from: "Bubu AI <info@bubuaimealplanner.com>",
-          to: [data.payer.email],
-          subject: "Welcome to Bubu AI",
-          react: EmailTemplate({
-            name: `${data.payer.first_name || ""} ${data.payer.last_name || ""}`.trim(),
-          }),
-        });
-
-        await (
+        const user = await (
           await clerkClient()
-        ).users.updateUserMetadata(data.payer.user_id, {
-          privateMetadata: {
-            agreed_to_bubu_ai_terms_of_service: true,
-          },
-        });
+        ).users.getUser(data.payer.user_id);
 
-        if (error) {
-          console.error(`[PAYMENT] ❌ Error sending email: ${error}`);
+        if (user.privateMetadata.agreed_to_bubu_ai_terms_of_service) {
+          console.log(`[PAYMENT] 🔒 User already agreed to terms of service`);
         } else {
-          console.log(`[PAYMENT] ✅ Email sent successfully: ${emailData}`);
+          console.log(`[PAYMENT] 🔒 User has not agreed to terms of service`);
+          await (
+            await clerkClient()
+          ).users.updateUserMetadata(data.payer.user_id, {
+            privateMetadata: {
+              agreed_to_bubu_ai_terms_of_service: true,
+            },
+          });
+          const { data: emailData, error } = await resend.emails.send({
+            from: "Bubu AI <info@bubuaimealplanner.com>",
+            to: [data.payer.email],
+            subject: "Welcome to Bubu AI",
+            react: EmailTemplate({
+              name: `${data.payer.first_name || ""} ${data.payer.last_name || ""}`.trim(),
+            }),
+          });
+
+          if (error) {
+            console.error(`[PAYMENT] ❌ Error sending email: ${error}`);
+          } else {
+            console.log(`[PAYMENT] ✅ Email sent successfully: ${emailData}`);
+          }
         }
       } else if (data.status === "failed" && data.failed_at) {
         console.warn(
