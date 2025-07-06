@@ -4,6 +4,7 @@ import { CookieConsentProvider } from "@/components/CookieConsentContext";
 import { Toaster } from "@/components/ui/sonner";
 import { ClerkProvider } from "@clerk/nextjs";
 import { dark } from "@clerk/themes";
+import { Analytics } from "@vercel/analytics/next";
 import type { Metadata } from "next";
 import { ThemeProvider } from "next-themes";
 import { Geist, Geist_Mono } from "next/font/google";
@@ -58,6 +59,7 @@ export default function RootLayout({
             >
               <CookieConsentProvider>
                 <main>{children}</main>
+                <Analytics />
                 <Toaster
                   position="top-center"
                   duration={2000}
