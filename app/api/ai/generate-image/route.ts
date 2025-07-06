@@ -64,6 +64,7 @@ export async function POST(req: NextRequest) {
     const imageBuffer = Buffer.from(await imageResponse.arrayBuffer());
 
     const webpBuffer = await sharp(imageBuffer)
+      .resize(700, 525)
       .webp({ quality: 50 })
       .toBuffer();
 
