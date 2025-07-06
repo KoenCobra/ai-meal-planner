@@ -364,7 +364,6 @@ export function EmailTemplate({ name }: EmailTemplateProps) {
           <strong
             style={{
               WebkitBackgroundClip: "text",
-              WebkitTextFillColor: "transparent",
             }}
           >
             Bubu AI
