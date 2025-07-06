@@ -32,7 +32,7 @@ export function EmailTemplate({ name }: EmailTemplateProps) {
         }}
       >
         {/* Welcome Section */}
-        <div style={{ padding: "50px 40px", marginTop: "20px" }}>
+        <div style={{ padding: "10px 8px", marginTop: "20px" }}>
           <h2
             style={{
               fontSize: "32px",
@@ -41,7 +41,6 @@ export function EmailTemplate({ name }: EmailTemplateProps) {
               marginBottom: "20px",
               textAlign: "center" as const,
               WebkitBackgroundClip: "text",
-              WebkitTextFillColor: "transparent",
             }}
           >
             Welcome to Bubu AI, {name}!
@@ -60,7 +59,6 @@ export function EmailTemplate({ name }: EmailTemplateProps) {
             <strong
               style={{
                 WebkitBackgroundClip: "text",
-                WebkitTextFillColor: "transparent",
                 fontWeight: "bold",
               }}
             >
@@ -89,7 +87,7 @@ export function EmailTemplate({ name }: EmailTemplateProps) {
             style={{
               backgroundColor: "#0f172a",
               borderRadius: "16px",
-              padding: "32px",
+              padding: "12px",
               marginBottom: "40px",
               border: "1px solid rgba(59, 130, 246, 0.3)",
               boxShadow: "0 8px 32px rgba(0, 0, 0, 0.3)",
@@ -124,7 +122,7 @@ export function EmailTemplate({ name }: EmailTemplateProps) {
               style={{
                 backgroundColor: "#1e293b",
                 borderRadius: "12px",
-                padding: "24px",
+                padding: "12px",
                 marginBottom: "24px",
                 border: "1px solid rgba(59, 130, 246, 0.3)",
                 boxShadow: "0 4px 16px rgba(0, 0, 0, 0.2)",
@@ -146,6 +144,7 @@ export function EmailTemplate({ name }: EmailTemplateProps) {
                   paddingLeft: "20px",
                   fontSize: "15px",
                   color: "#cbd5e1",
+                  listStyleType: "initial",
                 }}
               >
                 <li style={{ marginBottom: "8px" }}>
@@ -188,7 +187,7 @@ export function EmailTemplate({ name }: EmailTemplateProps) {
               style={{
                 backgroundColor: "#1e293b",
                 borderRadius: "12px",
-                padding: "24px",
+                padding: "12px",
                 marginBottom: "24px",
                 border: "1px solid rgba(14, 165, 233, 0.3)",
                 boxShadow: "0 4px 16px rgba(0, 0, 0, 0.2)",
@@ -210,6 +209,7 @@ export function EmailTemplate({ name }: EmailTemplateProps) {
                   paddingLeft: "20px",
                   fontSize: "15px",
                   color: "#cbd5e1",
+                  listStyleType: "initial",
                 }}
               >
                 <li style={{ marginBottom: "8px" }}>
@@ -244,7 +244,7 @@ export function EmailTemplate({ name }: EmailTemplateProps) {
               style={{
                 backgroundColor: "#1e293b",
                 borderRadius: "12px",
-                padding: "24px",
+                padding: "12px",
                 border: "1px solid rgba(59, 130, 246, 0.3)",
                 boxShadow: "0 4px 16px rgba(0, 0, 0, 0.2)",
               }}
@@ -259,12 +259,13 @@ export function EmailTemplate({ name }: EmailTemplateProps) {
               >
                 Benefits of Installing as PWA:
               </h4>
-              <ul
+              <ol
                 style={{
                   margin: "0",
                   paddingLeft: "20px",
                   fontSize: "15px",
                   color: "#cbd5e1",
+                  listStyleType: "initial",
                 }}
               >
                 <li style={{ marginBottom: "6px" }}>
@@ -293,7 +294,7 @@ export function EmailTemplate({ name }: EmailTemplateProps) {
                   </strong>{" "}
                   Optimized for mobile device performance
                 </li>
-              </ul>
+              </ol>
             </div>
           </div>
 
