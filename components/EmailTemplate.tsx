@@ -274,10 +274,6 @@ export function EmailTemplate({ name }: EmailTemplateProps) {
                   Works like a native mobile app
                 </li>
                 <li style={{ marginBottom: "6px" }}>
-                  <strong style={{ color: "#60a5fa" }}>Offline Access:</strong>{" "}
-                  Access your saved recipes without internet
-                </li>
-                <li style={{ marginBottom: "6px" }}>
                   <strong style={{ color: "#60a5fa" }}>Faster Loading:</strong>{" "}
                   Instant startup and smooth performance
                 </li>
@@ -286,12 +282,6 @@ export function EmailTemplate({ name }: EmailTemplateProps) {
                     Home Screen Access:
                   </strong>{" "}
                   Quick access from your device&apos;s home screen
-                </li>
-                <li style={{ marginBottom: "6px" }}>
-                  <strong style={{ color: "#60a5fa" }}>
-                    Push Notifications:
-                  </strong>{" "}
-                  Stay updated with recipe suggestions
                 </li>
                 <li style={{ marginBottom: "6px" }}>
                   <strong style={{ color: "#60a5fa" }}>Full Screen:</strong>{" "}
@@ -381,33 +371,6 @@ export function EmailTemplate({ name }: EmailTemplateProps) {
           </strong>
           . All rights reserved.
         </p>
-
-        <div
-          style={{
-            fontSize: "14px",
-            color: "#64748b",
-          }}
-        >
-          <a
-            href="https://bubuaimealplanner.com/privacy-policy"
-            style={{
-              color: "#94a3b8",
-              textDecoration: "none",
-              marginRight: "20px",
-            }}
-          >
-            Privacy Policy
-          </a>
-          <a
-            href="https://bubuaimealplanner.com/terms-of-service"
-            style={{
-              color: "#94a3b8",
-              textDecoration: "none",
-            }}
-          >
-            Terms of Service
-          </a>
-        </div>
       </div>
     </div>
   );
