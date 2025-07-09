@@ -17,6 +17,7 @@ import {
   ImageIcon,
   Loader2Icon,
   SendHorizontal,
+  SlidersHorizontal,
   Square,
   X,
 } from "lucide-react";
@@ -271,31 +272,40 @@ const BibiAiForm = ({
             />
 
             <motion.div
-              className="flex items-center"
+              className="flex items-center gap-2"
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               transition={{ delay: 0.3, duration: 0.4 }}
             >
-              <motion.div
-                whileHover={{ scale: 1.05 }}
-                whileTap={{ scale: 0.95 }}
-              >
+              <motion.div whileTap={{ scale: 0.95 }}>
                 <Button
                   type="button"
-                  variant="ghost"
-                  size="icon"
+                  variant="outline"
+                  className="rounded-full"
+                  size="sm"
+                  disabled={isProcessing}
+                >
+                  <SlidersHorizontal className="size-3 mr-1" />
+                  <span className="text-xs">Preferences</span>
+                </Button>
+              </motion.div>
+
+              <motion.div whileTap={{ scale: 0.95 }}>
+                <Button
+                  type="button"
+                  variant="outline"
                   onClick={() =>
                     document.getElementById("image-upload")?.click()
                   }
                   className="rounded-full"
                   disabled={isProcessing}
                 >
-                  <ImageIcon />
+                  <ImageIcon className="size-3 mr-1" />
+                  <span className="text-xs">Upload image</span>
                 </Button>
               </motion.div>
 
               <motion.div
-                whileHover={{ scale: 1.05 }}
                 whileTap={{ scale: 0.95 }}
                 transition={{ type: "spring", stiffness: 400, damping: 20 }}
               >
