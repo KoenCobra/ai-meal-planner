@@ -17,7 +17,6 @@ import {
   ImageIcon,
   Loader2Icon,
   SendHorizontal,
-  SlidersHorizontal,
   Square,
   X,
 } from "lucide-react";
@@ -277,7 +276,7 @@ const BibiAiForm = ({
               animate={{ opacity: 1 }}
               transition={{ delay: 0.3, duration: 0.4 }}
             >
-              <motion.div whileTap={{ scale: 0.95 }}>
+              {/* <motion.div whileTap={{ scale: 0.95 }}>
                 <Button
                   type="button"
                   variant="outline"
@@ -288,7 +287,7 @@ const BibiAiForm = ({
                   <SlidersHorizontal className="size-3 mr-1" />
                   <span className="text-xs">Preferences</span>
                 </Button>
-              </motion.div>
+              </motion.div> */}
 
               <motion.div whileTap={{ scale: 0.95 }}>
                 <Button
@@ -360,7 +359,7 @@ const BibiAiForm = ({
           <input
             ref={fileInputRef}
             type="file"
-            accept=".png,.jpg,.jpeg,.webp"
+            accept="image/*"
             onChange={handleImageChange}
             className="hidden"
             id="image-upload"
