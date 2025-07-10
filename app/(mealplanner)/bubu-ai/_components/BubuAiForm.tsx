@@ -17,10 +17,11 @@ import {
   ImageIcon,
   Loader2Icon,
   SendHorizontal,
+  SlidersHorizontal,
   Square,
   X,
 } from "lucide-react";
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useForm } from "react-hook-form";
 import { toast } from "sonner";
 
@@ -33,6 +34,7 @@ import { useGenerateNutritionalValues } from "../_hooks/useGenerateNutritionalVa
 import { useGenerateRecipe } from "../_hooks/useGenerateRecipe";
 import { useBubuAi } from "../BubuAiContext";
 import { useClearAiCache } from "../utils/clearAiCache";
+import Preferences from "./Preferences";
 
 interface BubuAiFormProps {
   isGeneratingImage: boolean;
@@ -57,6 +59,8 @@ const BibiAiForm = ({
     setImagePreview,
     setSavedRecipeId,
   } = useBubuAi();
+
+  const [showPreferences, setShowPreferences] = useState(false);
 
   const { generateRecipeMutation, abort } = useGenerateRecipe();
   const { analyzeImageMutation, abort: abortAnalyzeImage } = useAnalyzeImage();
@@ -165,209 +169,223 @@ const BibiAiForm = ({
   };
 
   return (
-    <motion.div
-      className="w-full"
-      initial={{ opacity: 0 }}
-      animate={{ opacity: 1 }}
-      transition={{ duration: 0.3 }}
-    >
-      <Form {...form}>
-        <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
-          <div className="relative">
-            <div className="flex items-start">
-              {selectedImage && imagePreview && (
-                <div className="relative inline-block mb-4">
-                  <div className="h-20 w-20 relative overflow-hidden rounded-sm">
-                    <Image
-                      src={imagePreview}
-                      alt="Selected food"
-                      fill
-                      sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
-                      className="object-cover"
-                      unoptimized
-                    />
-                  </div>
-                  <Button
-                    type="button"
-                    variant="ghost"
-                    size="icon"
-                    onClick={() => {
-                      setSelectedImage(null);
-                      setImagePreview(null);
-                      if (fileInputRef.current) {
-                        fileInputRef.current.value = "";
-                      }
-                    }}
-                    disabled={isProcessing}
-                    className="size-5 p-0 text-zinc-100 hover:text-white absolute -top-1.5 -right-1.5 bg-black/70 hover:bg-black/80 backdrop-blur-sm rounded-full"
-                  >
-                    <X className="size-4" />
-                  </Button>
-                </div>
-              )}
-            </div>
-
-            <FormField
-              control={form.control}
-              name="description"
-              render={({ field }) => (
-                <FormItem className="space-y-0">
-                  <FormControl>
-                    <motion.div
-                      initial={{ opacity: 0, y: 10 }}
-                      animate={{ opacity: 1, y: 0 }}
-                      transition={{ duration: 0.4 }}
-                      className="relative"
-                    >
-                      <textarea
-                        {...field}
-                        ref={textareaRef}
-                        placeholder={
-                          selectedImage
-                            ? "Add any specific instructions for your food image (optional)"
-                            : `Type your recipe description here (in your preferred language)...`
-                        }
-                        disabled={isProcessing}
-                        onChange={handleTextareaChange}
-                        onKeyDown={(e) => {
-                          if (e.key === "Enter" && !e.shiftKey) {
-                            e.preventDefault();
-                            form.handleSubmit(onSubmit)();
-                          }
-                        }}
-                        className="flex-1 resize-none border-0 bg-transparent p-0 focus-visible:outline-none focus-visible:ring-0 disabled:opacity-50 min-h-[60px] overflow-y-auto w-full pr-8"
+    <>
+      <motion.div
+        className="w-full"
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        transition={{ duration: 0.3 }}
+      >
+        <Form {...form}>
+          <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
+            <div className="relative">
+              <div className="flex items-start">
+                {selectedImage && imagePreview && (
+                  <div className="relative inline-block mb-4">
+                    <div className="h-20 w-20 relative overflow-hidden rounded-sm">
+                      <Image
+                        src={imagePreview}
+                        alt="Selected food"
+                        fill
+                        sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+                        className="object-cover"
+                        unoptimized
                       />
-
-                      <AnimatePresence>
-                        {description.trim() && !isProcessing && (
-                          <motion.div
-                            initial={{ opacity: 0, scale: 0.8 }}
-                            animate={{ opacity: 1, scale: 1 }}
-                            exit={{ opacity: 0, scale: 0.8 }}
-                            transition={{
-                              type: "spring",
-                              stiffness: 400,
-                              damping: 25,
-                            }}
-                            className="absolute -top-1 -right-1"
-                          >
-                            <Button
-                              type="button"
-                              variant="ghost"
-                              size="icon"
-                              onClick={clearTextarea}
-                              className="size-6 p-0 text-zinc-600 hover:text-zinc-800 dark:text-zinc-400 dark:hover:text-zinc-400 rounded-full hover:bg-zinc-100 dark:hover:bg-zinc-800"
-                            >
-                              <X className="size-3" />
-                            </Button>
-                          </motion.div>
-                        )}
-                      </AnimatePresence>
-                    </motion.div>
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-
-            <motion.div
-              className="flex items-center gap-2"
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              transition={{ delay: 0.3, duration: 0.4 }}
-            >
-              {/* <motion.div whileTap={{ scale: 0.95 }}>
-                <Button
-                  type="button"
-                  variant="outline"
-                  className="rounded-full"
-                  size="sm"
-                  disabled={isProcessing}
-                >
-                  <SlidersHorizontal className="size-3 mr-1" />
-                  <span className="text-xs">Preferences</span>
-                </Button>
-              </motion.div> */}
-
-              <motion.div whileTap={{ scale: 0.95 }}>
-                <Button
-                  type="button"
-                  variant="outline"
-                  onClick={() =>
-                    document.getElementById("image-upload")?.click()
-                  }
-                  className="rounded-full"
-                  disabled={isProcessing}
-                >
-                  <ImageIcon className="size-3 mr-1" />
-                  <span className="text-xs">Upload image</span>
-                </Button>
-              </motion.div>
-
-              <motion.div
-                whileTap={{ scale: 0.95 }}
-                transition={{ type: "spring", stiffness: 400, damping: 20 }}
-              >
-                <Button
-                  disabled={
-                    isProcessing || (!description.trim() && !selectedImage)
-                  }
-                  type="submit"
-                  size="icon"
-                  variant="ghost"
-                  className="rounded-full"
-                >
-                  {isProcessing ? (
-                    <Loader2Icon className="size-4 animate-spin" />
-                  ) : (
-                    <SendHorizontal className="size-4" />
-                  )}
-                </Button>
-              </motion.div>
-
-              <AnimatePresence>
-                {isProcessing && (
-                  <motion.div
-                    key="cancel-button"
-                    initial={{ opacity: 0, scale: 0.8 }}
-                    animate={{ opacity: 1, scale: 1 }}
-                    exit={{ opacity: 0, scale: 0.8 }}
-                    transition={{ type: "spring", stiffness: 400, damping: 25 }}
-                    whileHover={{ scale: 1.05 }}
-                    whileTap={{ scale: 0.95 }}
-                  >
+                    </div>
                     <Button
                       type="button"
                       variant="ghost"
                       size="icon"
                       onClick={() => {
-                        abort();
-                        abortAnalyzeImage();
-                        abortImage();
-                        abortNutritionalValues();
+                        setSelectedImage(null);
+                        setImagePreview(null);
+                        if (fileInputRef.current) {
+                          fileInputRef.current.value = "";
+                        }
                       }}
-                      className="rounded-full text-red-500 hover:text-red-600 hover:bg-red-50 dark:hover:bg-red-950/20"
+                      disabled={isProcessing}
+                      className="size-5 p-0 text-zinc-100 hover:text-white absolute -top-1.5 -right-1.5 bg-black/70 hover:bg-black/80 backdrop-blur-sm rounded-full"
                     >
-                      <Square className="size-4" fill="currentColor" />
+                      <X className="size-4" />
                     </Button>
-                  </motion.div>
+                  </div>
                 )}
-              </AnimatePresence>
-            </motion.div>
-          </div>
+              </div>
 
-          <input
-            ref={fileInputRef}
-            type="file"
-            accept="image/*"
-            onChange={handleImageChange}
-            className="hidden"
-            id="image-upload"
-            disabled={isProcessing}
-          />
-        </form>
-      </Form>
-    </motion.div>
+              <FormField
+                control={form.control}
+                name="description"
+                render={({ field }) => (
+                  <FormItem className="space-y-0">
+                    <FormControl>
+                      <motion.div
+                        initial={{ opacity: 0, y: 10 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        transition={{ duration: 0.4 }}
+                        className="relative"
+                      >
+                        <textarea
+                          {...field}
+                          ref={textareaRef}
+                          placeholder={
+                            selectedImage
+                              ? "Add any specific instructions for your food image (optional)"
+                              : `Type your recipe description here (in your preferred language)...`
+                          }
+                          disabled={isProcessing}
+                          onChange={handleTextareaChange}
+                          onKeyDown={(e) => {
+                            if (e.key === "Enter" && !e.shiftKey) {
+                              e.preventDefault();
+                              form.handleSubmit(onSubmit)();
+                            }
+                          }}
+                          className="flex-1 resize-none border-0 bg-transparent p-0 focus-visible:outline-none focus-visible:ring-0 disabled:opacity-50 min-h-[60px] overflow-y-auto w-full pr-8"
+                        />
+
+                        <AnimatePresence>
+                          {description.trim() && !isProcessing && (
+                            <motion.div
+                              initial={{ opacity: 0, scale: 0.8 }}
+                              animate={{ opacity: 1, scale: 1 }}
+                              exit={{ opacity: 0, scale: 0.8 }}
+                              transition={{
+                                type: "spring",
+                                stiffness: 400,
+                                damping: 25,
+                              }}
+                              className="absolute -top-1 -right-1"
+                            >
+                              <Button
+                                type="button"
+                                variant="ghost"
+                                size="icon"
+                                onClick={clearTextarea}
+                                className="size-6 p-0 text-zinc-600 hover:text-zinc-800 dark:text-zinc-400 dark:hover:text-zinc-400 rounded-full hover:bg-zinc-100 dark:hover:bg-zinc-800"
+                              >
+                                <X className="size-3" />
+                              </Button>
+                            </motion.div>
+                          )}
+                        </AnimatePresence>
+                      </motion.div>
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+
+              <motion.div
+                className="flex items-center gap-2"
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                transition={{ delay: 0.3, duration: 0.4 }}
+              >
+                <motion.div whileTap={{ scale: 0.95 }}>
+                  <Button
+                    type="button"
+                    variant="outline"
+                    className="rounded-full"
+                    size="sm"
+                    disabled={isProcessing}
+                    onClick={() => {
+                      setShowPreferences(true);
+                    }}
+                  >
+                    <SlidersHorizontal className="size-3 mr-1" />
+                    <span className="text-xs">Preferences</span>
+                  </Button>
+                </motion.div>
+
+                <motion.div whileTap={{ scale: 0.95 }}>
+                  <Button
+                    type="button"
+                    variant="outline"
+                    onClick={() =>
+                      document.getElementById("image-upload")?.click()
+                    }
+                    className="rounded-full"
+                    disabled={isProcessing}
+                  >
+                    <ImageIcon className="size-3 mr-1" />
+                    <span className="text-xs">Upload image</span>
+                  </Button>
+                </motion.div>
+
+                <motion.div
+                  whileTap={{ scale: 0.95 }}
+                  transition={{ type: "spring", stiffness: 400, damping: 20 }}
+                >
+                  <Button
+                    disabled={
+                      isProcessing || (!description.trim() && !selectedImage)
+                    }
+                    type="submit"
+                    size="icon"
+                    variant="ghost"
+                    className="rounded-full"
+                  >
+                    {isProcessing ? (
+                      <Loader2Icon className="size-4 animate-spin" />
+                    ) : (
+                      <SendHorizontal className="size-4" />
+                    )}
+                  </Button>
+                </motion.div>
+
+                <AnimatePresence>
+                  {isProcessing && (
+                    <motion.div
+                      key="cancel-button"
+                      initial={{ opacity: 0, scale: 0.8 }}
+                      animate={{ opacity: 1, scale: 1 }}
+                      exit={{ opacity: 0, scale: 0.8 }}
+                      transition={{
+                        type: "spring",
+                        stiffness: 400,
+                        damping: 25,
+                      }}
+                      whileHover={{ scale: 1.05 }}
+                      whileTap={{ scale: 0.95 }}
+                    >
+                      <Button
+                        type="button"
+                        variant="ghost"
+                        size="icon"
+                        onClick={() => {
+                          abort();
+                          abortAnalyzeImage();
+                          abortImage();
+                          abortNutritionalValues();
+                        }}
+                        className="rounded-full text-red-500 hover:text-red-600 hover:bg-red-50 dark:hover:bg-red-950/20"
+                      >
+                        <Square className="size-4" fill="currentColor" />
+                      </Button>
+                    </motion.div>
+                  )}
+                </AnimatePresence>
+              </motion.div>
+            </div>
+
+            <input
+              ref={fileInputRef}
+              type="file"
+              accept="image/*"
+              onChange={handleImageChange}
+              className="hidden"
+              id="image-upload"
+              disabled={isProcessing}
+            />
+          </form>
+        </Form>
+      </motion.div>
+
+      <Preferences
+        showPreferences={showPreferences}
+        setShowPreferences={setShowPreferences}
+      />
+    </>
   );
 };
 
