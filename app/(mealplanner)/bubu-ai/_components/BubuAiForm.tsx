@@ -276,7 +276,7 @@ const BibiAiForm = ({
               />
 
               <motion.div
-                className="flex items-center gap-2"
+                className="flex items-center"
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
                 transition={{ delay: 0.3, duration: 0.4 }}
@@ -284,31 +284,30 @@ const BibiAiForm = ({
                 <motion.div whileTap={{ scale: 0.95 }}>
                   <Button
                     type="button"
-                    variant="outline"
+                    variant="ghost"
+                    size="icon"
                     className="rounded-full"
-                    size="sm"
                     disabled={isProcessing}
                     onClick={() => {
                       setShowPreferences(true);
                     }}
                   >
-                    <SlidersHorizontal className="size-3 mr-1" />
-                    <span className="text-xs">Preferences</span>
+                    <SlidersHorizontal className="size-3" />
                   </Button>
                 </motion.div>
 
                 <motion.div whileTap={{ scale: 0.95 }}>
                   <Button
                     type="button"
-                    variant="outline"
+                    variant="ghost"
                     onClick={() =>
                       document.getElementById("image-upload")?.click()
                     }
+                    size="icon"
                     className="rounded-full"
                     disabled={isProcessing}
                   >
-                    <ImageIcon className="size-3 mr-1" />
-                    <span className="text-xs">Upload image</span>
+                    <ImageIcon className="size-3" />
                   </Button>
                 </motion.div>
 
@@ -323,7 +322,7 @@ const BibiAiForm = ({
                     type="submit"
                     size="icon"
                     variant="ghost"
-                    className="rounded-full"
+                    className="rounded-full size-8"
                   >
                     {isProcessing ? (
                       <Loader2Icon className="size-4 animate-spin" />
