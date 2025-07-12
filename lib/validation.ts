@@ -4,6 +4,12 @@ export const generateRecipeSchema = z.object({
   description: z
     .string()
     .max(500, "Description must be at most 500 characters"),
+  diets: z.array(z.string()).optional(),
+  allergies: z.array(z.string()).optional(),
+  preferences: z.array(z.string()).optional(),
+  servings: z.number().optional(),
+  readyInMinutes: z.number().optional(),
+  additionalInstructions: z.string().optional(),
 });
 
 export type GenerateRecipeInput = z.infer<typeof generateRecipeSchema>;

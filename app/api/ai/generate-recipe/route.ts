@@ -16,7 +16,15 @@ export async function POST(req: NextRequest) {
     }
 
     const input = generateRecipeSchema.parse(await req.json());
-    const { description } = input;
+    const {
+      description,
+      diets,
+      allergies,
+      preferences,
+      servings,
+      readyInMinutes,
+      additionalInstructions,
+    } = input;
 
     const rateLimitCheck = await convex.mutation(
       api.aiRateLimit.checkRecipeGenerationLimit,
@@ -54,7 +62,13 @@ export async function POST(req: NextRequest) {
         },
         {
           role: "user",
-          content: `Please provide a recipe from this description: ${description}`,
+          content: `Please provide a recipe from this description: ${description},
+          ${diets && `Diets: ${diets},`}
+          ${allergies && `Allergies: ${allergies},`}
+          ${preferences && `Preferences: ${preferences},`}
+          ${servings && `Servings: ${servings}`}
+          ${readyInMinutes && `Ready in minutes: ${readyInMinutes},`}
+          ${additionalInstructions && `Additional instructions: ${additionalInstructions},`}`,
         },
       ],
       response_format: {
