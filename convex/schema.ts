@@ -74,6 +74,16 @@ const applicationTables = {
   })
     .index("by_user", ["userId"])
     .index("by_user_name_and_unit", ["userId", "name", "unit"]),
+
+  preferences: defineTable({
+    userId: v.string(),
+    diets: v.array(v.string()),
+    allergies: v.array(v.string()),
+    preferences: v.array(v.string()),
+    servings: v.optional(v.number()),
+    readyInMinutes: v.optional(v.number()),
+    additionalInstructions: v.optional(v.string()),
+  }).index("by_user", ["userId"]),
 };
 
 export default defineSchema(

@@ -11,6 +11,7 @@
 import type * as aiRateLimit from "../aiRateLimit.js";
 import type * as groceryList from "../groceryList.js";
 import type * as menus from "../menus.js";
+import type * as preferences from "../preferences.js";
 import type * as rateLimiter from "../rateLimiter.js";
 import type * as recipes from "../recipes.js";
 
@@ -32,6 +33,7 @@ declare const fullApi: ApiFromModules<{
   aiRateLimit: typeof aiRateLimit;
   groceryList: typeof groceryList;
   menus: typeof menus;
+  preferences: typeof preferences;
   rateLimiter: typeof rateLimiter;
   recipes: typeof recipes;
 }>;
