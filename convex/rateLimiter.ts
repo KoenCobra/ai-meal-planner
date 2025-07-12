@@ -105,6 +105,13 @@ export const rateLimiter = new RateLimiter(components.rateLimiter, {
     period: HOUR,
     capacity: 120,
   },
+
+  updatePreferences: {
+    kind: "token bucket",
+    rate: 10,
+    period: MINUTE,
+    capacity: 15,
+  },
 });
 
 export { HOUR, MINUTE, SECOND } from "@convex-dev/rate-limiter";
