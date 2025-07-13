@@ -40,7 +40,7 @@ const Preferences = ({
 
   const form = useForm<PreferencesInput>({
     resolver: zodResolver(preferencesSchema),
-    defaultValues: {
+    values: {
       diets: preferences?.diets || [],
       allergies: preferences?.allergies || [],
       preferences: preferences?.preferences || [],

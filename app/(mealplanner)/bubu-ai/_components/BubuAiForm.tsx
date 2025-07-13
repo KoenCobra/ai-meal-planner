@@ -21,7 +21,7 @@ import {
   Square,
   X,
 } from "lucide-react";
-import { useEffect, useRef, useState } from "react";
+import { useRef, useState } from "react";
 import { useForm } from "react-hook-form";
 import { toast } from "sonner";
 
@@ -76,7 +76,7 @@ const BibiAiForm = ({
 
   const form = useForm<GenerateRecipeInput>({
     resolver: zodResolver(generateRecipeSchema),
-    defaultValues: {
+    values: {
       description: description,
     },
   });
@@ -144,10 +144,6 @@ const BibiAiForm = ({
       }
     }
   };
-
-  useEffect(() => {
-    form.setValue("description", description);
-  }, [description, form]);
 
   // Auto-resize textarea
   const handleTextareaChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
