@@ -1,5 +1,9 @@
 import { api } from "@/convex/_generated/api";
-import { recipeJsonSchema } from "@/lib/constants";
+import {
+  generateRecipeSystemPrompt,
+  generateRecipeUserPrompt,
+  recipeJsonSchema,
+} from "@/lib/constants";
 import { generateRecipeSchema } from "@/lib/validation";
 import { auth } from "@clerk/nextjs/server";
 import { ConvexHttpClient } from "convex/browser";
@@ -28,13 +32,6 @@ export async function POST(req: NextRequest) {
     const { description } = input;
     const { preferences } = request;
 
-    // ${diets && `Diets: ${diets},`}
-    // ${allergies && `Allergies: ${allergies},`}
-    // ${preferences && `Preferences: ${preferences},`}
-    // ${servings && `Servings: ${servings}`}
-    // ${readyInMinutes && `Ready in minutes: ${readyInMinutes},`}
-    // ${additionalInstructions && `Additional instructions: ${additionalInstructions},`}
-
     if (!rateLimitCheck?.success) {
       return NextResponse.json(
         {
@@ -44,7 +41,6 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    // OpenRouter API call with structured output
     const url = "https://openrouter.ai/api/v1/chat/completions";
     const headers = {
       Authorization: `Bearer ${process.env.OPENROUTER_API_KEY}`,
@@ -56,17 +52,11 @@ export async function POST(req: NextRequest) {
       messages: [
         {
           role: "system",
-          content: `Make sure to generate all the output in the language that is used in the input.
-          If the input has nothing to do with food, or will cause even the slightest bit of harm, please return an error message with the error prop in the shema output.
-          If the recipe would cause harm any way to the person's health, please return an error message with the error prop in the shema output.
-          Be very detailed and elaborate with the ingredients and steps.
-          Smoothies are by default in the "other" dishType.`,
+          content: generateRecipeSystemPrompt,
         },
         {
           role: "user",
-          content: `Please provide a recipe from this description: ${description},
-          ${preferences && `only use the following diets: ${preferences.diets},`}
-          `,
+          content: generateRecipeUserPrompt(description, preferences),
         },
       ],
       response_format: {

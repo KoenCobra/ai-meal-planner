@@ -1,3 +1,5 @@
+import { PreferencesInput } from "./validation";
+
 // Image size and dimension limits
 export const MAX_FILE_SIZE = 5 * 1024 * 1024; // 5MB in bytes
 
@@ -167,4 +169,13 @@ export const nutritionalValuesResponseSchema = {
     },
   },
   additionalProperties: false,
+};
+
+export const generateRecipeSystemPrompt = `Make sure to generate all the output in the language that is used in the input. If the input has nothing to do with food, or will cause even the slightest bit of harm, please return an error message with the error prop in the shema output. If the recipe would cause harm any way to the person's health, please return an error message with the error prop in the shema output. Be very detailed and elaborate with the ingredients and steps. Smoothies are by default in the "other" dishType.`;
+
+export const generateRecipeUserPrompt = (
+  description: string,
+  preferences: PreferencesInput,
+) => {
+  return `Please provide a recipe from this description: ${description}, ${preferences.diets && `only use the following diets: ${preferences.diets},`} ${preferences.allergies && `exclude recipes that contain the following allergies: ${preferences.allergies},`} ${preferences.preferences && `only use the following preferences: ${preferences.preferences},`} ${preferences.servings && `only use the following servings: ${preferences.servings},`} ${preferences.readyInMinutes && `only use the following ready in minutes: ${preferences.readyInMinutes}`} ${preferences.additionalInstructions && `additional instructions: ${preferences.additionalInstructions}`}`;
 };

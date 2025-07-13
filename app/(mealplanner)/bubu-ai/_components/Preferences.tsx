@@ -42,12 +42,12 @@ const Preferences = ({
   const form = useForm<PreferencesInput>({
     resolver: zodResolver(preferencesSchema),
     values: {
-      diets: preferences?.diets || [],
-      allergies: preferences?.allergies || [],
-      preferences: preferences?.preferences || [],
-      servings: preferences?.servings || 0,
-      readyInMinutes: preferences?.readyInMinutes || 0,
-      additionalInstructions: preferences?.additionalInstructions || "",
+      diets: preferences?.diets,
+      allergies: preferences?.allergies,
+      preferences: preferences?.preferences,
+      servings: preferences?.servings,
+      readyInMinutes: preferences?.readyInMinutes,
+      additionalInstructions: preferences?.additionalInstructions,
     },
   });
 
