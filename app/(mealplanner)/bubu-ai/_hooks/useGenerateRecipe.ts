@@ -1,6 +1,10 @@
 import { api } from "@/convex/_generated/api";
 import { sanitizeInput } from "@/lib/utils";
-import { GenerateRecipeInput, RecipeInput } from "@/lib/validation";
+import {
+  GenerateRecipeInput,
+  PreferencesInput,
+  RecipeInput,
+} from "@/lib/validation";
 import { convexQuery } from "@convex-dev/react-query";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useRef } from "react";
@@ -25,6 +29,38 @@ export const useGenerateRecipe = () => {
         description: sanitizedDescription,
       };
 
+      const filteredPreferences: Partial<PreferencesInput> = {};
+
+      if (preferences?.diets && preferences.diets.length > 0) {
+        filteredPreferences.diets = preferences.diets;
+      }
+
+      if (preferences?.allergies && preferences.allergies.length > 0) {
+        filteredPreferences.allergies = preferences.allergies;
+      }
+
+      if (preferences?.preferences && preferences.preferences.length > 0) {
+        filteredPreferences.preferences = preferences.preferences;
+      }
+
+      if (preferences?.servings && preferences.servings > 0) {
+        filteredPreferences.servings = preferences.servings;
+      }
+
+      if (preferences?.readyInMinutes && preferences.readyInMinutes > 0) {
+        filteredPreferences.readyInMinutes = preferences.readyInMinutes;
+      }
+
+      const sanitizedAdditionalInstructions = sanitizeInput(
+        preferences?.additionalInstructions || "",
+      );
+      if (sanitizedAdditionalInstructions) {
+        filteredPreferences.additionalInstructions =
+          sanitizedAdditionalInstructions;
+      }
+
+      console.log(filteredPreferences);
+
       const response = await fetch("/api/ai/generate-recipe", {
         method: "POST",
         headers: {
@@ -32,7 +68,7 @@ export const useGenerateRecipe = () => {
         },
         body: JSON.stringify({
           ...sanitizedInput,
-          preferences: preferences,
+          preferences: filteredPreferences,
         }),
         signal: abortController.signal,
       });
