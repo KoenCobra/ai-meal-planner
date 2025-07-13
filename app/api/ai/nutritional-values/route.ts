@@ -1,5 +1,8 @@
 import { api } from "@/convex/_generated/api";
-import { nutritionalValuesResponseSchema } from "@/lib/constants";
+import {
+  generateNutritionalValuesUserPrompt,
+  nutritionalValuesResponseSchema,
+} from "@/lib/constants";
 import { generateNutritionalValuesSchema } from "@/lib/validation";
 import { auth } from "@clerk/nextjs/server";
 import { ConvexHttpClient } from "convex/browser";
@@ -54,8 +57,10 @@ export async function POST(req: NextRequest) {
       messages: [
         {
           role: "user",
-          content: `Please calculate the total nutritional values for the entire recipe with the following ingredients:
-                    Ingredients: ${ingredientList} Recipe servings: ${servings} Be as accurate as possible with the nutritional data. Use standard nutritional databases as reference.`,
+          content: generateNutritionalValuesUserPrompt(
+            ingredientList,
+            servings,
+          ),
         },
       ],
       response_format: {

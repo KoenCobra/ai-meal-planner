@@ -1,4 +1,5 @@
 import { api } from "@/convex/_generated/api";
+import { generateImageUserPrompt } from "@/lib/constants";
 import { auth } from "@clerk/nextjs/server";
 import { fal } from "@fal-ai/client";
 import { ConvexHttpClient } from "convex/browser";
@@ -53,7 +54,7 @@ export async function POST(req: NextRequest) {
 
     const result = await fal.subscribe("fal-ai/flux/schnell", {
       input: {
-        prompt: `Professional food photography of ${recipeTitle}. ${recipeSummary}.Super high def 4K quality, and detailed.`,
+        prompt: generateImageUserPrompt(recipeTitle, recipeSummary),
         image_size: "landscape_4_3",
       },
     });

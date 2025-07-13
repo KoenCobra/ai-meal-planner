@@ -73,8 +73,6 @@ export async function POST(req: NextRequest) {
       },
     };
 
-    console.log(payload);
-
     const controller = new AbortController();
 
     req.signal.addEventListener("abort", () => {

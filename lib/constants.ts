@@ -171,7 +171,7 @@ export const nutritionalValuesResponseSchema = {
   additionalProperties: false,
 };
 
-export const generateRecipeSystemPrompt = `Generate all the output in the language that is used by the user's input. If the input has nothing to do with food, or will cause even the slightest bit of harm, please return an error message with the error prop in the shema output. If the recipe would cause harm any way to the person's health, please return an error message with the error prop in the shema output. Be very detailed and elaborate with the ingredients and steps. Smoothies are by default in the "other" dishType.`;
+export const generateRecipeSystemPrompt = `Generate all the output in the language that is used by the user (otherwise default to English). If the input has nothing to do with food, or will cause even the slightest bit of harm, please return an error message with the error prop in the shema output. If the recipe would cause harm any way to the person's health, please return an error message with the error prop in the shema output. Be very detailed and elaborate with the ingredients and steps. Smoothies are by default in the "other" dishType.`;
 
 export const generateRecipeUserPrompt = (
   description: string,
@@ -183,3 +183,15 @@ export const analyzeImageSystemPrompt = `You are a recipe generator AI. Your tas
 
 export const analyzeImageUserPrompt = (additionalInstructions: string) =>
   `${additionalInstructions ? `Additionally, consider these instructions from the user: ${additionalInstructions}` : ""}`;
+
+export const generateImageUserPrompt = (
+  recipeTitle: string,
+  recipeSummary: string,
+) =>
+  `Professional food photography of ${recipeTitle}. ${recipeSummary}.Super high def 4K quality, and detailed.`;
+
+export const generateNutritionalValuesUserPrompt = (
+  ingredientList: string,
+  servings: number,
+) =>
+  `Please calculate the total nutritional values for the entire recipe with the following ingredients: Ingredients: ${ingredientList} Recipe servings: ${servings} Be as accurate as possible with the nutritional data. Use standard nutritional databases as reference.`;
