@@ -15,15 +15,18 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
-    const input = generateRecipeSchema.parse(await req.json());
-    const { description } = input;
-
     const rateLimitCheck = await convex.mutation(
       api.aiRateLimit.checkRecipeGenerationLimit,
       {
         userId,
       },
     );
+
+    const request = await req.json();
+
+    const input = generateRecipeSchema.parse(request);
+    const { description } = input;
+    const { preferences } = request;
 
     // ${diets && `Diets: ${diets},`}
     // ${allergies && `Allergies: ${allergies},`}
@@ -61,7 +64,9 @@ export async function POST(req: NextRequest) {
         },
         {
           role: "user",
-          content: `Please provide a recipe from this description: ${description}`,
+          content: `Please provide a recipe from this description: ${description},
+          ${preferences && `only use the following diets: ${preferences.diets},`}
+          `,
         },
       ],
       response_format: {
@@ -77,6 +82,8 @@ export async function POST(req: NextRequest) {
         sort: "latency",
       },
     };
+
+    console.log(payload);
 
     const controller = new AbortController();
 

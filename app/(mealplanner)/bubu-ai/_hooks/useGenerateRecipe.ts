@@ -1,6 +1,8 @@
+import { api } from "@/convex/_generated/api";
 import { sanitizeInput } from "@/lib/utils";
 import { GenerateRecipeInput, RecipeInput } from "@/lib/validation";
-import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { convexQuery } from "@convex-dev/react-query";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useRef } from "react";
 import { useClearAiCache } from "../utils/clearAiCache";
 
@@ -8,6 +10,10 @@ export const useGenerateRecipe = () => {
   const queryClient = useQueryClient();
   const abortControllerRef = useRef<AbortController | null>(null);
   const { clearAiCache } = useClearAiCache();
+
+  const { data: preferences } = useQuery({
+    ...convexQuery(api.preferences.getPreferences, {}),
+  });
 
   const generateRecipeMutation = useMutation({
     mutationFn: async (input: GenerateRecipeInput) => {
@@ -24,7 +30,10 @@ export const useGenerateRecipe = () => {
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify(sanitizedInput),
+        body: JSON.stringify({
+          ...sanitizedInput,
+          preferences: preferences,
+        }),
         signal: abortController.signal,
       });
 

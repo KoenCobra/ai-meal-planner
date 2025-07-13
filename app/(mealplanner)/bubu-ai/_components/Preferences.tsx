@@ -17,6 +17,7 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { api } from "@/convex/_generated/api";
+import { sanitizeInput } from "@/lib/utils";
 import { PreferencesInput, preferencesSchema } from "@/lib/validation";
 import { convexQuery } from "@convex-dev/react-query";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -57,7 +58,8 @@ const Preferences = ({
       preferences: input.preferences || [],
       servings: input.servings || 0,
       readyInMinutes: input.readyInMinutes || 0,
-      additionalInstructions: input.additionalInstructions || "",
+      additionalInstructions:
+        sanitizeInput(input.additionalInstructions || "") || "",
     });
   };
 
