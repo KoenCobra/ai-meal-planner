@@ -61,6 +61,8 @@ const Preferences = ({
       additionalInstructions:
         sanitizeInput(input.additionalInstructions || "") || "",
     });
+
+    setShowPreferences(false);
   };
 
   return (

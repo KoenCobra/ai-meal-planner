@@ -59,8 +59,6 @@ export const useGenerateRecipe = () => {
           sanitizedAdditionalInstructions;
       }
 
-      console.log(filteredPreferences);
-
       const response = await fetch("/api/ai/generate-recipe", {
         method: "POST",
         headers: {

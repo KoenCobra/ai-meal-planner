@@ -16,3 +16,13 @@ export const allergies = [
   "Shellfish",
   "Fish",
 ] as const;
+
+export const preferences = [
+  "Low-Carb",
+  "Low-Fat",
+  "Low-Sodium",
+  "Low-Sugar",
+  "Low-Calorie",
+  "Low-Cholesterol",
+  "Low-Saturated Fat",
+] as const;
