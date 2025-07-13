@@ -12,8 +12,8 @@ export const preferencesSchema = z.object({
   diets: z.array(z.string()).optional(),
   allergies: z.array(z.string()).optional(),
   preferences: z.array(z.string()).optional(),
-  servings: z.number().optional(),
-  readyInMinutes: z.number().optional(),
+  servings: z.coerce.number().optional(),
+  readyInMinutes: z.coerce.number().optional(),
   additionalInstructions: z
     .string()
     .max(150, "Additional instructions must be at most 150 characters")

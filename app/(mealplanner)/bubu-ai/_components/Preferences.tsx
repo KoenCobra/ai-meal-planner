@@ -16,6 +16,8 @@ import {
   FormLabel,
   FormMessage,
 } from "@/components/ui/form";
+import { Input } from "@/components/ui/input";
+import { Slider } from "@/components/ui/slider";
 import { Textarea } from "@/components/ui/textarea";
 import { api } from "@/convex/_generated/api";
 import { sanitizeInput } from "@/lib/utils";
@@ -46,8 +48,8 @@ const Preferences = ({
       diets: preferencesData?.diets,
       allergies: preferencesData?.allergies,
       preferences: preferencesData?.preferences,
-      servings: preferencesData?.servings,
-      readyInMinutes: preferencesData?.readyInMinutes,
+      servings: preferencesData?.servings || 2,
+      readyInMinutes: preferencesData?.readyInMinutes || 60,
       additionalInstructions: preferencesData?.additionalInstructions,
     },
   });
@@ -57,8 +59,8 @@ const Preferences = ({
       diets: input.diets || [],
       allergies: input.allergies || [],
       preferences: input.preferences || [],
-      servings: input.servings || 0,
-      readyInMinutes: input.readyInMinutes || 0,
+      servings: input.servings || 2,
+      readyInMinutes: input.readyInMinutes || 60,
       additionalInstructions:
         sanitizeInput(input.additionalInstructions || "") || "",
     });
@@ -215,6 +217,49 @@ const Preferences = ({
                 </FormItem>
               )}
             />
+
+            <FormField
+              control={form.control}
+              name="servings"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel className="text-base">Servings</FormLabel>
+                  <FormControl>
+                    <Input {...field} placeholder="Servings" type="number" />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+
+            <FormField
+              control={form.control}
+              name="readyInMinutes"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel className="text-base">Ready in Minutes</FormLabel>
+                  <FormControl>
+                    <Slider
+                      value={[field.value ?? 60]}
+                      max={120}
+                      step={5}
+                      className="w-full"
+                      onValueChange={(value) => {
+                        field.onChange(value[0]);
+                      }}
+                    />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+
+            {form.watch("readyInMinutes") && (
+              <p className="text-sm text-muted-foreground">
+                {form.watch("readyInMinutes")}
+              </p>
+            )}
+
             <FormField
               control={form.control}
               name="additionalInstructions"
