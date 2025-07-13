@@ -16,6 +16,7 @@ import {
   FormLabel,
   FormMessage,
 } from "@/components/ui/form";
+import { Textarea } from "@/components/ui/textarea";
 import { api } from "@/convex/_generated/api";
 import { sanitizeInput } from "@/lib/utils";
 import { PreferencesInput, preferencesSchema } from "@/lib/validation";
@@ -24,7 +25,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useQuery } from "@tanstack/react-query";
 import { useMutation } from "convex/react";
 import { useForm } from "react-hook-form";
-import { diets, preferences } from "./diets";
+import { allergies, diets, preferences } from "./diets";
 
 const Preferences = ({
   showPreferences,
@@ -165,6 +166,71 @@ const Preferences = ({
                       }}
                     />
                   ))}
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+
+            <FormField
+              control={form.control}
+              name="allergies"
+              render={() => (
+                <FormItem>
+                  <FormLabel className="text-base">Allergies</FormLabel>
+                  {allergies.map((item) => (
+                    <FormField
+                      key={item}
+                      control={form.control}
+                      name="allergies"
+                      render={({ field }) => {
+                        return (
+                          <FormItem
+                            key={item}
+                            className="flex flex-row items-center gap-2"
+                          >
+                            <FormControl>
+                              <Checkbox
+                                checked={field.value?.includes(item)}
+                                onCheckedChange={(checked) => {
+                                  return checked
+                                    ? field.onChange([
+                                        ...(field.value ?? []),
+                                        item,
+                                      ])
+                                    : field.onChange(
+                                        field.value?.filter(
+                                          (value) => value !== item,
+                                        ),
+                                      );
+                                }}
+                              />
+                            </FormControl>
+                            <FormLabel className="text-sm font-normal cursor-pointer">
+                              {item}
+                            </FormLabel>
+                          </FormItem>
+                        );
+                      }}
+                    />
+                  ))}
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+            <FormField
+              control={form.control}
+              name="additionalInstructions"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel className="text-base">
+                    Additional Instructions
+                  </FormLabel>
+                  <FormControl>
+                    <Textarea
+                      {...field}
+                      placeholder="Additional instructions"
+                    />
+                  </FormControl>
                   <FormMessage />
                 </FormItem>
               )}

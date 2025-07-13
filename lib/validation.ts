@@ -14,7 +14,10 @@ export const preferencesSchema = z.object({
   preferences: z.array(z.string()).optional(),
   servings: z.number().optional(),
   readyInMinutes: z.number().optional(),
-  additionalInstructions: z.string().optional(),
+  additionalInstructions: z
+    .string()
+    .max(150, "Additional instructions must be at most 150 characters")
+    .optional(),
 });
 
 export type PreferencesInput = z.infer<typeof preferencesSchema>;
