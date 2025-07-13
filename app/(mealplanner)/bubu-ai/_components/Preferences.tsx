@@ -24,7 +24,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useQuery } from "@tanstack/react-query";
 import { useMutation } from "convex/react";
 import { useForm } from "react-hook-form";
-import { diets } from "./diets";
+import { diets, preferences } from "./diets";
 
 const Preferences = ({
   showPreferences,
@@ -33,7 +33,7 @@ const Preferences = ({
   showPreferences: boolean;
   setShowPreferences: (show: boolean) => void;
 }) => {
-  const { data: preferences } = useQuery({
+  const { data: preferencesData } = useQuery({
     ...convexQuery(api.preferences.getPreferences, {}),
   });
 
@@ -42,12 +42,12 @@ const Preferences = ({
   const form = useForm<PreferencesInput>({
     resolver: zodResolver(preferencesSchema),
     values: {
-      diets: preferences?.diets,
-      allergies: preferences?.allergies,
-      preferences: preferences?.preferences,
-      servings: preferences?.servings,
-      readyInMinutes: preferences?.readyInMinutes,
-      additionalInstructions: preferences?.additionalInstructions,
+      diets: preferencesData?.diets,
+      allergies: preferencesData?.allergies,
+      preferences: preferencesData?.preferences,
+      servings: preferencesData?.servings,
+      readyInMinutes: preferencesData?.readyInMinutes,
+      additionalInstructions: preferencesData?.additionalInstructions,
     },
   });
 
@@ -87,6 +87,53 @@ const Preferences = ({
                       key={item}
                       control={form.control}
                       name="diets"
+                      render={({ field }) => {
+                        return (
+                          <FormItem
+                            key={item}
+                            className="flex flex-row items-center gap-2"
+                          >
+                            <FormControl>
+                              <Checkbox
+                                checked={field.value?.includes(item)}
+                                onCheckedChange={(checked) => {
+                                  return checked
+                                    ? field.onChange([
+                                        ...(field.value ?? []),
+                                        item,
+                                      ])
+                                    : field.onChange(
+                                        field.value?.filter(
+                                          (value) => value !== item,
+                                        ),
+                                      );
+                                }}
+                              />
+                            </FormControl>
+                            <FormLabel className="text-sm font-normal cursor-pointer">
+                              {item}
+                            </FormLabel>
+                          </FormItem>
+                        );
+                      }}
+                    />
+                  ))}
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+
+            <FormField
+              control={form.control}
+              name="preferences"
+              render={() => (
+                <FormItem>
+                  <FormLabel className="text-base">Preferences</FormLabel>
+                  {preferences.map((item) => (
+                    <FormField
+                      key={item}
+                      control={form.control}
+                      name="preferences"
                       render={({ field }) => {
                         return (
                           <FormItem

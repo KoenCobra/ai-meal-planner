@@ -171,11 +171,15 @@ export const nutritionalValuesResponseSchema = {
   additionalProperties: false,
 };
 
-export const generateRecipeSystemPrompt = `Make sure to generate all the output in the language that is used in the input. If the input has nothing to do with food, or will cause even the slightest bit of harm, please return an error message with the error prop in the shema output. If the recipe would cause harm any way to the person's health, please return an error message with the error prop in the shema output. Be very detailed and elaborate with the ingredients and steps. Smoothies are by default in the "other" dishType.`;
+export const generateRecipeSystemPrompt = `Generate all the output in the language that is used by the user's input. If the input has nothing to do with food, or will cause even the slightest bit of harm, please return an error message with the error prop in the shema output. If the recipe would cause harm any way to the person's health, please return an error message with the error prop in the shema output. Be very detailed and elaborate with the ingredients and steps. Smoothies are by default in the "other" dishType.`;
 
 export const generateRecipeUserPrompt = (
   description: string,
   preferences: PreferencesInput,
-) => {
-  return `Please provide a recipe from this description: ${description}, ${preferences.diets ? `only use the following diets: ${preferences.diets},` : ""} ${preferences.allergies ? `exclude recipes that contain the following allergies: ${preferences.allergies},` : ""} ${preferences.preferences ? `only use the following preferences: ${preferences.preferences},` : ""} ${preferences.servings ? `only use the following servings: ${preferences.servings},` : ""} ${preferences.readyInMinutes ? `only use the following ready in minutes: ${preferences.readyInMinutes}` : ""} ${preferences.additionalInstructions ? `additional instructions: ${preferences.additionalInstructions}` : ""}`;
-};
+) =>
+  `Please provide a recipe from this description: ${description}, ${preferences.diets ? `only use the following diets: ${preferences.diets},` : ""} ${preferences.allergies ? `exclude recipes that contain the following allergies: ${preferences.allergies},` : ""} ${preferences.preferences ? `only use the following preferences: ${preferences.preferences},` : ""} ${preferences.servings ? `only use the following servings: ${preferences.servings},` : ""} ${preferences.readyInMinutes ? `only use the following ready in minutes: ${preferences.readyInMinutes}` : ""} ${preferences.additionalInstructions ? `additional instructions: ${preferences.additionalInstructions}` : ""}`;
+
+export const analyzeImageSystemPrompt = `You are a recipe generator AI. Your task is to analyze the food image and generate a recipe that could recreate this dish. Make sure to generate all the output in the language that is used in the image. If the input has nothing to do with food, or will cause even the slightest bit of harm please return an error message with the error prop in the shema output. If the recipe would cause harm any way to the person's health, please return an error message with the error prop in the shema output. Be very detailed and elaborate with the ingredients and steps. Smoothies are by default in the "other" category.`;
+
+export const analyzeImageUserPrompt = (additionalInstructions: string) =>
+  `${additionalInstructions ? `Additionally, consider these instructions from the user: ${additionalInstructions}` : ""}`;

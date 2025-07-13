@@ -1,5 +1,9 @@
 import { api } from "@/convex/_generated/api";
-import { recipeJsonSchema } from "@/lib/constants";
+import {
+  analyzeImageSystemPrompt,
+  analyzeImageUserPrompt,
+  recipeJsonSchema,
+} from "@/lib/constants";
 import { auth } from "@clerk/nextjs/server";
 import { ConvexHttpClient } from "convex/browser";
 import { NextRequest, NextResponse } from "next/server";
@@ -59,24 +63,14 @@ export async function POST(req: NextRequest) {
       messages: [
         {
           role: "system",
-          content: `You are a recipe generator AI. Your task is to analyze the food image and generate a recipe that could recreate this dish.
-              Make sure to generate all the output in the language that is used in the image.
-              If the input has nothing to do with food, or will cause even the slightest bit of harm please return an error message with the error prop in the shema output.
-              If the recipe would cause harm any way to the person's health, please return an error message with the error prop in the shema output.
-              Be very detailed and elaborate with the ingredients and steps.
-              Smoothies are by default in the "other" category.`,
+          content: analyzeImageSystemPrompt,
         },
         {
           role: "user",
           content: [
             {
               type: "text",
-              text: `
-              ${
-                additionalInstructions
-                  ? `Additionally, consider these instructions from the user: ${additionalInstructions}`
-                  : ""
-              }`,
+              text: analyzeImageUserPrompt(additionalInstructions),
             },
             {
               type: "image_url",
