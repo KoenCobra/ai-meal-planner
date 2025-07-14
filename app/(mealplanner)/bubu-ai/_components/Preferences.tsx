@@ -73,13 +73,25 @@ const Preferences = ({
     }
   };
 
+  const handleClearAll = () => {
+    form.reset({
+      diets: [],
+      allergies: [],
+      preferences: [],
+      servings: 2,
+      readyInMinutes: 60,
+      additionalInstructions: "",
+    });
+    toast.success("All preferences cleared");
+  };
+
   const CheckboxSection = ({
     title,
     items,
     fieldName,
   }: {
     title: string;
-    items: string[];
+    items: readonly string[];
     fieldName: "diets" | "preferences" | "allergies";
   }) => (
     <div className="space-y-4">
@@ -120,11 +132,26 @@ const Preferences = ({
     <Dialog open={showPreferences} onOpenChange={setShowPreferences} modal>
       <DialogContent className="w-[95vw] max-w-2xl flex flex-col pb-0">
         <DialogHeader className="pb-6">
-          <DialogTitle className="text-2xl font-bold">Preferences</DialogTitle>
-          <DialogDescription className="text-base text-muted-foreground">
-            Customize your recipe generation preferences to get personalized
-            meal suggestions.
-          </DialogDescription>
+          <div className="flex items-center justify-between">
+            <div>
+              <DialogTitle className="text-2xl font-bold flex items-center justify-between gap-2">
+                Preferences
+                <Button
+                  type="button"
+                  variant="outline"
+                  size="sm"
+                  onClick={handleClearAll}
+                  className="shrink-0 ml-auto mr-5"
+                >
+                  Reset
+                </Button>
+              </DialogTitle>
+              <DialogDescription className="text-base text-muted-foreground">
+                Customize your recipe generation preferences to get personalized
+                meal suggestions.
+              </DialogDescription>
+            </div>
+          </div>
         </DialogHeader>
 
         <div className="flex-1">
