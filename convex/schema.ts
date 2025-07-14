@@ -77,9 +77,9 @@ const applicationTables = {
 
   preferences: defineTable({
     userId: v.string(),
-    diets: v.array(v.string()),
-    allergies: v.array(v.string()),
-    preferences: v.array(v.string()),
+    diets: v.optional(v.array(v.string())),
+    allergies: v.optional(v.array(v.string())),
+    preferences: v.optional(v.array(v.string())),
     servings: v.optional(v.number()),
     readyInMinutes: v.optional(v.number()),
     additionalInstructions: v.optional(v.string()),

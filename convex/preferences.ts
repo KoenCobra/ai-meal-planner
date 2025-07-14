@@ -19,12 +19,12 @@ export const getPreferences = query({
 
 export const updatePreferences = mutation({
   args: {
-    diets: v.array(v.string()),
-    allergies: v.array(v.string()),
-    preferences: v.array(v.string()),
-    servings: v.number(),
-    readyInMinutes: v.number(),
-    additionalInstructions: v.string(),
+    diets: v.optional(v.array(v.string())),
+    allergies: v.optional(v.array(v.string())),
+    preferences: v.optional(v.array(v.string())),
+    servings: v.optional(v.number()),
+    readyInMinutes: v.optional(v.number()),
+    additionalInstructions: v.optional(v.string()),
   },
   handler: async (ctx, args) => {
     const userId = (await ctx.auth.getUserIdentity())?.subject;
