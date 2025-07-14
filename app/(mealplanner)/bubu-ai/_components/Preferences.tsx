@@ -1,5 +1,4 @@
 import { Button } from "@/components/ui/button";
-import { Checkbox } from "@/components/ui/checkbox";
 import {
   Dialog,
   DialogContent,
@@ -26,6 +25,7 @@ import { convexQuery } from "@convex-dev/react-query";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useQuery } from "@tanstack/react-query";
 import { useMutation } from "convex/react";
+import { CheckSquare, Square } from "lucide-react";
 import { useForm } from "react-hook-form";
 import { toast } from "sonner";
 import { allergies, diets, preferences } from "./diets";
@@ -102,26 +102,41 @@ const Preferences = ({
             key={item}
             control={form.control}
             name={fieldName}
-            render={({ field }) => (
-              <FormItem className="flex items-center space-x-3 space-y-0">
-                <FormControl>
-                  <Checkbox
-                    checked={field.value?.includes(item)}
-                    onCheckedChange={(checked) => {
-                      return checked
-                        ? field.onChange([...(field.value ?? []), item])
-                        : field.onChange(
-                            field.value?.filter((value) => value !== item),
-                          );
-                    }}
-                    className="data-[state=checked]:bg-primary data-[state=checked]:border-primary"
-                  />
-                </FormControl>
-                <FormLabel className="text-sm font-medium cursor-pointer leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70">
-                  {item}
-                </FormLabel>
-              </FormItem>
-            )}
+            render={({ field }) => {
+              const isSelected = field.value?.includes(item);
+              return (
+                <FormItem>
+                  <FormControl>
+                    <Button
+                      type="button"
+                      variant="outline"
+                      size="sm"
+                      className={`w-full justify-start text-left h-auto py-2 px-3 font-normal transition-colors ${
+                        isSelected
+                          ? "border-primary border-2 text-foreground"
+                          : "border-border"
+                      }`}
+                      onClick={() => {
+                        const newValue = isSelected
+                          ? field.value?.filter((value) => value !== item)
+                          : [...(field.value ?? []), item];
+                        field.onChange(newValue);
+                      }}
+                    >
+                      <div className="flex items-center gap-3">
+                        {isSelected ? (
+                          <CheckSquare className="h-4 w-4 text-primary flex-shrink-0" />
+                        ) : (
+                          <Square className="h-4 w-4 text-muted-foreground flex-shrink-0" />
+                        )}
+                        <span>{item}</span>
+                      </div>
+                    </Button>
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              );
+            }}
           />
         ))}
       </div>
