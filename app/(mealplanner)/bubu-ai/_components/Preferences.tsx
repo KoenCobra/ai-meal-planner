@@ -26,6 +26,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useQuery } from "@tanstack/react-query";
 import { useMutation } from "convex/react";
 import { CheckSquare, Square } from "lucide-react";
+import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { toast } from "sonner";
 import { allergies, diets, preferences } from "./diets";
@@ -37,6 +38,8 @@ const Preferences = ({
   showPreferences: boolean;
   setShowPreferences: (show: boolean) => void;
 }) => {
+  const [isSavingPreferences, setIsSavingPreferences] = useState(false);
+
   const { data: preferencesData } = useQuery({
     ...convexQuery(api.preferences.getPreferences, {}),
   });
@@ -57,6 +60,7 @@ const Preferences = ({
 
   const onSubmit = async (input: PreferencesInput) => {
     try {
+      setIsSavingPreferences(true);
       await updatePreferences({
         diets: input.diets || [],
         allergies: input.allergies || [],
@@ -70,6 +74,8 @@ const Preferences = ({
       setShowPreferences(false);
     } catch {
       toast.error("Failed to update preferences");
+    } finally {
+      setIsSavingPreferences(false);
     }
   };
 
@@ -301,7 +307,7 @@ const Preferences = ({
                         <Textarea
                           {...field}
                           placeholder="Any special dietary requirements, cooking methods, or ingredient preferences..."
-                          className="min-h-[100px] resize-none"
+                          className="min-h-[100px] resize-none focus-visible:ring-0"
                           maxLength={150}
                         />
                       </FormControl>
@@ -333,6 +339,7 @@ const Preferences = ({
               type="submit"
               onClick={form.handleSubmit(onSubmit)}
               className="flex-1 sm:flex-none"
+              disabled={isSavingPreferences}
             >
               Save Preferences
             </Button>
