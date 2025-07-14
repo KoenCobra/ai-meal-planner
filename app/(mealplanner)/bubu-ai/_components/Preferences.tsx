@@ -113,7 +113,7 @@ const Preferences = ({
                       size="sm"
                       className={`w-full justify-start text-left h-auto py-2 px-3 font-normal transition-colors ${
                         isSelected
-                          ? "border-primary border-2 text-foreground"
+                          ? "border-primary border-2 dark:border-white/80 text-foreground"
                           : "border-border"
                       }`}
                       onClick={() => {
