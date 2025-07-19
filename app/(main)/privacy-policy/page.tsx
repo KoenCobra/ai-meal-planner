@@ -209,7 +209,7 @@ export default function PrivacyPolicyPage() {
           <CardContent>
             <p className="text-sm text-muted-foreground">
               If you have any questions about this Privacy Policy or our data
-              practices, please contact us at privacy@bubu-ai.com.
+              practices, please contact us at info@bubuaimealplanner.com.
             </p>
           </CardContent>
         </Card>
