@@ -25,10 +25,13 @@ import { useRef, useState } from "react";
 import { useForm } from "react-hook-form";
 import { toast } from "sonner";
 
+import { sanitizeHtml } from "@/lib/utils";
 import {
   type GenerateRecipeInput,
   generateRecipeSchema,
 } from "@/lib/validation";
+import { useUser } from "@clerk/nextjs";
+import { track } from "@vercel/analytics";
 import { useAnalyzeImage } from "../_hooks/useAnylizeImage";
 import { useGenerateNutritionalValues } from "../_hooks/useGenerateNutritionalValues";
 import { useGenerateRecipe } from "../_hooks/useGenerateRecipe";
@@ -50,6 +53,7 @@ const BibiAiForm = ({
   generateImage,
   abortImage,
 }: BubuAiFormProps) => {
+  const { user } = useUser();
   const {
     description,
     setDescription,
@@ -124,8 +128,19 @@ const BibiAiForm = ({
           image: selectedImage,
           additionalInstructions: input.description,
         });
+
+        track("BubuAiForm submit", {
+          user: user?.emailAddresses[0].emailAddress ?? "anonymous",
+          description: sanitizeHtml(input.description),
+          image: true,
+        });
       } else {
         recipe = await generateRecipeMutation.mutateAsync(input);
+
+        track("BubuAiForm submit", {
+          user: user?.emailAddresses[0].emailAddress ?? "anonymous",
+          description: sanitizeHtml(input.description),
+        });
       }
 
       if (!recipe.error) {
