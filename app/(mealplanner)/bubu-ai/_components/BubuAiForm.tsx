@@ -274,7 +274,7 @@ const BibiAiForm = ({
                                 onClick={clearTextarea}
                                 className="size-6 p-0 text-zinc-600 hover:text-zinc-800 dark:text-zinc-400 dark:hover:text-zinc-400 rounded-full hover:bg-zinc-100 dark:hover:bg-zinc-800"
                               >
-                                <X className="size-3" />
+                                <X className="size-4" />
                               </Button>
                             </motion.div>
                           )}
@@ -296,14 +296,13 @@ const BibiAiForm = ({
                   <Button
                     type="button"
                     variant="ghost"
-                    size="icon"
                     className="rounded-full"
                     disabled={isProcessing}
                     onClick={() => {
                       setShowPreferences(true);
                     }}
                   >
-                    <SlidersHorizontal className="size-3" />
+                    <SlidersHorizontal className="size-4" />
                   </Button>
                 </motion.div>
 
@@ -314,11 +313,10 @@ const BibiAiForm = ({
                     onClick={() =>
                       document.getElementById("image-upload")?.click()
                     }
-                    size="icon"
                     className="rounded-full"
                     disabled={isProcessing}
                   >
-                    <ImageIcon className="size-3" />
+                    <ImageIcon className="size-4" />
                   </Button>
                 </motion.div>
 
@@ -331,7 +329,6 @@ const BibiAiForm = ({
                       isProcessing || (!description.trim() && !selectedImage)
                     }
                     type="submit"
-                    size="icon"
                     variant="ghost"
                     className="rounded-full size-8"
                   >
@@ -361,7 +358,6 @@ const BibiAiForm = ({
                       <Button
                         type="button"
                         variant="ghost"
-                        size="icon"
                         onClick={() => {
                           abort();
                           abortAnalyzeImage();
