@@ -16,6 +16,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import {
   ImageIcon,
   Loader2Icon,
+  LockIcon,
   SendHorizontal,
   SlidersHorizontal,
   Square,
@@ -32,6 +33,7 @@ import {
 } from "@/lib/validation";
 import { useUser } from "@clerk/nextjs";
 import { track } from "@vercel/analytics";
+import { redirect } from "next/navigation";
 import { useAnalyzeImage } from "../_hooks/useAnylizeImage";
 import { useGenerateNutritionalValues } from "../_hooks/useGenerateNutritionalValues";
 import { useGenerateRecipe } from "../_hooks/useGenerateRecipe";
@@ -46,14 +48,21 @@ interface BubuAiFormProps {
     recipeSummary: string;
   }) => Promise<{ imageUrl: string }>;
   abortImage: () => void;
+  generationsLeft: number;
+  updateFreeRecipeGenerationsLeft: () => Promise<number>;
+  hasActiveSubscription: boolean;
 }
 
-const BibiAiForm = ({
+const BubuAiForm = ({
   isGeneratingImage,
   generateImage,
   abortImage,
+  generationsLeft,
+  updateFreeRecipeGenerationsLeft,
+  hasActiveSubscription,
 }: BubuAiFormProps) => {
   const { user } = useUser();
+
   const {
     description,
     setDescription,
@@ -65,6 +74,8 @@ const BibiAiForm = ({
   } = useBubuAi();
 
   const [showPreferences, setShowPreferences] = useState(false);
+  const [recipeGenerationsLeft, setRecipeGenerationsLeft] =
+    useState(generationsLeft);
 
   const { generateRecipeMutation, abort } = useGenerateRecipe();
   const { analyzeImageMutation, abort: abortAnalyzeImage } = useAnalyzeImage();
@@ -117,6 +128,10 @@ const BibiAiForm = ({
   };
 
   const onSubmit = async (input: GenerateRecipeInput) => {
+    if (recipeGenerationsLeft === 0) {
+      return toast.error("You have no free recipes left");
+    }
+
     clearAiCache();
     setSavedRecipeId(null);
 
@@ -150,6 +165,9 @@ const BibiAiForm = ({
         });
 
         generateNutritionalValues(recipe.ingredients, recipe.servings);
+
+        const newGenerationsLeft = await updateFreeRecipeGenerationsLeft();
+        setRecipeGenerationsLeft(newGenerationsLeft);
       }
     } catch (error) {
       if (error instanceof Error && error.name === "AbortError") {
@@ -371,6 +389,23 @@ const BibiAiForm = ({
                     </motion.div>
                   )}
                 </AnimatePresence>
+                {!hasActiveSubscription && recipeGenerationsLeft > 0 && (
+                  <p className="text-xs font-medium text-muted-foreground italic ml-auto bg-muted rounded-full px-2 py-1">
+                    {recipeGenerationsLeft} free recipes left
+                  </p>
+                )}
+                {!hasActiveSubscription && recipeGenerationsLeft === 0 && (
+                  <Button
+                    variant="ghost"
+                    className="rounded-full ml-auto"
+                    type="button"
+                    onClick={() => {
+                      redirect("/billing");
+                    }}
+                  >
+                    <LockIcon className="size-4" />
+                  </Button>
+                )}
               </motion.div>
             </div>
 
@@ -395,4 +430,4 @@ const BibiAiForm = ({
   );
 };
 
-export default BibiAiForm;
+export default BubuAiForm;

@@ -1,6 +1,4 @@
-import { freeRecipeGenerationsLeft } from "@/lib/freeTrial";
 import { auth } from "@clerk/nextjs/server";
-import { redirect } from "next/navigation";
 import React from "react";
 import Navbar from "./_components/Navbar";
 import { BubuAiProvider } from "./bubu-ai/BubuAiContext";
@@ -10,10 +8,8 @@ const layout = async ({ children }: { children: React.ReactNode }) => {
   const { userId } = await auth();
 
   if (!userId) {
-    redirect("/");
+    throw new Error("Unauthorized");
   }
-
-  await freeRecipeGenerationsLeft();
 
   return (
     <BubuAiProvider>

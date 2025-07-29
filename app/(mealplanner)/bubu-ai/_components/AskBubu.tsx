@@ -9,7 +9,15 @@ import BubuAiForm from "./BubuAiForm";
 import BubuAiResponse from "./BubuAiResponse";
 import Header from "./Header";
 
-const BibiAi = () => {
+const BubuAi = ({
+  hasActiveSubscription,
+  generationsLeft,
+  updateFreeRecipeGenerationsLeft,
+}: {
+  hasActiveSubscription: boolean;
+  generationsLeft: number;
+  updateFreeRecipeGenerationsLeft: () => Promise<number>;
+}) => {
   const { data: recipe } = useQuery<RecipeInput>({
     queryKey: ["generate-recipe"],
   });
@@ -40,6 +48,11 @@ const BibiAi = () => {
                 isGeneratingImage={generateImageMutation.isPending}
                 generateImage={generateImageMutation.mutateAsync}
                 abortImage={abortImage}
+                generationsLeft={generationsLeft}
+                updateFreeRecipeGenerationsLeft={
+                  updateFreeRecipeGenerationsLeft
+                }
+                hasActiveSubscription={hasActiveSubscription}
               />
             </CardContent>
           </Card>
@@ -70,4 +83,4 @@ const BibiAi = () => {
   );
 };
 
-export default BibiAi;
+export default BubuAi;
