@@ -128,7 +128,7 @@ const BubuAiForm = ({
   };
 
   const onSubmit = async (input: GenerateRecipeInput) => {
-    if (recipeGenerationsLeft === 0) {
+    if (recipeGenerationsLeft === 0 && !hasActiveSubscription) {
       return toast.error("You have no free recipes left");
     }
 

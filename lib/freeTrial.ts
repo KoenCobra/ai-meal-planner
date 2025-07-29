@@ -29,20 +29,11 @@ export const updateFreeRecipeGenerationsLeft = async () => {
 
   const user = await (await clerkClient()).users.getUser(userId);
 
-  if (user.privateMetadata.free_recipe_generations_left === undefined) {
-    await (
-      await clerkClient()
-    ).users.updateUserMetadata(userId, {
-      privateMetadata: {
-        free_recipe_generations_left: 9,
-      },
-    });
-  }
-
   await (
     await clerkClient()
   ).users.updateUserMetadata(userId, {
     privateMetadata: {
+      ...user.privateMetadata,
       free_recipe_generations_left: generationsLeft - 1,
     },
   });
