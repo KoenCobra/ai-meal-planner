@@ -1,3 +1,4 @@
+import { freeRecipeGenerationsLeft } from "@/lib/freeTrial";
 import { auth } from "@clerk/nextjs/server";
 import { redirect } from "next/navigation";
 import React from "react";
@@ -6,11 +7,13 @@ import { BubuAiProvider } from "./bubu-ai/BubuAiContext";
 import { SearchProvider } from "./search/_context/SearchProvider";
 
 const layout = async ({ children }: { children: React.ReactNode }) => {
-  const { has } = await auth();
+  const { userId } = await auth();
 
-  if (!has({ plan: "active_subscription" })) {
-    redirect("/billing");
+  if (!userId) {
+    redirect("/");
   }
+
+  await freeRecipeGenerationsLeft();
 
   return (
     <BubuAiProvider>

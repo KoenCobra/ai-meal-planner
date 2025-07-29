@@ -4,9 +4,9 @@ import React from "react";
 import Navbar from "./_components/Navbar";
 
 const layout = async ({ children }: { children: React.ReactNode }) => {
-  const { has, userId } = await auth();
+  const { userId } = await auth();
 
-  if (userId && has({ plan: "active_subscription" })) {
+  if (userId) {
     redirect("/bubu-ai");
   }
 
