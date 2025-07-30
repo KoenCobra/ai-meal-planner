@@ -17,7 +17,7 @@ const BillingPage = () => {
 
       {/* Pricing Table */}
       <div className="mb-16">
-        <PricingTable />
+        <PricingTable newSubscriptionRedirectUrl="/bubu-ai" />
       </div>
 
       {/* Payment Completion Notice */}

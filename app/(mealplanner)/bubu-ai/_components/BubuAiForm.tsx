@@ -16,10 +16,10 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import {
   ImageIcon,
   Loader2Icon,
-  LockIcon,
   SendHorizontal,
   SlidersHorizontal,
   Square,
+  UnlockIcon,
   X,
 } from "lucide-react";
 import { useRef, useState } from "react";
@@ -403,7 +403,8 @@ const BubuAiForm = ({
                       redirect("/billing");
                     }}
                   >
-                    <LockIcon className="size-4" />
+                    <UnlockIcon className="size-4" />
+                    <span className="text-xs">Unlock more recipes</span>
                   </Button>
                 )}
               </motion.div>
