@@ -46,7 +46,7 @@ const Home = async () => {
       </div>
 
       {/* Hero Section */}
-      <div className="max-w-6xl mx-auto text-center relative min-h-screen py-20 px-4">
+      <div className="max-w-6xl mx-auto text-center relative min-h-screen py-20">
         {/* Main Hero Title with Bubu AI Emphasis */}
         <div className="mb-16">
           <h1 className="text-6xl md:text-8xl font-bold mb-4">
@@ -79,7 +79,7 @@ const Home = async () => {
         </p>
 
         <div className="flex flex-col sm:flex-row gap-6 justify-center items-center mb-20">
-          <Link href="/bubu-ai">
+          <Link href="/bubu-ai" className="flex flex-col items-center">
             <Button
               size="lg"
               className="text-lg px-10 py-7 rounded-2xl bg-gradient-to-r from-blue-600 to-blue-400 hover:from-blue-700 hover:to-blue-500 text-white border-0 shadow-xl hover:shadow-2xl transform hover:scale-105 transition-all duration-300"
@@ -87,6 +87,9 @@ const Home = async () => {
               <Zap className="size-6 mr-3" />
               Experience Bubu AI
             </Button>
+            <p className="text-sm text-muted-foreground mt-2 opacity-75">
+              (10 free recipes included • No credit card needed)
+            </p>
           </Link>
         </div>
       </div>
@@ -507,7 +510,7 @@ const Home = async () => {
       </div>
 
       {/* Multi-Platform & Multi-Language Showcase */}
-      <section className="py-24 px-4 bg-gradient-to-b from-blue-50/30 to-transparent dark:from-blue-950/20 dark:to-transparent text-balance rounded-t-lg">
+      <section className="py-24 bg-gradient-to-b from-blue-50/30 to-transparent dark:from-blue-950/20 dark:to-transparent text-balance rounded-t-lg">
         <div className="max-w-7xl mx-auto">
           {/* Section Header */}
           <div className="text-center mb-20">
@@ -614,7 +617,7 @@ const Home = async () => {
       </section>
 
       {/* Features Section */}
-      <section className="py-16 px-4 bg-gradient-to-b from-blue-50/50 to-transparent dark:from-blue-950/20 dark:to-transparent rounded-lg">
+      <section className="py-16 bg-gradient-to-b from-blue-50/50 to-transparent dark:from-blue-950/20 dark:to-transparent rounded-lg">
         <div className="max-w-6xl mx-auto">
           <div className="text-center mb-20">
             <h2 className="text-5xl md:text-6xl font-bold mb-8">
@@ -771,7 +774,7 @@ const Home = async () => {
       </section>
 
       {/* Pricing Section */}
-      <section className="py-32 px-4">
+      <section className="py-32">
         <div className="max-w-4xl mx-auto text-center">
           <h2 className="text-5xl md:text-6xl font-bold mb-8">
             Simple, Transparent
@@ -789,12 +792,6 @@ const Home = async () => {
 
           <Card className="border-2 border-blue-200/50 dark:border-blue-400/20 max-w-lg mx-auto bg-white/50 dark:bg-zinc-900/50 backdrop-blur-sm shadow-2xl">
             <CardHeader className="text-center">
-              {/* <div className="relative w-20 h-20 mx-auto mb-6">
-                <div className="absolute inset-0 bg-gradient-to-r from-blue-600 to-blue-400 dark:from-blue-400 dark:to-blue-300 rounded-2xl blur-lg opacity-30"></div>
-                <div className="relative bg-gradient-to-r from-blue-600 to-blue-400 dark:from-blue-400 dark:to-blue-300 rounded-2xl flex items-center justify-center w-full h-full">
-                  <ChefHat className="w-10 h-10 text-white" />
-                </div>
-              </div> */}
               <CardTitle className="text-3xl">
                 <span className="bg-gradient-to-r from-blue-600 to-blue-400 dark:from-blue-400 dark:to-blue-300 bg-clip-text text-transparent">
                   Bubu AI
@@ -814,31 +811,35 @@ const Home = async () => {
               <div className="space-y-4">
                 <div className="flex items-center gap-2">
                   <CheckCircle className="size-4 text-muted-foreground flex-shrink-0" />
-                  <span className="text-lg">Recipe Generation with Images</span>
+                  <span>Recipe Generation with Images</span>
                 </div>
                 <div className="flex items-center gap-2">
                   <CheckCircle className="size-4 text-muted-foreground flex-shrink-0" />
-                  <span className="text-lg">Dynamic Menu Planning</span>
+                  <span>Dynamic Menu Planning</span>
                 </div>
                 <div className="flex items-center gap-2">
                   <CheckCircle className="size-4 text-muted-foreground flex-shrink-0" />
-                  <span className="text-lg">Save Your Favorite Recipes</span>
+                  <span>Save Your Favorite Recipes</span>
                 </div>
                 <div className="flex items-center gap-2">
                   <CheckCircle className="size-4 text-muted-foreground flex-shrink-0" />
-                  <span className="text-lg">Smart Grocery List Sync</span>
+                  <span>Smart Grocery List Sync</span>
                 </div>
                 <div className="flex items-center gap-2">
                   <CheckCircle className="size-4 text-muted-foreground flex-shrink-0" />
-                  <span className="text-lg">Advanced Recipe Search</span>
+                  <span>Advanced Recipe Search</span>
                 </div>
                 <div className="flex items-center gap-2">
                   <CheckCircle className="size-4 text-muted-foreground flex-shrink-0" />
-                  <span className="text-lg">Nutritional Information</span>
+                  <span>Nutritional Information</span>
                 </div>
                 <div className="flex items-center gap-2">
                   <CheckCircle className="size-4 text-muted-foreground flex-shrink-0" />
-                  <span className="text-lg">Ingredient image recognition</span>
+                  <span>Ingredient image recognition</span>
+                </div>
+                <div className="flex items-center gap-2">
+                  <CheckCircle className="size-4 text-muted-foreground flex-shrink-0" />
+                  <span>10 free recipes</span>
                 </div>
               </div>
 
@@ -857,7 +858,7 @@ const Home = async () => {
       </section>
 
       {/* CTA Section */}
-      <section className="py-32 px-4 bg-gradient-to-r from-blue-600/10 via-blue-400/5 to-blue-300/10 dark:from-blue-600/20 dark:via-blue-400/10 dark:to-blue-300/20 rounded-t-lg text-balance">
+      <section className="py-32 bg-gradient-to-r from-blue-600/10 via-blue-400/5 to-blue-300/10 dark:from-blue-600/20 dark:via-blue-400/10 dark:to-blue-300/20 rounded-t-lg text-balance">
         <div className="max-w-4xl mx-auto text-center">
           <h2 className="text-5xl md:text-6xl font-bold mb-8">
             Ready to Transform Your
@@ -889,7 +890,7 @@ const Home = async () => {
       </section>
 
       {/* Footer */}
-      <footer className="py-16 px-4 bg-gradient-to-b from-blue-50/30 to-transparent dark:from-blue-950/20 dark:to-transparent">
+      <footer className="py-16 bg-gradient-to-b from-blue-50/30 to-transparent dark:from-blue-950/20 dark:to-transparent">
         <div className="max-w-6xl mx-auto">
           <div className="grid md:grid-cols-3 gap-8">
             <div>
