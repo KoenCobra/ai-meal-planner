@@ -261,7 +261,11 @@ const BubuAiForm = ({
                               ? "Add any specific instructions for your food image (optional)"
                               : `Type your recipe description here (in your preferred language)...`
                           }
-                          disabled={isProcessing}
+                          disabled={
+                            isProcessing ||
+                            (!hasActiveSubscription &&
+                              recipeGenerationsLeft === 0)
+                          }
                           onChange={handleTextareaChange}
                           onKeyDown={(e) => {
                             if (e.key === "Enter" && !e.shiftKey) {
@@ -315,7 +319,10 @@ const BubuAiForm = ({
                     type="button"
                     variant="ghost"
                     className="rounded-full"
-                    disabled={isProcessing}
+                    disabled={
+                      isProcessing ||
+                      (!hasActiveSubscription && recipeGenerationsLeft === 0)
+                    }
                     onClick={() => {
                       setShowPreferences(true);
                     }}
@@ -332,7 +339,10 @@ const BubuAiForm = ({
                       document.getElementById("image-upload")?.click()
                     }
                     className="rounded-full"
-                    disabled={isProcessing}
+                    disabled={
+                      isProcessing ||
+                      (!hasActiveSubscription && recipeGenerationsLeft === 0)
+                    }
                   >
                     <ImageIcon className="size-4" />
                   </Button>

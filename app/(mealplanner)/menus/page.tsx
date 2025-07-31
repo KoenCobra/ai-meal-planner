@@ -1,4 +1,9 @@
+import {
+  freeRecipeGenerationsLeft,
+  hasUserActiveSubscription,
+} from "@/lib/freeTrial";
 import { Metadata } from "next";
+import { redirect } from "next/navigation";
 import MenusOverview from "./_components/MenusOverview";
 
 export const metadata: Metadata = {
@@ -7,6 +12,13 @@ export const metadata: Metadata = {
 };
 
 const Menus = async () => {
+  const hasActiveSubscription = await hasUserActiveSubscription();
+  const generationsLeft = await freeRecipeGenerationsLeft();
+
+  if (!hasActiveSubscription && generationsLeft === 0) {
+    redirect("/billing");
+  }
+
   return (
     <div className="animate-in fade-in duration-500">
       <h1 className="text-3xl font-bold text-center items-center gap-2 mb-4">
