@@ -14,6 +14,7 @@ const nextConfig: NextConfig = {
         hostname: "v3.fal.media",
       },
     ],
+    unoptimized: true,
   },
   experimental: {
     serverActions: {
