@@ -104,8 +104,13 @@ export function GroceryList() {
     return null;
   };
 
-  const activeItems = items?.filter((item) => !item.checked) || [];
-  const checkedItems = items?.filter((item) => item.checked) || [];
+  // Ensure newest items appear first
+  const sortedItems = (items ?? [])
+    .slice()
+    .sort((a, b) => b._creationTime - a._creationTime);
+
+  const activeItems = sortedItems.filter((item) => !item.checked);
+  const checkedItems = sortedItems.filter((item) => item.checked);
 
   // Then, add a LoadingState component before the return statement
   function LoadingState() {

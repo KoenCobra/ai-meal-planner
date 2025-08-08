@@ -126,10 +126,11 @@ export const listItems = query({
       console.error("Unauthorized when listing grocery items");
       throw new Error("Unauthorized when listing grocery items");
     }
+    // Use by_user index and order by creation time descending
     return await ctx.db
       .query("groceryItems")
-      .withIndex("by_user_name_and_unit", (q) => q.eq("userId", userId))
-      .order("asc")
+      .withIndex("by_user", (q) => q.eq("userId", userId))
+      .order("desc")
       .collect();
   },
 });
