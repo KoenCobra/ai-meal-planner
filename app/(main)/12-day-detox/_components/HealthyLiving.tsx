@@ -7,36 +7,36 @@ const HealthyLiving = () => {
       imgSrc: "/12-day-detox/blueberries.jpg",
       description:
         "Discover the power of natural, unprocessed foods in supporting your body's optimal function. Our program emphasizes fresh, organic ingredients that provide essential nutrients for health and vitality",
-      shade: "emerald-500",
+      shade: "black",
     },
     {
       title: "Mindful Living",
       imgSrc: "/12-day-detox/meditation.jpg",
       description:
         "Learn to incorporate mindfulness practices that reduce stress and support your body's natural healing processes. Our program includes daily visualization exercises and stress-reduction techniques.",
-      shade: "emerald-600",
+      shade: "gray-800",
     },
     {
       title: "Sustainable Habits",
       imgSrc: "/12-day-detox/glass-bowls.jpg",
       description:
         "Develop lasting habits that support long-term health and wellness. Our program teaches you practical skills for maintaining a healthy lifestyle beyond the 12-day detox.",
-      shade: "emerald-400",
+      shade: "gray-900",
     },
   ];
 
   return (
-    <section className="py-20 bg-slate-50">
+    <section className="py-20 bg-gray-50">
       <div className="container mx-auto px-4 sm:px-6 lg:px-8">
         <div className="max-w-4xl mx-auto text-center mb-16">
-          <div className="inline-block px-4 py-2 bg-emerald-100 text-emerald-800 text-sm font-semibold rounded-full mb-6">
+          <div className="inline-block px-4 py-2 bg-gray-100 text-black text-sm font-semibold rounded-full mb-6 border border-green-400">
             Our Approach
           </div>
-          <h2 className="text-4xl lg:text-5xl font-bold text-slate-900 mb-6 leading-tight">
+          <h2 className="text-4xl lg:text-5xl font-bold text-black mb-6 leading-tight">
             The Foundation of
-            <span className="text-emerald-600"> Healthy Living</span>
+            <span className="text-green-600"> Healthy Living</span>
           </h2>
-          <p className="text-xl text-slate-600 leading-relaxed">
+          <p className="text-xl text-gray-600 leading-relaxed">
             Your health is your most valuable asset. Making informed choices
             about nutrition and lifestyle can dramatically impact your quality
             of life and longevity.
@@ -72,7 +72,7 @@ const SingleHealthyLiving = ({
   shade: string;
 }) => {
   return (
-    <div className="group bg-white rounded-3xl overflow-hidden shadow-lg hover:shadow-2xl transition-all duration-500 hover:-translate-y-2">
+    <div className="group bg-white rounded-3xl overflow-hidden shadow-lg hover:shadow-2xl transition-all duration-500 hover:-translate-y-2 border border-gray-200 hover:border-green-400">
       <div className="relative overflow-hidden">
         <Image
           src={imgSrc}
@@ -88,12 +88,12 @@ const SingleHealthyLiving = ({
       </div>
       <div className="p-8">
         <div
-          className={`inline-flex items-center justify-center w-12 h-12 bg-${shade} rounded-2xl mb-6 shadow-lg`}
+          className={`inline-flex items-center justify-center w-12 h-12 bg-${shade} rounded-2xl mb-6 shadow-lg group-hover:bg-green-500 transition-colors duration-300`}
         >
           <div className="w-6 h-6 bg-white rounded-full opacity-80"></div>
         </div>
-        <h3 className="text-2xl font-bold text-slate-900 mb-4">{title}</h3>
-        <p className="text-slate-600 leading-relaxed">{description}</p>
+        <h3 className="text-2xl font-bold text-black mb-4">{title}</h3>
+        <p className="text-gray-600 leading-relaxed">{description}</p>
       </div>
     </div>
   );

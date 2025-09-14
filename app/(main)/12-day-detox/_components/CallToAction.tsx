@@ -10,9 +10,9 @@ const CallToAction = () => {
   ];
 
   return (
-    <section className="relative py-20 overflow-hidden bg-slate-900">
+    <section className="relative py-20 overflow-hidden bg-black">
       {/* Background pattern */}
-      <div className="absolute inset-0 bg-gradient-to-br from-slate-900 via-slate-800 to-emerald-800"></div>
+      <div className="absolute inset-0 bg-gradient-to-br from-black via-gray-900 to-gray-800"></div>
       <div className='absolute inset-0 bg-[url("data:image/svg+xml,%3Csvg width="60" height="60" viewBox="0 0 60 60" xmlns="http://www.w3.org/2000/svg"%3E%3Cg fill="none" fill-rule="evenodd"%3E%3Cg fill="%239C92AC" fill-opacity="0.05"%3E%3Ccircle cx="30" cy="30" r="2"/%3E%3C/g%3E%3C/g%3E%3C/svg%3E")] opacity-30'></div>
 
       <div className="relative container mx-auto px-4 sm:px-6 lg:px-8">
@@ -20,10 +20,10 @@ const CallToAction = () => {
           {/* Main content card */}
           <div className="bg-white rounded-3xl shadow-2xl overflow-hidden">
             {/* Header section with gradient */}
-            <div className="bg-emerald-600 px-8 py-12 text-center text-white relative overflow-hidden">
-              <div className="absolute inset-0 bg-white/10 backdrop-blur-sm"></div>
+            <div className="bg-black px-8 py-12 text-center text-white relative overflow-hidden border-b border-green-400">
+              <div className="absolute inset-0 bg-white/5 backdrop-blur-sm"></div>
               <div className="relative z-10">
-                <div className="inline-block px-4 py-2 bg-white/20 backdrop-blur-sm rounded-full mb-6">
+                <div className="inline-block px-4 py-2 bg-white/10 backdrop-blur-sm rounded-full mb-6 border border-green-400">
                   <span className="text-sm font-semibold">
                     ✨ Free with Bubu AI
                   </span>
@@ -31,7 +31,7 @@ const CallToAction = () => {
                 <h2 className="text-4xl lg:text-5xl font-bold mb-6 leading-tight">
                   Ready to Transform Your Life?
                 </h2>
-                <p className="text-xl text-emerald-100 mb-8 max-w-2xl mx-auto leading-relaxed">
+                <p className="text-xl text-gray-300 mb-8 max-w-2xl mx-auto leading-relaxed">
                   Join our 12-Day Detox Program and start your journey to better
                   health today
                 </p>
@@ -44,7 +44,7 @@ const CallToAction = () => {
               <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4 mb-12">
                 {features.map((feature, index) => (
                   <div key={index} className="flex items-center">
-                    <div className="w-6 h-6 bg-emerald-500 rounded-full flex items-center justify-center mr-3 flex-shrink-0">
+                    <div className="w-6 h-6 bg-black rounded-full flex items-center justify-center mr-3 flex-shrink-0 hover:bg-green-500 transition-colors duration-300">
                       <svg
                         className="w-3.5 h-3.5 text-white"
                         fill="none"
@@ -59,31 +59,29 @@ const CallToAction = () => {
                         />
                       </svg>
                     </div>
-                    <span className="text-slate-700 font-medium">
-                      {feature}
-                    </span>
+                    <span className="text-gray-700 font-medium">{feature}</span>
                   </div>
                 ))}
               </div>
 
               {/* Free access section */}
               <div className="text-center mb-12">
-                <div className="inline-block bg-emerald-50 border border-emerald-100 px-6 py-3 rounded-2xl mb-6">
-                  <p className="text-lg text-emerald-600 font-semibold">
+                <div className="inline-block bg-gray-50 border border-green-400 px-6 py-3 rounded-2xl mb-6">
+                  <p className="text-lg text-green-600 font-semibold">
                     ✨ Completely FREE with Bubu AI
                   </p>
                 </div>
 
                 <div className="flex items-center justify-center gap-6 mb-6">
-                  <div className="text-5xl lg:text-6xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-emerald-600 to-emerald-500">
+                  <div className="text-5xl lg:text-6xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-black to-gray-600">
                     FREE
                   </div>
-                  <div className="bg-emerald-500 text-white px-4 py-2 rounded-full shadow-lg">
+                  <div className="bg-green-500 text-white px-4 py-2 rounded-full shadow-lg">
                     <span className="text-sm font-bold">INCLUDED</span>
                   </div>
                 </div>
 
-                <p className="text-slate-600 mb-8">
+                <p className="text-gray-600 mb-8">
                   Included in your Bubu AI subscription • 7-day free trial
                   available
                 </p>
@@ -92,8 +90,8 @@ const CallToAction = () => {
               </div>
 
               {/* Trust badges */}
-              <div className="pt-8 border-t border-slate-100">
-                <div className="flex justify-center items-center gap-8 text-slate-400">
+              <div className="pt-8 border-t border-gray-200">
+                <div className="flex justify-center items-center gap-8 text-gray-400">
                   <div className="flex items-center gap-2">
                     <svg
                       className="w-6 h-6"
