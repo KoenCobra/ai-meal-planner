@@ -26,14 +26,14 @@ const Benefits = () => {
   ];
 
   return (
-    <section className="py-20 bg-white">
+    <section className="py-20 bg-white dark:bg-gray-900">
       <div className="container mx-auto px-4 sm:px-6 lg:px-8">
         {/* Section header */}
         <div className="text-center mb-16">
-          <h2 className="text-3xl sm:text-4xl font-bold text-black mb-4">
+          <h2 className="text-3xl sm:text-4xl font-bold text-black dark:text-white mb-4">
             Why Choose Our Program?
           </h2>
-          <p className="text-lg text-gray-600 max-w-2xl mx-auto">
+          <p className="text-lg text-gray-600 dark:text-gray-300 max-w-2xl mx-auto">
             Experience the difference with our science-backed approach to
             wellness
           </p>
@@ -68,17 +68,26 @@ const SingleBenefit = ({
   Icon: React.ElementType;
   index: number;
 }) => {
-  const iconStyles = ["bg-black", "bg-gray-800", "bg-gray-900", "bg-black"];
+  const iconStyles = [
+    "bg-black dark:bg-gray-700",
+    "bg-gray-800 dark:bg-gray-600",
+    "bg-gray-900 dark:bg-gray-500",
+    "bg-black dark:bg-gray-700",
+  ];
 
   return (
-    <div className="group bg-white rounded-2xl p-8 shadow-sm hover:shadow-lg transition-all duration-300 hover:-translate-y-1 border border-gray-200 hover:border-green-400">
+    <div className="group bg-white dark:bg-gray-800 rounded-2xl p-8 shadow-sm hover:shadow-lg dark:shadow-gray-900/50 transition-all duration-300 hover:-translate-y-1 border border-gray-200 dark:border-gray-700 hover:border-green-400 dark:hover:border-green-500">
       <div
-        className={`inline-flex p-4 ${iconStyles[index]} rounded-2xl mb-6 shadow-lg group-hover:scale-110 transition-transform duration-300 group-hover:bg-green-500`}
+        className={`inline-flex p-4 ${iconStyles[index]} rounded-2xl mb-6 shadow-lg group-hover:scale-110 transition-transform duration-300 group-hover:bg-green-500 dark:group-hover:bg-green-600`}
       >
         <Icon className="w-8 h-8 text-white" />
       </div>
-      <h3 className="text-xl font-bold text-black mb-3">{title}</h3>
-      <p className="text-gray-600 leading-relaxed">{description}</p>
+      <h3 className="text-xl font-bold text-black dark:text-white mb-3">
+        {title}
+      </h3>
+      <p className="text-gray-600 dark:text-gray-300 leading-relaxed">
+        {description}
+      </p>
     </div>
   );
 };

@@ -6,7 +6,7 @@ const CallToActionButton = () => {
       onClick={() => {
         window.location.href = "/bubu-ai";
       }}
-      className="inline-flex items-center justify-center px-8 py-4 text-lg font-semibold text-black bg-white rounded-full hover:bg-gray-100 transform hover:scale-105 transition-all duration-300 shadow-lg hover:shadow-xl focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2 border border-green-400 hover:border-green-500"
+      className="inline-flex items-center justify-center px-8 py-4 text-lg font-semibold text-black dark:text-white bg-white dark:bg-gray-800 rounded-full hover:bg-gray-100 dark:hover:bg-gray-700 transform hover:scale-105 transition-all duration-300 shadow-lg hover:shadow-xl focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2 dark:focus:ring-offset-gray-900 border border-green-400 hover:border-green-500 dark:border-green-500 dark:hover:border-green-400"
     >
       Access with Bubu AI
       <svg

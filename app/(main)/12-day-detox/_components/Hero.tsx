@@ -14,13 +14,13 @@ const Hero = () => {
         sizes="100vw"
       />
       {/* Modern monochrome gradient overlay */}
-      <div className="absolute inset-0 bg-gradient-to-br from-black/80 via-gray-900/70 to-black/60"></div>
+      <div className="absolute inset-0 bg-gradient-to-br from-black/80 via-gray-900/70 to-black/60 dark:from-black/90 dark:via-gray-900/80 dark:to-black/70"></div>
 
       <div className="relative z-10 container mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex items-center justify-center min-h-screen">
           <div className="text-center max-w-4xl mx-auto">
             {/* Badge */}
-            <div className="inline-flex items-center px-4 py-2 rounded-full bg-white/10 backdrop-blur-sm border border-white/20 mb-8">
+            <div className="inline-flex items-center px-4 py-2 rounded-full bg-white/10 backdrop-blur-sm border border-white/20 dark:bg-white/15 dark:border-white/30 mb-8">
               <span className="text-sm font-medium text-white">
                 ✨ Science-Based Wellness Program
               </span>
@@ -29,11 +29,13 @@ const Hero = () => {
             {/* Main heading with better typography */}
             <h1 className="text-5xl sm:text-6xl lg:text-7xl font-bold text-white mb-6 leading-tight tracking-tight">
               Transform Your Health in
-              <span className="block text-green-400">12 Days</span>
+              <span className="block text-green-400 dark:text-green-300">
+                12 Days
+              </span>
             </h1>
 
             {/* Subheading */}
-            <p className="text-xl sm:text-2xl text-gray-200 mb-12 max-w-3xl mx-auto leading-relaxed font-light">
+            <p className="text-xl sm:text-2xl text-gray-200 dark:text-gray-100 mb-12 max-w-3xl mx-auto leading-relaxed font-light">
               Experience natural rejuvenation through whole foods and expert
               guidance. No pills, no shakes — just pure, natural transformation.
             </p>
@@ -41,7 +43,7 @@ const Hero = () => {
             {/* CTA Button */}
             <div className="space-y-4">
               <CallToActionButton />
-              <p className="text-sm text-gray-300">
+              <p className="text-sm text-gray-300 dark:text-gray-200">
                 Join 10,000+ people who transformed their health naturally
               </p>
             </div>
@@ -50,7 +52,7 @@ const Hero = () => {
       </div>
 
       {/* Subtle bottom gradient */}
-      <div className="absolute bottom-0 left-0 right-0 h-32 bg-gradient-to-t from-white via-white/50 to-transparent"></div>
+      <div className="absolute bottom-0 left-0 right-0 h-32 bg-gradient-to-t from-white via-white/50 to-transparent dark:from-background dark:via-background/50 dark:to-transparent"></div>
     </header>
   );
 };

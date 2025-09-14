@@ -26,17 +26,20 @@ const HealthyLiving = () => {
   ];
 
   return (
-    <section className="py-20 bg-gray-50">
+    <section className="py-20 bg-gray-50 dark:bg-gray-800">
       <div className="container mx-auto px-4 sm:px-6 lg:px-8">
         <div className="max-w-4xl mx-auto text-center mb-16">
-          <div className="inline-block px-4 py-2 bg-gray-100 text-black text-sm font-semibold rounded-full mb-6 border border-green-400">
+          <div className="inline-block px-4 py-2 bg-gray-100 dark:bg-gray-700 text-black dark:text-white text-sm font-semibold rounded-full mb-6 border border-green-400 dark:border-green-500">
             Our Approach
           </div>
-          <h2 className="text-4xl lg:text-5xl font-bold text-black mb-6 leading-tight">
+          <h2 className="text-4xl lg:text-5xl font-bold text-black dark:text-white mb-6 leading-tight">
             The Foundation of
-            <span className="text-green-600"> Healthy Living</span>
+            <span className="text-green-600 dark:text-green-400">
+              {" "}
+              Healthy Living
+            </span>
           </h2>
-          <p className="text-xl text-gray-600 leading-relaxed">
+          <p className="text-xl text-gray-600 dark:text-gray-300 leading-relaxed">
             Your health is your most valuable asset. Making informed choices
             about nutrition and lifestyle can dramatically impact your quality
             of life and longevity.
@@ -72,7 +75,7 @@ const SingleHealthyLiving = ({
   shade: string;
 }) => {
   return (
-    <div className="group bg-white rounded-3xl overflow-hidden shadow-lg hover:shadow-2xl transition-all duration-500 hover:-translate-y-2 border border-gray-200 hover:border-green-400">
+    <div className="group bg-white dark:bg-gray-900 rounded-3xl overflow-hidden shadow-lg hover:shadow-2xl dark:shadow-gray-900/50 transition-all duration-500 hover:-translate-y-2 border border-gray-200 dark:border-gray-700 hover:border-green-400 dark:hover:border-green-500">
       <div className="relative overflow-hidden">
         <Image
           src={imgSrc}
@@ -88,12 +91,16 @@ const SingleHealthyLiving = ({
       </div>
       <div className="p-8">
         <div
-          className={`inline-flex items-center justify-center w-12 h-12 bg-${shade} rounded-2xl mb-6 shadow-lg group-hover:bg-green-500 transition-colors duration-300`}
+          className={`inline-flex items-center justify-center w-12 h-12 bg-${shade} dark:bg-gray-600 rounded-2xl mb-6 shadow-lg group-hover:bg-green-500 dark:group-hover:bg-green-600 transition-colors duration-300`}
         >
           <div className="w-6 h-6 bg-white rounded-full opacity-80"></div>
         </div>
-        <h3 className="text-2xl font-bold text-black mb-4">{title}</h3>
-        <p className="text-gray-600 leading-relaxed">{description}</p>
+        <h3 className="text-2xl font-bold text-black dark:text-white mb-4">
+          {title}
+        </h3>
+        <p className="text-gray-600 dark:text-gray-300 leading-relaxed">
+          {description}
+        </p>
       </div>
     </div>
   );
