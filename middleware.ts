@@ -9,6 +9,7 @@ const isPublicRoute = createRouteMatcher([
   "/privacy-policy",
   "/terms-of-service",
   "/api/webhooks/clerk",
+  "/12-day-detox",
 ]);
 
 export default clerkMiddleware(async (auth, req) => {

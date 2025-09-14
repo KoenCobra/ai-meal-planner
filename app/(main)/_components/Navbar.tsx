@@ -37,6 +37,9 @@ const Navbar = () => {
             <Link href="/bubu-ai">
               <Button variant="link">Meal Planner</Button>
             </Link>
+            <Link href="/12-day-detox">
+              <Button variant="link">12 Day Detox</Button>
+            </Link>
             <SignedOut>
               <LoginButton />
             </SignedOut>
