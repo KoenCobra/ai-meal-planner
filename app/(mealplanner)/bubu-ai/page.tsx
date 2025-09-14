@@ -1,8 +1,3 @@
-import {
-  freeRecipeGenerationsLeft,
-  hasUserActiveSubscription,
-  updateFreeRecipeGenerationsLeft,
-} from "@/lib/freeTrial";
 import { Metadata } from "next";
 import AskBubu from "./_components/AskBubu";
 
@@ -12,16 +7,7 @@ export const metadata: Metadata = {
 };
 
 const BubuAiPage = async () => {
-  const hasActiveSubscription = await hasUserActiveSubscription();
-  const generationsLeft = await freeRecipeGenerationsLeft();
-
-  return (
-    <AskBubu
-      hasActiveSubscription={hasActiveSubscription}
-      generationsLeft={generationsLeft}
-      updateFreeRecipeGenerationsLeft={updateFreeRecipeGenerationsLeft}
-    />
-  );
+  return <AskBubu />;
 };
 
 export default BubuAiPage;

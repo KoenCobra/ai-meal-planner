@@ -229,31 +229,6 @@ export async function POST(request: Request) {
           `[PAYMENT] ⏳ Payment in progress - Status: ${data.status}`,
         );
       }
-    } else if (payload.type === "user.created") {
-      console.log("New user created");
-
-      const userData = payload.data as {
-        id: string;
-      };
-
-      console.log(`User ID: ${userData.id}`);
-
-      try {
-        await (
-          await clerkClient()
-        ).users.updateUserMetadata(userData.id, {
-          privateMetadata: {
-            free_recipe_generations_left: 10,
-          },
-        });
-
-        console.log(`✅ Free trial metadata set for user: ${userData.id}`);
-      } catch (metadataError) {
-        console.error(
-          `❌ Error setting metadata for user ${userData.id}:`,
-          metadataError,
-        );
-      }
     } else {
       console.log(`[WEBHOOK] Unhandled event type: ${payload.type}`);
     }

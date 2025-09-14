@@ -19,7 +19,6 @@ import {
   SendHorizontal,
   SlidersHorizontal,
   Square,
-  UnlockIcon,
   X,
 } from "lucide-react";
 import { useRef, useState } from "react";
@@ -33,7 +32,6 @@ import {
 } from "@/lib/validation";
 import { useUser } from "@clerk/nextjs";
 import { track } from "@vercel/analytics";
-import { redirect } from "next/navigation";
 import { useAnalyzeImage } from "../_hooks/useAnylizeImage";
 import { useGenerateNutritionalValues } from "../_hooks/useGenerateNutritionalValues";
 import { useGenerateRecipe } from "../_hooks/useGenerateRecipe";
@@ -48,18 +46,12 @@ interface BubuAiFormProps {
     recipeSummary: string;
   }) => Promise<{ imageUrl: string }>;
   abortImage: () => void;
-  generationsLeft: number;
-  updateFreeRecipeGenerationsLeft: () => Promise<number>;
-  hasActiveSubscription: boolean;
 }
 
 const BubuAiForm = ({
   isGeneratingImage,
   generateImage,
   abortImage,
-  generationsLeft,
-  updateFreeRecipeGenerationsLeft,
-  hasActiveSubscription,
 }: BubuAiFormProps) => {
   const { user } = useUser();
 
@@ -74,8 +66,6 @@ const BubuAiForm = ({
   } = useBubuAi();
 
   const [showPreferences, setShowPreferences] = useState(false);
-  const [recipeGenerationsLeft, setRecipeGenerationsLeft] =
-    useState(generationsLeft);
 
   const { generateRecipeMutation, abort } = useGenerateRecipe();
   const { analyzeImageMutation, abort: abortAnalyzeImage } = useAnalyzeImage();
@@ -128,10 +118,6 @@ const BubuAiForm = ({
   };
 
   const onSubmit = async (input: GenerateRecipeInput) => {
-    if (recipeGenerationsLeft === 0 && !hasActiveSubscription) {
-      return toast.error("You have no free recipes left");
-    }
-
     clearAiCache();
     setSavedRecipeId(null);
 
@@ -165,9 +151,6 @@ const BubuAiForm = ({
         });
 
         generateNutritionalValues(recipe.ingredients, recipe.servings);
-
-        const newGenerationsLeft = await updateFreeRecipeGenerationsLeft();
-        setRecipeGenerationsLeft(newGenerationsLeft);
       }
     } catch (error) {
       if (error instanceof Error && error.name === "AbortError") {
@@ -260,11 +243,7 @@ const BubuAiForm = ({
                               ? "Add any specific instructions for your food image (optional)"
                               : `Type your recipe description here (in your preferred language)...`
                           }
-                          disabled={
-                            isProcessing ||
-                            (!hasActiveSubscription &&
-                              recipeGenerationsLeft === 0)
-                          }
+                          disabled={isProcessing}
                           onChange={handleTextareaChange}
                           onKeyDown={(e) => {
                             if (e.key === "Enter" && !e.shiftKey) {
@@ -318,10 +297,7 @@ const BubuAiForm = ({
                     type="button"
                     variant="ghost"
                     className="rounded-full"
-                    disabled={
-                      isProcessing ||
-                      (!hasActiveSubscription && recipeGenerationsLeft === 0)
-                    }
+                    disabled={isProcessing}
                     onClick={() => {
                       setShowPreferences(true);
                     }}
@@ -338,10 +314,7 @@ const BubuAiForm = ({
                       document.getElementById("image-upload")?.click()
                     }
                     className="rounded-full"
-                    disabled={
-                      isProcessing ||
-                      (!hasActiveSubscription && recipeGenerationsLeft === 0)
-                    }
+                    disabled={isProcessing}
                   >
                     <ImageIcon className="size-4" />
                   </Button>
@@ -398,24 +371,6 @@ const BubuAiForm = ({
                     </motion.div>
                   )}
                 </AnimatePresence>
-                {!hasActiveSubscription && recipeGenerationsLeft > 0 && (
-                  <p className="text-xs font-medium text-muted-foreground italic ml-auto bg-muted rounded-full px-2 py-1">
-                    {recipeGenerationsLeft} free recipes left
-                  </p>
-                )}
-                {!hasActiveSubscription && recipeGenerationsLeft === 0 && (
-                  <Button
-                    variant="ghost"
-                    className="rounded-full ml-auto"
-                    type="button"
-                    onClick={() => {
-                      redirect("/billing");
-                    }}
-                  >
-                    <UnlockIcon className="size-4" />
-                    <span className="text-xs">Unlock more recipes</span>
-                  </Button>
-                )}
               </motion.div>
             </div>
 
