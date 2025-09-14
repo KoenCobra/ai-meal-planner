@@ -4,11 +4,24 @@ const CallToActionButton = () => {
   return (
     <button
       onClick={() => {
-        window.location.href = "/12-day-detox";
+        window.location.href = "/bubu-ai";
       }}
-      className="bg-green-600 text-white px-8 py-4 rounded-lg text-lg font-semibold hover:bg-green-700 transition-colors"
+      className="inline-flex items-center justify-center px-8 py-4 text-lg font-semibold text-white bg-emerald-600 rounded-full hover:bg-emerald-700 transform hover:scale-105 transition-all duration-300 shadow-lg hover:shadow-xl focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:ring-offset-2"
     >
-      Start Your Journey Today
+      Access with Bubu AI
+      <svg
+        className="ml-2 w-5 h-5"
+        fill="none"
+        stroke="currentColor"
+        viewBox="0 0 24 24"
+      >
+        <path
+          strokeLinecap="round"
+          strokeLinejoin="round"
+          strokeWidth={2}
+          d="M13 7l5 5m0 0l-5 5m5-5H6"
+        />
+      </svg>
     </button>
   );
 };
