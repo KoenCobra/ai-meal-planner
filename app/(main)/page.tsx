@@ -73,9 +73,8 @@ const Home = async () => {
           <span className="font-semibold bg-gradient-to-r from-blue-600 to-blue-400 dark:from-blue-400 dark:to-blue-300 bg-clip-text text-transparent">
             Bubu AI
           </span>
-          . Generate personalized recipes, create intelligent meal plans, and
-          discover endless culinary possibilities with our advanced AI
-          technology.
+          .<br /> Generate personalized recipes and create intelligent meal
+          plans. <br /> Start your 7-day free trial today!
         </p>
 
         <div className="flex flex-col sm:flex-row gap-6 justify-center items-center mb-20">
@@ -87,9 +86,7 @@ const Home = async () => {
               <Zap className="size-6 mr-3" />
               Experience Bubu AI
             </Button>
-            <p className="text-sm text-muted-foreground mt-2 opacity-75">
-              (10 free recipes included • No credit card needed)
-            </p>
+            <p className="text-sm text-muted-foreground mt-2 opacity-75"></p>
           </Link>
         </div>
       </div>
@@ -839,7 +836,7 @@ const Home = async () => {
                 </div>
                 <div className="flex items-center gap-2">
                   <CheckCircle className="size-4 text-muted-foreground flex-shrink-0" />
-                  <span>10 free recipes</span>
+                  <span>7-day free trial</span>
                 </div>
               </div>
 
