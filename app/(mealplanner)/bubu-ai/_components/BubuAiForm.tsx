@@ -25,6 +25,7 @@ import { useRef, useState } from "react";
 import { useForm } from "react-hook-form";
 import { toast } from "sonner";
 
+import { MAX_FILE_SIZE } from "@/lib/constants";
 import { sanitizeHtml } from "@/lib/utils";
 import {
   type GenerateRecipeInput,
@@ -95,7 +96,7 @@ const BubuAiForm = ({
   const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files && e.target.files[0]) {
       const file = e.target.files[0];
-      if (file.size > 5 * 1024 * 1024) {
+      if (file.size > MAX_FILE_SIZE) {
         toast.error("Image size should be less than 5MB");
         return;
       }

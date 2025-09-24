@@ -1,0 +1,11 @@
+export { default as AppFeaturesShowcase } from "./AppFeaturesShowcase";
+export { default as BackgroundEffects } from "./BackgroundEffects";
+export { default as CTASection } from "./CTASection";
+export { default as FeaturesSection } from "./FeaturesSection";
+export { default as FloatingFeatureBadges } from "./FloatingFeatureBadges";
+export { default as HeroSection } from "./HeroSection";
+export { default as HomeFooter } from "./HomeFooter";
+export { default as MultiLanguageShowcase } from "./MultiLanguageShowcase";
+export { default as PreferencesShowcase } from "./PreferencesShowcase";
+export { default as PricingSection } from "./PricingSection";
+export { default as StackedCollage } from "./StackedCollage";
