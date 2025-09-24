@@ -6,7 +6,11 @@ import { BubuAiProvider } from "./bubu-ai/BubuAiContext";
 import { SearchProvider } from "./search/_context/SearchProvider";
 
 const layout = async ({ children }: { children: React.ReactNode }) => {
-  const { has } = await auth();
+  const { has, userId } = await auth();
+
+  if (!userId) {
+    throw new Error("Unauthorized");
+  }
 
   if (!has({ plan: "active_subscription" })) {
     redirect("/billing");
