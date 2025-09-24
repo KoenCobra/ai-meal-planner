@@ -1,5 +1,7 @@
-import { ConvexError, v } from "convex/values";
+import { v } from "convex/values";
 import { mutation, MutationCtx, query } from "./_generated/server";
+import { getAuthenticatedUserId } from "./lib/auth";
+import * as GroceryItemsModel from "./model/groceryItems";
 import { rateLimiter } from "./rateLimiter";
 
 export const addItem = mutation({
@@ -9,46 +11,20 @@ export const addItem = mutation({
     quantity: v.optional(v.number()),
   },
   handler: async (ctx, args) => {
-    const userId = (await ctx.auth.getUserIdentity())?.subject;
-    if (!userId) {
-      console.error("Unauthorized when adding grocery item");
-      throw new Error("Unauthorized when adding grocery item");
-    }
+    const userId = await getAuthenticatedUserId(ctx, "adding grocery item");
 
     await rateLimiter.limit(ctx, "addGroceryItem", {
       key: userId,
       throws: true,
     });
 
-    // Check if item with same name and unit already exists
-    const existingItem = await ctx.db
-      .query("groceryItems")
-      .withIndex("by_user_name_and_unit", (q) =>
-        q
-          .eq("userId", userId)
-          .eq("name", args.name.toLowerCase())
-          .eq("unit", args.unit?.toLowerCase() || ""),
-      )
-      .first();
-
-    if (existingItem && args.quantity && existingItem.quantity) {
-      // Add quantities together if same name and unit
-      const totalQuantity = existingItem.quantity + args.quantity;
-
-      await ctx.db.patch(existingItem._id, {
-        quantity: totalQuantity,
-      });
-
-      return existingItem._id;
-    }
-
-    return await ctx.db.insert("groceryItems", {
+    return await GroceryItemsModel.addOrUpdateGroceryItem(
+      ctx,
       userId,
-      name: args.name.toLowerCase(),
-      unit: args.unit?.toLowerCase() || "",
-      quantity: args.quantity,
-      checked: false,
-    });
+      args.name,
+      args.unit || "",
+      args.quantity || 0,
+    );
   },
 });
 
@@ -58,41 +34,17 @@ export const addOrUpdateGroceryItem = async (
   unit: string,
   quantity: number,
 ) => {
-  const userId = (await ctx.auth.getUserIdentity())?.subject;
-  if (!userId) {
-    console.error("Unauthorized when adding or updating grocery item");
-    throw new Error("Unauthorized when adding or updating grocery item");
-  }
-
-  // Check if item with same name and unit already exists
-  const existingItem = await ctx.db
-    .query("groceryItems")
-    .withIndex("by_user_name_and_unit", (q) =>
-      q
-        .eq("userId", userId)
-        .eq("name", name.toLowerCase())
-        .eq("unit", unit.toLowerCase()),
-    )
-    .first();
-
-  if (existingItem && existingItem.quantity) {
-    // Add quantities together if same name and unit
-    const totalQuantity = existingItem.quantity + quantity;
-
-    await ctx.db.patch(existingItem._id, {
-      quantity: totalQuantity,
-    });
-
-    return existingItem._id;
-  }
-
-  return await ctx.db.insert("groceryItems", {
+  const userId = await getAuthenticatedUserId(
+    ctx,
+    "adding or updating grocery item",
+  );
+  return await GroceryItemsModel.addOrUpdateGroceryItem(
+    ctx,
     userId,
-    name: name.toLowerCase(),
-    unit: unit.toLowerCase(),
+    name,
+    unit,
     quantity,
-    checked: false,
-  });
+  );
 };
 
 export const toggleItem = mutation({
@@ -100,60 +52,36 @@ export const toggleItem = mutation({
     id: v.id("groceryItems"),
   },
   handler: async (ctx, args) => {
-    const userId = (await ctx.auth.getUserIdentity())?.subject;
-    if (!userId) {
-      console.error("Unauthorized when toggling grocery item");
-      throw new Error("Unauthorized when toggling grocery item");
-    }
+    const userId = await getAuthenticatedUserId(ctx, "toggling grocery item");
 
     await rateLimiter.limit(ctx, "toggleGroceryItem", {
       key: userId,
       throws: true,
     });
 
-    const item = await ctx.db.get(args.id);
-    if (!item) throw new ConvexError("Item not found");
-    if (item.userId !== userId) throw new ConvexError("Not authorized");
-
-    await ctx.db.patch(args.id, { checked: !item.checked });
+    await GroceryItemsModel.toggleGroceryItem(ctx, userId, args.id);
   },
 });
 
 export const listItems = query({
   handler: async (ctx) => {
-    const userId = (await ctx.auth.getUserIdentity())?.subject;
-    if (!userId) {
-      console.error("Unauthorized when listing grocery items");
-      throw new Error("Unauthorized when listing grocery items");
-    }
-    // Use by_user index and order by creation time descending
-    return await ctx.db
-      .query("groceryItems")
-      .withIndex("by_user", (q) => q.eq("userId", userId))
-      .order("desc")
-      .collect();
+    const userId = await getAuthenticatedUserId(ctx, "listing grocery items");
+    return await GroceryItemsModel.getUserGroceryItems(ctx, userId);
   },
 });
 
 export const clearAllItems = mutation({
   handler: async (ctx) => {
-    const userId = (await ctx.auth.getUserIdentity())?.subject;
-    if (!userId) {
-      console.error("Unauthorized when clearing all grocery items");
-      throw new Error("Unauthorized when clearing all grocery items");
-    }
+    const userId = await getAuthenticatedUserId(
+      ctx,
+      "clearing all grocery items",
+    );
+
     await rateLimiter.limit(ctx, "clearAllGroceryItems", {
       key: userId,
       throws: true,
     });
 
-    const allItems = await ctx.db
-      .query("groceryItems")
-      .withIndex("by_user", (q) => q.eq("userId", userId))
-      .collect();
-
-    for (const item of allItems) {
-      await ctx.db.delete(item._id);
-    }
+    await GroceryItemsModel.clearAllUserGroceryItems(ctx, userId);
   },
 });

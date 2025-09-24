@@ -1,14 +1,11 @@
-import { ConvexError, v } from "convex/values";
+import { v } from "convex/values";
 import { mutation, query } from "./_generated/server";
+import { getAuthenticatedUserId } from "./lib/auth";
 import { rateLimiter } from "./rateLimiter";
 
 export const getPreferences = query({
   handler: async (ctx) => {
-    const userId = (await ctx.auth.getUserIdentity())?.subject;
-    if (!userId) {
-      console.error("Unauthorized when getting preferences");
-      throw new ConvexError("Unauthorized when getting preferences");
-    }
+    const userId = await getAuthenticatedUserId(ctx, "getting preferences");
 
     return await ctx.db
       .query("preferences")
@@ -27,11 +24,7 @@ export const updatePreferences = mutation({
     additionalInstructions: v.optional(v.string()),
   },
   handler: async (ctx, args) => {
-    const userId = (await ctx.auth.getUserIdentity())?.subject;
-    if (!userId) {
-      console.error("Unauthorized when updating preferences");
-      throw new ConvexError("Unauthorized when updating preferences");
-    }
+    const userId = await getAuthenticatedUserId(ctx, "updating preferences");
 
     await rateLimiter.limit(ctx, "updatePreferences", {
       key: userId,

@@ -1,43 +1,18 @@
 import { paginationOptsValidator } from "convex/server";
 import { ConvexError, v } from "convex/values";
-import { Doc } from "./_generated/dataModel";
-import { mutation, query, QueryCtx } from "./_generated/server";
+import { mutation, query } from "./_generated/server";
 import { addOrUpdateGroceryItem } from "./groceryList";
+import { getAuthenticatedUserId } from "./lib/auth";
+import {
+  enrichRecipesWithImageUrls,
+  enrichRecipeWithImageUrl,
+} from "./lib/imageUtils";
 import { rateLimiter } from "./rateLimiter";
-
-// Helper function to enrich a recipe with its image URL
-async function enrichRecipeWithImageUrl(
-  ctx: QueryCtx,
-  recipe: Doc<"recipes">,
-): Promise<Doc<"recipes"> & { imageUrl?: string }> {
-  if (!recipe.imageId) {
-    return recipe;
-  }
-
-  const imageUrl = await ctx.storage.getUrl(recipe.imageId);
-  return {
-    ...recipe,
-    imageUrl: imageUrl || undefined,
-  };
-}
-
-// Helper function to enrich multiple recipes with their image URLs
-async function enrichRecipesWithImageUrls(
-  ctx: QueryCtx,
-  recipes: Doc<"recipes">[],
-): Promise<(Doc<"recipes"> & { imageUrl?: string })[]> {
-  return Promise.all(
-    recipes.map((recipe) => enrichRecipeWithImageUrl(ctx, recipe)),
-  );
-}
 
 export const generateUploadUrl = mutation({
   args: {},
   handler: async (ctx) => {
-    const userId = (await ctx.auth.getUserIdentity())?.subject;
-    if (!userId) {
-      throw new Error("Unauthorized");
-    }
+    await getAuthenticatedUserId(ctx, "generating upload URL");
     return await ctx.storage.generateUploadUrl();
   },
 });

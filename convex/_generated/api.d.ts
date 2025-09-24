@@ -10,7 +10,11 @@
 
 import type * as aiRateLimit from "../aiRateLimit.js";
 import type * as groceryList from "../groceryList.js";
+import type * as lib_auth from "../lib/auth.js";
+import type * as lib_imageUtils from "../lib/imageUtils.js";
+import type * as lib_types from "../lib/types.js";
 import type * as menus from "../menus.js";
+import type * as model_groceryItems from "../model/groceryItems.js";
 import type * as preferences from "../preferences.js";
 import type * as rateLimiter from "../rateLimiter.js";
 import type * as recipes from "../recipes.js";
@@ -32,7 +36,11 @@ import type {
 declare const fullApi: ApiFromModules<{
   aiRateLimit: typeof aiRateLimit;
   groceryList: typeof groceryList;
+  "lib/auth": typeof lib_auth;
+  "lib/imageUtils": typeof lib_imageUtils;
+  "lib/types": typeof lib_types;
   menus: typeof menus;
+  "model/groceryItems": typeof model_groceryItems;
   preferences: typeof preferences;
   rateLimiter: typeof rateLimiter;
   recipes: typeof recipes;

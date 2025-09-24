@@ -12,13 +12,20 @@ export const checkRecipeGenerationLimit = mutation({
         key: args.userId,
         throws: true,
       });
-
       return { success: true };
-    } catch {
+    } catch (error) {
+      if (error instanceof ConvexError && error.data?.kind === "RateLimited") {
+        return {
+          success: false,
+          retryAfter: error.data.retryAfter,
+          message:
+            "Rate limit exceeded for recipe generation. Please try again later.",
+        };
+      }
       return {
         success: false,
         message:
-          "Rate limit exceeded for recipe generation. Please try again later.",
+          "An unexpected error occurred during recipe generation rate limit check.",
       };
     }
   },
@@ -34,7 +41,6 @@ export const checkImageGenerationLimit = mutation({
         key: args.userId,
         throws: true,
       });
-
       return { success: true };
     } catch (error) {
       if (error instanceof ConvexError && error.data?.kind === "RateLimited") {
@@ -45,6 +51,11 @@ export const checkImageGenerationLimit = mutation({
             "Rate limit exceeded for image generation. Please try again later.",
         };
       }
+      return {
+        success: false,
+        message:
+          "An unexpected error occurred during image generation rate limit check.",
+      };
     }
   },
 });
@@ -59,7 +70,6 @@ export const checkImageAnalysisLimit = mutation({
         key: args.userId,
         throws: true,
       });
-
       return { success: true };
     } catch (error) {
       if (error instanceof ConvexError && error.data?.kind === "RateLimited") {
@@ -70,6 +80,11 @@ export const checkImageAnalysisLimit = mutation({
             "Rate limit exceeded for image analysis. Please try again later.",
         };
       }
+      return {
+        success: false,
+        message:
+          "An unexpected error occurred during image analysis rate limit check.",
+      };
     }
   },
 });
@@ -84,7 +99,6 @@ export const checkNutritionalValuesGenerationLimit = mutation({
         key: args.userId,
         throws: true,
       });
-
       return { success: true };
     } catch (error) {
       if (error instanceof ConvexError && error.data?.kind === "RateLimited") {
@@ -95,6 +109,11 @@ export const checkNutritionalValuesGenerationLimit = mutation({
             "Rate limit exceeded for nutritional values generation. Please try again later.",
         };
       }
+      return {
+        success: false,
+        message:
+          "An unexpected error occurred during nutritional values generation rate limit check.",
+      };
     }
   },
 });

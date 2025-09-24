@@ -1,46 +1,17 @@
 import { paginationOptsValidator } from "convex/server";
 import { ConvexError, v } from "convex/values";
-import { Doc } from "./_generated/dataModel";
-import { mutation, query, QueryCtx } from "./_generated/server";
+import { mutation, query } from "./_generated/server";
 import { addOrUpdateGroceryItem } from "./groceryList";
+import { getAuthenticatedUserId } from "./lib/auth";
+import { enrichRecipesWithImageUrls } from "./lib/imageUtils";
 import { rateLimiter } from "./rateLimiter";
-
-// Helper function to enrich a recipe with its image URL
-async function enrichRecipeWithImageUrl(
-  ctx: QueryCtx,
-  recipe: Doc<"recipes">,
-): Promise<Doc<"recipes"> & { imageUrl?: string }> {
-  if (!recipe.imageId) {
-    return recipe;
-  }
-
-  const imageUrl = await ctx.storage.getUrl(recipe.imageId);
-  return {
-    ...recipe,
-    imageUrl: imageUrl || undefined,
-  };
-}
-
-// Helper function to enrich multiple recipes with their image URLs
-async function enrichRecipesWithImageUrls(
-  ctx: QueryCtx,
-  recipes: Doc<"recipes">[],
-): Promise<(Doc<"recipes"> & { imageUrl?: string })[]> {
-  return Promise.all(
-    recipes.map((recipe) => enrichRecipeWithImageUrl(ctx, recipe)),
-  );
-}
 
 export const createMenu = mutation({
   args: {
     name: v.string(),
   },
   handler: async (ctx, args) => {
-    const userId = (await ctx.auth.getUserIdentity())?.subject;
-    if (!userId) {
-      console.error("Unauthorized when creating menu");
-      throw new Error("Unauthorized when creating menu");
-    }
+    const userId = await getAuthenticatedUserId(ctx, "creating menu");
 
     await rateLimiter.limit(ctx, "createMenu", {
       key: userId,
