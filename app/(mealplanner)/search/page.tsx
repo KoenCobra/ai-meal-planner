@@ -1,9 +1,4 @@
-import {
-  freeRecipeGenerationsLeft,
-  hasUserActiveSubscription,
-} from "@/lib/freeTrial";
 import { Metadata } from "next";
-import { redirect } from "next/navigation";
 import SearchPage from "./components/Search";
 
 export const metadata: Metadata = {
@@ -12,12 +7,6 @@ export const metadata: Metadata = {
 };
 
 const page = async () => {
-  const hasActiveSubscription = await hasUserActiveSubscription();
-  const generationsLeft = await freeRecipeGenerationsLeft();
-
-  if (!hasActiveSubscription && generationsLeft === 0) {
-    redirect("/billing");
-  }
   return <SearchPage />;
 };
 

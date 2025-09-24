@@ -1,10 +1,5 @@
 import { GroceryList } from "@/components/GroceryList";
-import {
-  freeRecipeGenerationsLeft,
-  hasUserActiveSubscription,
-} from "@/lib/freeTrial";
 import { Metadata } from "next";
-import { redirect } from "next/navigation";
 
 export const metadata: Metadata = {
   title: "Grocery List",
@@ -12,12 +7,6 @@ export const metadata: Metadata = {
 };
 
 const GroceriesPage = async () => {
-  const hasActiveSubscription = await hasUserActiveSubscription();
-  const generationsLeft = await freeRecipeGenerationsLeft();
-
-  if (!hasActiveSubscription && generationsLeft === 0) {
-    redirect("/billing");
-  }
   return (
     <div className="pb-8">
       <GroceryList />
