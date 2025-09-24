@@ -12,6 +12,7 @@ import {
   FormItem,
   FormMessage,
 } from "@/components/ui/form";
+import { componentVariants, motionValues } from "@/lib/animation";
 import { zodResolver } from "@hookform/resolvers/zod";
 import {
   ImageIcon,
@@ -231,9 +232,9 @@ const BubuAiForm = ({
                   <FormItem className="space-y-0">
                     <FormControl>
                       <motion.div
-                        initial={{ opacity: 0, y: 10 }}
-                        animate={{ opacity: 1, y: 0 }}
-                        transition={{ duration: 0.4 }}
+                        variants={componentVariants.fadeInUp}
+                        initial="hidden"
+                        animate="visible"
                         className="relative"
                       >
                         <textarea
@@ -258,14 +259,10 @@ const BubuAiForm = ({
                         <AnimatePresence>
                           {description.trim() && !isProcessing && (
                             <motion.div
-                              initial={{ opacity: 0, scale: 0.8 }}
-                              animate={{ opacity: 1, scale: 1 }}
-                              exit={{ opacity: 0, scale: 0.8 }}
-                              transition={{
-                                type: "spring",
-                                stiffness: 400,
-                                damping: 25,
-                              }}
+                              variants={componentVariants.scaleFadeIn}
+                              initial="hidden"
+                              animate="visible"
+                              exit="hidden"
                               className="absolute -top-1 -right-1"
                             >
                               <Button
@@ -293,7 +290,7 @@ const BubuAiForm = ({
                 animate={{ opacity: 1 }}
                 transition={{ delay: 0.3, duration: 0.4 }}
               >
-                <motion.div whileTap={{ scale: 0.95 }}>
+                <motion.div {...motionValues.tap}>
                   <Button
                     type="button"
                     variant="ghost"
@@ -307,7 +304,7 @@ const BubuAiForm = ({
                   </Button>
                 </motion.div>
 
-                <motion.div whileTap={{ scale: 0.95 }}>
+                <motion.div {...motionValues.tap}>
                   <Button
                     type="button"
                     variant="ghost"
@@ -321,10 +318,7 @@ const BubuAiForm = ({
                   </Button>
                 </motion.div>
 
-                <motion.div
-                  whileTap={{ scale: 0.95 }}
-                  transition={{ type: "spring", stiffness: 400, damping: 20 }}
-                >
+                <motion.div {...motionValues.tap}>
                   <Button
                     disabled={
                       isProcessing || (!description.trim() && !selectedImage)
@@ -345,16 +339,11 @@ const BubuAiForm = ({
                   {isProcessing && (
                     <motion.div
                       key="cancel-button"
-                      initial={{ opacity: 0, scale: 0.8 }}
-                      animate={{ opacity: 1, scale: 1 }}
-                      exit={{ opacity: 0, scale: 0.8 }}
-                      transition={{
-                        type: "spring",
-                        stiffness: 400,
-                        damping: 25,
-                      }}
-                      whileHover={{ scale: 1.05 }}
-                      whileTap={{ scale: 0.95 }}
+                      variants={componentVariants.scaleFadeIn}
+                      initial="hidden"
+                      animate="visible"
+                      exit="hidden"
+                      {...motionValues.buttonHover}
                     >
                       <Button
                         type="button"

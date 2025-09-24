@@ -4,10 +4,9 @@ import type { Id } from "@/convex/_generated/dataModel";
 import { Loader2 } from "lucide-react";
 import { useEffect, useRef } from "react";
 import { useInfiniteRecipes } from "../_hooks/useInfiniteRecipes";
+import { MealType } from "../tabs";
 import { EmptyState } from "./EmptyState";
 import { RecipeGrid } from "./RecipeGrid";
-
-type MealType = "breakfast" | "lunch" | "dinner" | "other";
 
 interface InfiniteRecipeGridProps {
   mealType: MealType;
@@ -15,7 +14,7 @@ interface InfiniteRecipeGridProps {
   onDelete: (recipeId: Id<"recipes">, title: string, dishType: string) => void;
 }
 
-function RecipeGridSkeleton() {
+function SimpleLoadingSkeleton() {
   return (
     <div className="flex items-center justify-center py-8">
       <Loader2 className="h-8 w-8 animate-spin text-muted-foreground" />
@@ -61,7 +60,7 @@ export const InfiniteRecipeGrid = ({
   }, [fetchNextPage, hasNextPage, isFetchingNextPage]);
 
   if (isLoading) {
-    return <RecipeGridSkeleton />;
+    return <SimpleLoadingSkeleton />;
   }
 
   if (isError) {

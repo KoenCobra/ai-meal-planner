@@ -1,37 +1,25 @@
-import { Id } from "@/convex/_generated/dataModel";
-import BreakfastTabContent from "./_components/recipeTypeTabsContent/breakfastTabContent";
-import DinnerTabContent from "./_components/recipeTypeTabsContent/dinnerTabContent";
-import LunchTabContent from "./_components/recipeTypeTabsContent/lunchTabContent";
-import OtherTabContent from "./_components/recipeTypeTabsContent/otherTabContent";
+export type MealType = "breakfast" | "lunch" | "dinner" | "other";
 
-interface TabContentProps {
-  menuId?: Id<"menus">;
-  onDelete: (recipeId: Id<"recipes">, title: string, dishType: string) => void;
+export interface TabConfig {
+  title: string;
+  key: MealType;
 }
 
-export const tabs: {
-  title: string;
-  component: React.ComponentType<TabContentProps>;
-  key: string;
-}[] = [
+export const tabs: TabConfig[] = [
   {
     title: "Breakfast",
-    component: BreakfastTabContent,
     key: "breakfast",
   },
   {
     title: "Lunch",
-    component: LunchTabContent,
     key: "lunch",
   },
   {
     title: "Dinner",
-    component: DinnerTabContent,
     key: "dinner",
   },
   {
     title: "Other",
-    component: OtherTabContent,
     key: "other",
   },
 ];

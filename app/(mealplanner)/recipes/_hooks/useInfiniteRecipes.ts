@@ -2,8 +2,7 @@ import { api } from "@/convex/_generated/api";
 import { Id } from "@/convex/_generated/dataModel";
 import { useInfiniteQuery } from "@tanstack/react-query";
 import { useConvex } from "convex/react";
-
-type MealType = "breakfast" | "lunch" | "dinner" | "other";
+import { MealType } from "../tabs";
 
 interface UseInfiniteRecipesProps {
   mealType: MealType;

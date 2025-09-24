@@ -5,7 +5,8 @@ import { Id } from "@/convex/_generated/dataModel";
 import { useSearchParams } from "next/navigation";
 import DeleteRecipeDialog from "../../_components/DeleteRecipeDialog";
 import { useRecipeDelete } from "../_hooks/useRecipeDelete";
-import { tabs } from "../tabs";
+import { MealType, tabs } from "../tabs";
+import { RecipeTabContent } from "./RecipeTabContent";
 
 interface RecipeDetailsProps {
   menuId?: Id<"menus">;
@@ -31,9 +32,14 @@ const RecipeDetails = ({ menuId }: RecipeDetailsProps) => {
     window.history.replaceState(null, "", `?${newSearchParams.toString()}`);
   };
 
-  const RecipeTabContent = tabs.find(
-    (tab) => tab.key === currentTab,
-  )?.component;
+  // Type guard to ensure currentTab is a valid meal type
+  const isValidMealType = (tab: string): tab is MealType => {
+    return tabs.some((t) => t.key === tab);
+  };
+
+  const validCurrentTab = isValidMealType(currentTab)
+    ? currentTab
+    : "breakfast";
 
   return (
     <div className="mx-auto">
@@ -42,15 +48,21 @@ const RecipeDetails = ({ menuId }: RecipeDetailsProps) => {
       </h1>
       <Tabs value={currentTab} onValueChange={setCurrentTab} className="w-full">
         <TabsList className="grid w-full grid-cols-4 dark:border dark:border-border/50">
-          <TabsTrigger value="breakfast">Breakfast</TabsTrigger>
-          <TabsTrigger value="lunch">Lunch</TabsTrigger>
-          <TabsTrigger value="dinner">Dinner</TabsTrigger>
-          <TabsTrigger value="other">Other</TabsTrigger>
+          {tabs.map((tab) => (
+            <TabsTrigger key={tab.key} value={tab.key}>
+              {tab.title}
+            </TabsTrigger>
+          ))}
         </TabsList>
       </Tabs>
-      {RecipeTabContent && (
-        <RecipeTabContent menuId={menuId} onDelete={handleDelete} />
-      )}
+
+      <div className="mt-6">
+        <RecipeTabContent
+          mealType={validCurrentTab}
+          menuId={menuId}
+          onDelete={handleDelete}
+        />
+      </div>
 
       <DeleteRecipeDialog
         open={!!recipeToDelete}

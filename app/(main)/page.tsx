@@ -21,7 +21,6 @@ const Home = async () => {
   return (
     <div className="relative overflow-hidden">
       <BackgroundEffects />
-
       <HeroSection />
       <AppFeaturesShowcase />
       <PreferencesShowcase />

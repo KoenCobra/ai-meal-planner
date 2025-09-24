@@ -43,7 +43,10 @@ const AddToMenuDialog: React.FC<AddToMenuDialogProps> = ({
     const success = await saveMenuAssociations();
     if (success) {
       onOpenChange(false);
-      onSuccess?.();
+
+      if (onSuccess) {
+        onSuccess();
+      }
     }
   };
 
